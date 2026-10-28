@@ -30,38 +30,51 @@ export interface LightPreset {
 }
 
 export const LIGHT_PRESETS: Record<string, LightPreset> = {
+  // --- Siang terang --------------------------------------------------------
+  // Siang harus terasa BERBEDA TEGAS dari malam: kabut jauh (udara bening),
+  // matahari besar tinggi, hemi biru langit. Bab pagi (b01, b07, b09, b11,
+  // b13, b15, b18) memakai preset ini.
   pagi_desa: {
-    ambient: { color: 0xffeedd, intensity: 0.4 },
-    hemisphere: { skyColor: 0xfff8e7, groundColor: 0x887755, intensity: 0.6 },
-    directional: { color: 0xfff0d0, intensity: 1.2, position: new THREE.Vector3(50, 100, 50), target: new THREE.Vector3(0, 0, 0), castShadow: false },
-    fog: { color: 0xe8e0d0, near: 30, far: 150 },
-    sky: { top: 0x7ba7d4, celestial: { color: 0xfff3d0, size: 0.030, glow: 1.25, stars: 0 } }
+    ambient: { color: 0xffeedd, intensity: 0.55 },
+    hemisphere: { skyColor: 0xdfeaff, groundColor: 0x8a7a58, intensity: 0.75 },
+    directional: { color: 0xfff2d4, intensity: 1.6, position: new THREE.Vector3(60, 110, 40), target: new THREE.Vector3(0, 0, 0), castShadow: false },
+    fog: { color: 0xe8e0d0, near: 40, far: 220 },
+    sky: { top: 0x5b9bd8, celestial: { color: 0xfff6dc, size: 0.036, glow: 1.6, stars: 0 } }
   },
+  // --- Senja ---------------------------------------------------------------
+  // Horizon oranye menyala (warna kabut = pita langit terendah), puncak ungu
+  // gelap, matahari besar rendah di barat, bintang pertama mulai berani.
   sore: {
-    ambient: { color: 0x443322, intensity: 0.3 },
-    hemisphere: { skyColor: 0xff8844, groundColor: 0x442211, intensity: 0.5 },
-    directional: { color: 0xff6622, intensity: 0.8, position: new THREE.Vector3(-50, 60, -50), target: new THREE.Vector3(0, 0, 0), castShadow: false },
-    fog: { color: 0x332211, near: 20, far: 100 },
-    sky: { top: 0x7a4a6a, celestial: { color: 0xffb469, size: 0.040, glow: 1.7, dir: new THREE.Vector3(-0.75, 0.20, -0.63), stars: 0 } }
+    ambient: { color: 0x4a3325, intensity: 0.32 },
+    hemisphere: { skyColor: 0xff8844, groundColor: 0x442211, intensity: 0.55 },
+    directional: { color: 0xff7733, intensity: 1.0, position: new THREE.Vector3(-50, 55, -50), target: new THREE.Vector3(0, 0, 0), castShadow: false },
+    fog: { color: 0x5a3320, near: 22, far: 130 },
+    sky: { top: 0x5f3a6e, celestial: { color: 0xffb469, size: 0.052, glow: 2.1, dir: new THREE.Vector3(-0.75, 0.18, -0.64), stars: 0.08 } }
   },
+  // --- Malam pekat dalam ruangan/halaman -----------------------------------
+  // Gelap pekat dengan bulan rendah + bintang penuh di langit, cahaya utama
+  // dari lampu titik dalam rumah. Bulan redup hanya memberi bentuk bidang.
   malam_rumah: {
-    ambient: { color: 0x111122, intensity: 0.2 },
-    hemisphere: { skyColor: 0x111133, groundColor: 0x0a0a15, intensity: 0.3 },
+    ambient: { color: 0x121a2e, intensity: 0.18 },
+    hemisphere: { skyColor: 0x111b33, groundColor: 0x080a12, intensity: 0.22 },
+    directional: { color: 0x9fb4d8, intensity: 0.22, position: new THREE.Vector3(42, 55, -72), target: new THREE.Vector3(0, 0, 0), castShadow: false },
     pointLights: [
       { color: 0xffcc88, intensity: 0.8, position: new THREE.Vector3(0, 2.5, 0), distance: 8, decay: 2 },
       { color: 0xffaa44, intensity: 0.5, position: new THREE.Vector3(2, 1.5, -1), distance: 5, decay: 2 }
     ],
-    fog: { color: 0x050510, near: 5, far: 40 },
-    sky: { top: 0x0b1024, celestial: { color: 0xdbe6f8, size: 0.026, glow: 0.85, dir: new THREE.Vector3(0.42, 0.55, -0.72), stars: 1 } }
+    fog: { color: 0x04060e, near: 5, far: 40 },
+    sky: { top: 0x060a18, celestial: { color: 0xdbe6f8, size: 0.028, glow: 1.0, stars: 1 } }
   },
+  // --- Malam hutan ---------------------------------------------------------
+  // Bulan dingin lebih terang dari malam rumah supaya siluet pohon, penanda
+  // tujuan, dan jarak tempuh tetap terbaca tanpa lampu senter; langit paling
+  // gelap dengan bintang penuh.
   hutan_malam: {
-    // Bulan dingin: gelap tetap gelap, tapi siluet pohon, penanda tujuan,
-    // dan jarak tempuh masih terbaca tanpa lampu senter.
-    ambient: { color: 0x16202b, intensity: 0.3 },
-    hemisphere: { skyColor: 0x223346, groundColor: 0x0a0f13, intensity: 0.3 },
-    directional: { color: 0x8fa6c4, intensity: 0.38, position: new THREE.Vector3(-45, 70, 35), target: new THREE.Vector3(0, 0, 0), castShadow: false },
-    fog: { color: 0x0a1017, near: 8, far: 55 },
-    sky: { top: 0x0d1a28, celestial: { color: 0xcddcf2, size: 0.024, glow: 0.7, stars: 0.85 } }
+    ambient: { color: 0x141d29, intensity: 0.26 },
+    hemisphere: { skyColor: 0x1e2e42, groundColor: 0x080d11, intensity: 0.26 },
+    directional: { color: 0x9db3d4, intensity: 0.5, position: new THREE.Vector3(-45, 70, 35), target: new THREE.Vector3(0, 0, 0), castShadow: false },
+    fog: { color: 0x080e15, near: 8, far: 60 },
+    sky: { top: 0x071220, celestial: { color: 0xcddcf2, size: 0.026, glow: 0.85, stars: 1 } }
   },
   api: {
     ambient: { color: 0x331100, intensity: 0.3 },
