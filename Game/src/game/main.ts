@@ -1423,6 +1423,7 @@ export class Game {
 
     this.fpsController?.setCollisionObjects(built.colliders);
     interactionManager.setWorldObjects(built.colliders);
+    this.fpsController?.setWorldBounds(built.bounds);
     this.registerInteractables(built);
 
     const location = gameState.get('location');
@@ -2392,14 +2393,20 @@ export class Game {
       return;
     }
 
-    // Hanya satu label yang tampil tiap frame, dan harus benar-benar terlihat:
-    // milik target yang sedang diarahkan, atau tujuan terdekat yang ada di
-    // depan kamera. Kalau semua penanda menulis teksnya sekaligus, beberapa
-    // label dengan objektif sama berdempetan dan saling menutupi: sementara
-    // tujuan di belakang pemain tidak ada gunanya ditampilkan.
+    // Penanda utama: satu-satunya yang menyala kuning penuh, tampil di dunia,
+    // menjadi sasaran pip kompas HUD, dan (lewat labelIdx) satu-satunya yang
+    // menampilkan teks tujuan mengambang.
+    const primaryIdx = this.findPrimaryMarker(targetId, camPos);
+    this.updateCompass(fwd, camPos, primaryIdx >= 0 ? this.propMeshes[primaryIdx] : null);
+
+    // Hanya SATU label yang tampil tiap frame, dan harus milik penanda
+    // utama yang benar-benar terlihat di depan kamera. Tujuan lain dan
+    // interaksi biasa tidak lagi menampilkan label: teksnya hanya muncul
+    // lewat prompt E saat pemain mengarahkan pandangan ke objeknya.
     let labelIdx = -1;
     let labelScore = Number.POSITIVE_INFINITY;
     for (let i = 0; i < this.propMeshes.length; i++) {
+      if (i !== primaryIdx) continue;
       const marker = this.propMeshes[i];
       if (marker.userData.looted) continue;
       if (!marker.parent || !marker.userData.label) continue;
@@ -2424,11 +2431,6 @@ export class Game {
       const score = active ? -1 : dist;
       if (score < labelScore) { labelScore = score; labelIdx = i; }
     }
-
-    // Penanda utama: satu-satunya yang menyala kuning penuh dan menjadi
-    // sasaran pip kompas HUD.
-    const primaryIdx = this.findPrimaryMarker(targetId, camPos);
-    this.updateCompass(fwd, camPos, primaryIdx >= 0 ? this.propMeshes[primaryIdx] : null);
 
     for (let i = 0; i < this.propMeshes.length; i++) {
       const marker = this.propMeshes[i];
@@ -2473,21 +2475,19 @@ export class Game {
         this.applyMarkerGoalStyle(marker, bright);
       }
 
-      // Non-tujuan (termasuk `goalFor` yang sedang tidak berlaku): samar dan
-      // baru muncul saat pemain mendekat atau memandang ke arahnya.
-      if (!isGoal && cam && !active) {
-        const visible = dist < 7;
-        if (marker.visible !== visible) marker.visible = visible;
-        if (!visible) {
-          // Label ikut disembunyikan: blok pembaruan label ada di bawah dan
-          // tidak tercapai kalau penandanya sudah hilang dari layar.
-          const hidden = marker.userData.label as THREE.Sprite | undefined;
-          if (hidden && hidden.visible) hidden.visible = false;
-          continue;
-        }
-      } else if (!marker.visible) {
-        marker.visible = true;
+      // Hanya penanda UTAMA yang tampil di dunia. Tujuan cerita lain dan
+      // interaksi biasa (flavor) disembunyikan total: pemain menemukannya
+      // lewat penglihatan dan prompt E saat mengarahkan pandangan, bukan
+      // lewat hutan belah ketupat yang memenuhi layar (kebocoran lama di
+      // mana marker goal non-utama jatuh ke `visible = true` tanpa gaya
+      // emas). Label ikut disembunyikan bersamanya.
+      if (!bright) {
+        if (marker.visible) marker.visible = false;
+        const hidden = marker.userData.label as THREE.Sprite | undefined;
+        if (hidden && hidden.visible) hidden.visible = false;
+        continue;
       }
+      if (!marker.visible) marker.visible = true;
 
       const baseY = marker.userData.baseY as number;
       marker.position.y = baseY + Math.sin(now * 0.0021 + i * 1.7) * (bright ? 0.05 : 0.03);

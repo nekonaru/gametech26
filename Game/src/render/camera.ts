@@ -55,12 +55,13 @@ export class FPSController {
   private cameraTargetY = 1.62;
 
   /**
-   * Batas dunia tak terlihat: radius horizontal maksimum jelajah pemain.
-   * Semua denah scene berada di dalam lantai 40x40 (sudut ±28,3); radius 34
-   * memberi ruang longgar sekaligus menghalangi pemain menembus keluar
-   * groundDisc menuju void tanpa dasar di kejauhan.
+   * Batas dunia tak terlihat: persegi jelajah pemain per scene (x0..x1,
+   * z0..z1). Nilai awal meniru pagar lama (radius 34) untuk keadaan sebelum
+   * scene dibangun; sesudahnya SceneFactory mengirim batas nyata scene
+   * (BuiltScene.bounds) sehingga pagar selalu sejajar dengan tepi tanah dan
+   * penghalang berlatar yang dibangun builder (tembok, pohon, pagar).
    */
-  private worldRadius = 34;
+  private worldBounds = { x0: -34, x1: 34, z0: -34, z1: 34 };
 
   private collisionObjects: THREE.Object3D[] = [];
   private collisionBoxes: THREE.Box3[] = [];
@@ -222,28 +223,41 @@ export class FPSController {
   }
 
   /**
-   * Pagar dunia tak terlihat: pemain yang menembus radius batas ditarik kembali
-   * ke tepi peta, dan komponen kecepatan yang menabrak batas dibuang supaya
+   * Pagar dunia tak terlihat: pemain yang menembus batas scene ditarik kembali
+   * ke tepi, dan komponen kecepatan yang menabrak batas dibuang supaya
    * terasa seperti pagar sungguhan (menyusuri batas dengan halus), bukan
-   * teleport tersentak atau jalan ke void tanpa dasar.
+   * teleport tersentak. Batas per scene sejajar dengan penghalang berlatar
+   * yang dilihat pemain (tembok, pohon, pagar) sehingga tidak ada ruang
+   * antara visual dan fisik.
    */
   private enforceWorldBounds(): void {
     const s = this.playerCollider.start;
     const e = this.playerCollider.end;
-    const r = Math.hypot(s.x, s.z);
-    if (r <= this.worldRadius || r === 0) return;
-    const nx = s.x / r;
-    const nz = s.z / r;
+    // Sisakan radius kapsul + celah tipis supaya punggung tidak menempel
+    // di permukaan penghalang.
+    const inset = this.playerCollider.radius + 0.05;
+    const b = this.worldBounds;
+    const cx = (s.x + e.x) * 0.5;
+    const cz = (s.z + e.z) * 0.5;
+    const nx = Math.min(Math.max(cx, b.x0 + inset), b.x1 - inset);
+    const nz = Math.min(Math.max(cz, b.z0 + inset), b.z1 - inset);
+    if (nx === cx && nz === cz) return;
+    const dx = nx - cx;
+    const dz = nz - cz;
     // Bagian kecepatan menjauhi batas dibuang; yang menyusuri batas tetap
     // dibiarkan agar gerakan terasa alami saat menempel pagar.
-    const outward = this.velocity.x * nx + this.velocity.z * nz;
-    if (outward > 0) {
-      this.velocity.x -= nx * outward;
-      this.velocity.z -= nz * outward;
-    }
-    const k = this.worldRadius / r;
-    s.x *= k; s.z *= k;
-    e.x *= k; e.z *= k;
+    if (dx !== 0 && Math.sign(this.velocity.x) === Math.sign(dx)) this.velocity.x = 0;
+    if (dz !== 0 && Math.sign(this.velocity.z) === Math.sign(dz)) this.velocity.z = 0;
+    s.x += dx; s.z += dz;
+    e.x += dx; e.z += dz;
+  }
+
+  /**
+   * Pasang batas jelajah scene (dari BuiltScene.bounds) supaya pagar dunia
+   * mengikuti ukuran nyata scene, bukan radius global yang sama untuk semua.
+   */
+  setWorldBounds(b: { x0: number; x1: number; z0: number; z1: number }): void {
+    this.worldBounds = { x0: b.x0, x1: b.x1, z0: b.z0, z1: b.z1 };
   }
 
   /**

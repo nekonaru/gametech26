@@ -3,9 +3,9 @@
  * Konsumen mengimpor semuanya lewat barrel src/render/scenes.ts.
  */
 import * as THREE from 'three';
-import { Kit, palette, mat, anchor, boxGeo, cylGeo, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, lampAt, tree, scatterTrees, table, chair, shelf, poster, benchRow, crate, bed, rug, sofa, addGroupProxy, wardrobe, fridge, stove, kitchenCounter, tvSet, radioBox, calendarSheet, mirrorPanel, pictureFrame, wallClock, envelope, wallet, plate, cup, screwdriver, fuseBox, hangingLamp, ceilingFan, signBoard, banner, sachetStrip, motorbike, bicycle, scarecrow, haystack, basket, sack, woodPile, bucket, doorPanel, chestOfDrawers, phoneDevice, shoesPair, firePit } from './kit.js';
+import { Kit, palette, mat, anchor, boxGeo, cylGeo, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, lampAt, tree, scatterTrees, table, chair, shelf, poster, benchRow, crate, bed, rug, sofa, addGroupProxy, wardrobe, fridge, stove, kitchenCounter, tvSet, radioBox, calendarSheet, mirrorPanel, pictureFrame, wallClock, envelope, wallet, plate, cup, screwdriver, fuseBox, hangingLamp, ceilingFan, signBoard, banner, sachetStrip, motorbike, bicycle, scarecrow, haystack, basket, sack, woodPile, bucket, doorPanel, chestOfDrawers, phoneDevice, shoesPair, firePit, setSceneBounds } from './kit.js';
 import { addDynamicTick, figure } from './dynamics.js';
-import { car, bush, bottle, footprints, wallBoard, coffeeMachine, cupStack, jar, ribbon, lampPost, gateArch, hutSmall, flameMat, fireRing, markerPost, pane, groundDisc, distantBackdrop, trimRing, windowPanel, roofHip, doorwayOnX, roomShell } from './props.js';
+import { car, bush, bottle, footprints, wallBoard, coffeeMachine, cupStack, jar, ribbon, lampPost, gateArch, hutSmall, flameMat, fireRing, markerPost, pane, groundDisc, distantBackdrop, trimRing, windowPanel, roofHip, doorwayOnX, roomShell, sealPerimeter } from './props.js';
 export function buildRumah(kit: Kit): void {
   // Jendela rumah kini lubang tembus + diorama pemandangan (windowPortal):
   // kamar dan ruang tamu menghadap utara (-z), teras menghadap selatan (+z).
@@ -358,6 +358,15 @@ export function buildExteriorRumah(kit: Kit): void {
   // langit-langit supaya sudutnya tidak menembus permukaan atap.
   box(kit, 11.08, 0.16, 9.08, palette.woodDark, 0, 3.0, 0, false);
   roofHip(kit, 0, 0, 11.4, 9.4, 3, 1.7, 0x74493a);
+
+  // --- Batas pekarangan ---
+  // Pekarangan tidak punya floor() sendiri (hanya groundDisc), sehingga
+  // tanpa ini batas jelajah tetap seukuran lantai interior dan pemain
+  // terkurung di dalam rumah. Kunci ke pagar kayu (±17) dengan celah
+  // setapak di selatan menuju gerbang; ujung setapak (z=19.4) ditutup
+  // semak supaya "mau keluar desa" terbaca sebagai jalan buntu alami.
+  setSceneBounds(kit, -17, 17, -17, 19.4);
+  sealPerimeter(kit, kit.bounds, { style: 'hedge', sides: ['s'], gap: { side: 's', halfWidth: 1.6 }, seed: 59 });
 }
 
 export function buildKedai(kit: Kit): void {
@@ -651,6 +660,10 @@ export function buildGubuk(kit: Kit): void {
   A('pekerja', 1.4, 1.15, 0.2);
   A('mobil', 1.1, 1.2, 3.6);
   A('jalan_keluar', -0.6, 1.1, 5.6);
+
+  // Batas halaman: pagar pohon di tepi lantai 34x34 supaya pemain tidak
+  // berjalan keluar ke void di balik siluet desa.
+  sealPerimeter(kit, kit.bounds, { style: 'trees', seed: 3 });
 }
 
 export function buildForest(kit: Kit, dense: number): void {
@@ -718,6 +731,12 @@ export function buildForest(kit: Kit, dense: number): void {
   A('peta', -1.6, 1.25, 8.6);
   A('semak', 5.6, 1.0, 3.2);
   A('jalur_pulang', 0.4, 1.1, 11.5);
+
+  // Hutan kecil berpagar pepohonan rapat: batas jelajah dikunci di ±24
+  // (lebih rapat dari lantai 60x60) supaya rimba terasa sebagai ruang
+  // tertutup, bukan ladang rumput tak berujung dengan beberapa pohon.
+  setSceneBounds(kit, -24, 24, -24, 24);
+  sealPerimeter(kit, kit.bounds, { style: 'trees', seed: 11 });
 }
 
 /** Kabel listrik melengkung antar tiang (mengikuti parabola, bukan garis kaku). */
@@ -891,6 +910,13 @@ export function buildJalan(kit: Kit): void {
   A('sosok_raka', 0.4, 1.3, -20);
   A('jalan_ke_hutan', 0.8, 1.1, -19);
   A('jalan_pulang', -0.8, 1.1, 19);
+
+  // Desa berpagar rumah di timur-barat dan pepohonan di utara-selatan.
+  // Batas dikunci x±15 (di belakang deret rumah) dan z±27 (melewati gerbang
+  // desa) supaya jalan beraspal berujung di rerimbunan, bukan di void.
+  setSceneBounds(kit, -15, 15, -27, 27);
+  sealPerimeter(kit, kit.bounds, { style: 'village', sides: ['e', 'w'], seed: 17 });
+  sealPerimeter(kit, kit.bounds, { style: 'trees', sides: ['n', 's'], seed: 19 });
 }
 
 export function buildLadang(kit: Kit): void {
@@ -959,6 +985,12 @@ export function buildLadang(kit: Kit): void {
   A('bekas_diri', 7.0, 0.9, 3.5);
   A('bekas_jalur', 7.5, 1.0, -1.5);
   A('jalan_pulang', 0, 1.1, 14);
+
+  // Ladang berpagar semak: batas mengikuti konten (pondok Joy di x≈18,
+  // jejak di z≈-13) sehingga barisan tanaman tidak berujung di lantai
+  // kosong sejauh 20 meter.
+  setSceneBounds(kit, -15, 21, -22, 19);
+  sealPerimeter(kit, kit.bounds, { style: 'hedge', seed: 23 });
 }
 
 export function buildBalai(kit: Kit): void {
@@ -1151,6 +1183,11 @@ export function buildTepiHutan(kit: Kit): void {
   A('keputusan_pulang', 2.0, 1.1, 5.5);
   A('cari_dimas', -2.0, 1.1, 2.5);
   A('ujung_lari', 0, 1.1, -24);
+
+  // Tepi hutan berpagar pohon; batas mengikuti konten (z -26..15, x ±18)
+  // supaya jalur tanah langsung berujung di rimba.
+  setSceneBounds(kit, -18, 18, -26, 15);
+  sealPerimeter(kit, kit.bounds, { style: 'trees', seed: 29 });
 }
 
 export function buildHutanBerputar(kit: Kit): void {
@@ -1244,6 +1281,12 @@ export function buildHutanBerputar(kit: Kit): void {
   A('keluar_kebun', 0, 1.3, 15);
   A('sosok_joy', -4.2, 1.3, -9);
   A('bisikan_pertama', 0, 1.3, 4.5);
+
+  // Cincin luar berpagar pohon dengan CELAH di sisi selatan: lorong exit
+  // glow (z=19) tetap terbuka secara visual, dan pemain berhenti dengan
+  // halus di dekat cahaya (batas tak terlihat di z=20) sebelum trigger E.
+  setSceneBounds(kit, -20, 20, -20, 20);
+  sealPerimeter(kit, kit.bounds, { style: 'trees', gap: { side: 's', halfWidth: 4 }, seed: 31 });
 }
 
 export function buildHutanApi(kit: Kit): void {
@@ -1318,6 +1361,11 @@ export function buildHutanApi(kit: Kit): void {
   A('bayangan_joy', -4.4, 1.3, -7.4);
   A('suara_dimas', 0, 1.3, 2.5);
   A('pilihan_akhir', 0, 1.3, -5.5);
+
+  // Rimba terbakar berpagar batang gosong; batas ±24 mengikuti sebaran
+  // pohon mati supaya api di cincin tengah terasa dikelilingi hutan hangus.
+  setSceneBounds(kit, -24, 24, -24, 24);
+  sealPerimeter(kit, kit.bounds, { style: 'burnt', seed: 37 });
 }
 
 /** Gugusan abu dan tulang kayu yang tersisa setelah api padam. */
@@ -1444,6 +1492,10 @@ export function buildPasar(kit: Kit): void {
   A('lapak_sayur', -2, 1.3, 4.4);
   A('keranjang', -3.3, 1.3, 3.7);
   A('spanduk_pasar', 0, 2.2, 13.5);
+
+  // Pasar berpagar peti dagangan & drum: tepi lantai 40x40 (±20) tidak
+  // lagi berupa garis rumput aneh di balik lapak terakhir.
+  sealPerimeter(kit, kit.bounds, { style: 'market', seed: 41 });
 }
 
 export function buildProyek(kit: Kit): void {
@@ -1633,6 +1685,10 @@ export function buildProyek(kit: Kit): void {
   A('tumpukan_semen', -2.6, 1.1, -2.5);
   A('perancah', 1.2, 1.3, -5.4);
   A('spanduk_proyek', -4.5, 2.3, 1.15);
+
+  // Pagar zona: material bangunan & terpal bekas menutup tepi halaman 40x40
+  // supaya lokasi proyek terasa berbatas, bukan mengambang di tanah kosong.
+  sealPerimeter(kit, kit.bounds, { style: 'construction', seed: 43 });
 }
 
 export function buildTerminal(kit: Kit): void {
@@ -1702,6 +1758,10 @@ export function buildTerminal(kit: Kit): void {
   lampPost(kit, -16, 0, 4.5);
   lampPost(kit, 16, 2, 4.5);
   lampAt(kit, 0, 2.85, -6, 0xdfe7ff, 0.7, 12);
+
+  // Terminal berpagar peti kargo & drum: peron tidak lagi berakhir di
+  // tanah lapang tanpa pagar.
+  sealPerimeter(kit, kit.bounds, { style: 'depot', seed: 47 });
 }
 
 export function buildMimpi(kit: Kit): void {
@@ -1761,6 +1821,10 @@ export function buildMimpi(kit: Kit): void {
     shard.rotation.y = a;
     kit.group.add(shard);
   }
+
+  // Mimpi berpagar reruntuhan melayang: batas ±25 (lantai 50x50) ditutup
+  // balok gelap supaya ruang mimpi terasa tertutup dan klaustrofobik.
+  sealPerimeter(kit, kit.bounds, { style: 'dream', seed: 53 });
 }
 
 export function buildPenjara(kit: Kit): void {

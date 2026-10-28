@@ -4,7 +4,7 @@
  */
 import * as THREE from 'three';
 import { getSoftDotTexture, getFlameGradientTexture } from '../textures.js';
-import { SceneDoor, Kit, palette, mat, boxGeo, cylGeo, cylGeoTiled, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, addGroupProxy } from './kit.js';
+import { SceneDoor, SceneBounds, Kit, palette, mat, boxGeo, cylGeo, cylGeoTiled, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, addGroupProxy, tree, crate, woodPile } from './kit.js';
 import { addDynamicTick } from './dynamics.js';
 
 /** Mobil sedan: badan, kabin, kaca, grill, lampu, dan empat roda. */
@@ -1173,6 +1173,148 @@ export function roomShell(kit: Kit, w: number, d: number, h: number, opts: RoomS
   }
   for (const hole of southHoles) {
     if (hole.y0 > 0.01) windowPortal(kit, hole, d / 2, 1, { curtain: opts.windowCurtains, exterior: opts.exterior });
+  }
+}
+
+export interface SealOptions {
+  /** Gaya penghalang: prop berlatar yang menutupi pagar tak terlihat. */
+  style: 'trees' | 'village' | 'market' | 'construction' | 'depot' | 'burnt' | 'dream' | 'hedge';
+  /** Sisi yang disegel; default keempat sisi. Dipakai gaya campuran per sisi. */
+  sides?: Array<'n' | 's' | 'e' | 'w'>;
+  /**
+   * Sisi yang dibuka celahnya (mis. jalan keluar yang dipakai naskah).
+   * Celah TETAP dipagar tak terlihat: pemain berhenti di cahaya keluar,
+   * bukan menembus ke void, dan transisi bab tetap lewat trigger E.
+   */
+  gap?: { side: 'n' | 's' | 'e' | 'w'; halfWidth?: number };
+  seed?: number;
+}
+
+/**
+ * Segel tepi scene: pagar dunia tak terlihat yang dipasang TEPAT di garis
+ * batas jelajah (BuiltScene.bounds), lalu ditutupi prop berlatar sehingga
+ * pemain melihat alasan berhenti (tembok, pohon, pagar, reruntuhan) alih-
+ * alih menabrak ruang kosong tak terlihat di ujung lantai.
+ *
+ * Dipanggil builder scene luar pada akhir fungsi (setelah semua floor()
+ * menghitung bounds, atau setelah setSceneBounds). Scene indoor tidak
+ * memerlukannya: dinding roomShell sudah menjadi pagar nyata.
+ */
+export function sealPerimeter(kit: Kit, b: SceneBounds, opts: SealOptions): void {
+  // Seeded PRNG sederhana (LCG): layout pagar sama tiap kali scene dibangun,
+  // penting untuk visual regression dan kesan "dunia yang konsisten".
+  let s = (opts.seed ?? 7) >>> 0;
+  const rnd = (): number => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 0xffffffff;
+  };
+
+  type Side = 'n' | 's' | 'e' | 'w';
+  const sides: Array<{ side: Side; len: number; at: (t: number) => [number, number]; rot: number }> = [
+    { side: 'n', len: b.x1 - b.x0, at: (t) => [t, b.z0], rot: 0 },
+    { side: 's', len: b.x1 - b.x0, at: (t) => [t, b.z1], rot: Math.PI },
+    { side: 'w', len: b.z1 - b.z0, at: (t) => [b.x0, t], rot: Math.PI / 2 },
+    { side: 'e', len: b.z1 - b.z0, at: (t) => [b.x1, t], rot: -Math.PI / 2 }
+  ];
+
+  const gapHalf = opts.gap?.halfWidth ?? 3.5;
+  const spacing = opts.style === 'hedge' ? 1.7 : 2.6;
+
+  for (const { side, len, at, rot } of sides) {
+    if (opts.sides && !opts.sides.includes(side)) continue;
+    const half = len / 2;
+    // Pagar tak terlihat per sisi: dua segmen bila ada celah, satu bila tidak.
+    const spans: Array<[number, number]> = opts.gap?.side === side
+      ? [[-half, -gapHalf], [gapHalf, half]]
+      : [[-half, half]];
+    for (const [a, z] of spans) {
+      const segLen = z - a;
+      if (segLen <= 0.2) continue;
+      const mid = (a + z) / 2;
+      const [cx, cz] = at(mid);
+      const wallMesh = new THREE.Mesh(
+        boxGeo(rot === 0 || rot === Math.PI ? segLen : 0.6, 3, rot === 0 || rot === Math.PI ? 0.6 : segLen),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      wallMesh.position.set(cx, 1.5, cz);
+      kit.group.add(wallMesh);
+      kit.colliders.push(wallMesh);
+    }
+
+    // Prop berlatar: berjajar di luar garis batas menutupi pagar tak terlihat.
+    const count = Math.max(2, Math.round(len / spacing));
+    for (let i = 0; i <= count; i++) {
+      const t = -half + (len * i) / count;
+      if (opts.gap?.side === side && Math.abs(t) < gapHalf + 0.8) continue;
+      const [cx, cz] = at(t);
+      // Sedikit KE LUAR dari garis batas supaya area bermain tetap lega
+      // dan pagar tak terlihat berdiri tepat di belakang prop.
+      const ox = -Math.sin(rot) * 1.3;
+      const oz = -Math.cos(rot) * 1.3;
+      const x = cx + ox + (rnd() - 0.5) * 0.7;
+      const z = cz + oz + (rnd() - 0.5) * 0.7;
+      sealProp(kit, opts.style, x, z, rot, rnd);
+    }
+  }
+}
+
+/** Satu prop penyegel tepi, dipilih gaya. */
+function sealProp(kit: Kit, style: SealOptions['style'], x: number, z: number, rot: number, rnd: () => number): void {
+  switch (style) {
+    case 'trees':
+      tree(kit, x, z, 3.6 + rnd() * 1.6);
+      if (rnd() < 0.35) bush(kit, x + (rnd() - 0.5) * 2, z + (rnd() - 0.5) * 2, 0.7 + rnd() * 0.4);
+      break;
+    case 'burnt':
+      // Pohon gosong: batang hitam tanpa tajuk, kadang bertumpukan batu.
+      cylinder(kit, 0.12, 0.2, 3.2 + rnd() * 1.8, 0x1e1712, x, 1.7, z, true);
+      if (rnd() < 0.3) {
+        const stone = new THREE.Mesh(sphereGeo(0.35 + rnd() * 0.2, 6, 5), mat(0x4a423a));
+        stone.position.set(x + 0.5, 0.18, z + 0.3);
+        kit.group.add(stone);
+      }
+      break;
+    case 'village':
+      if (rnd() < 0.4) {
+        hutSmall(kit, x, z, 3.2, 3, 2.4, rot + Math.PI, palette.wallDark, 0x6b4536);
+      } else {
+        tree(kit, x, z, 3.2 + rnd());
+      }
+      break;
+    case 'market':
+      if (rnd() < 0.5) {
+        crate(kit, x, z, 0.7 + rnd() * 0.3, palette.woodDark);
+        if (rnd() < 0.5) crate(kit, x + 0.5, z + 0.4, 0.5, palette.wood);
+      } else {
+        bush(kit, x, z, 0.55 + rnd() * 0.3, palette.leafDark);
+      }
+      break;
+    case 'construction':
+      if (rnd() < 0.45) {
+        woodPile(kit, x, z, 2);
+      } else if (rnd() < 0.6) {
+        crate(kit, x, z, 0.8, 0x8a6a4a);
+      } else {
+        // Tumpukan bata setengah jadi.
+        box(kit, 1.1, 0.7, 0.6, 0x8a4a3a, x, 0.35, z, true);
+      }
+      break;
+    case 'depot':
+      if (rnd() < 0.55) {
+        crate(kit, x, z, 0.9 + rnd() * 0.3, palette.metal);
+      } else {
+        // Drum minyak bekas.
+        cylinder(kit, 0.34, 0.34, 0.95, 0x4a5b6b, x, 0.48, z, true);
+      }
+      break;
+    case 'dream':
+      // Reruntuhan melayang: balok gelap yang sedikit berputar (tanpa tick
+      // dinamis; mimpi statis sudah cukup menakutkan).
+      box(kit, 1.6 + rnd(), 0.3, 1.2 + rnd() * 0.6, rnd() < 0.5 ? 0x2b2b3d : 0x34344a, x, 1.1 + rnd() * 1.8, z, false);
+      break;
+    case 'hedge':
+      bush(kit, x, z, 0.95 + rnd() * 0.35, 0x274d2c);
+      break;
   }
 }
 

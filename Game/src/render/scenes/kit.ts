@@ -38,6 +38,15 @@ export interface BuiltScene {
   colliders: THREE.Object3D[];
   spawn: { pos: [number, number, number]; yaw: number };
   /**
+   * Batas jelajah pemain ( persegi x0..x1, z0..z1, satuan meter ).
+   * Dihitung otomatis dari gabungan lantai yang dipanggil builder, atau
+   * diset eksplisit lewat setSceneBounds untuk scene luar yang halamannya
+   * lebih besar dari lantai utamanya (pekarangan rumah). FPSController
+   * memakai nilai ini sebagai pagar dunia sehingga pemain tidak pernah
+   * berjalan ke void di luar tepi tanah.
+   */
+  bounds: SceneBounds;
+  /**
    * Posisi dunia prop yang benar-benar ada di adegan, dipetakan lewat id
    * interactable naskah. Penanda interaksi memakai titik ini lebih dulu
    * supaya penanda muncul *di atas benda yang benar* (kasur, pintu, kompor)
@@ -48,11 +57,47 @@ export interface BuiltScene {
   doors: SceneDoor[];
 }
 
+/** Persegi batas jelajah pemain pada satu scene. */
+export interface SceneBounds {
+  x0: number;
+  x1: number;
+  z0: number;
+  z1: number;
+}
+
 export interface Kit {
   group: THREE.Group;
   colliders: THREE.Object3D[];
   anchors: Record<string, [number, number, number]>;
   doors: SceneDoor[];
+  /** Batas jelajah; diperluas otomatis oleh floor(), dikunci setSceneBounds. */
+  bounds: SceneBounds;
+  /** True setelah builder memanggil setSceneBounds: union floor diabaikan. */
+  boundsFixed: boolean;
+}
+
+/**
+ * Perluas batas jelajah agar mencakup lantai berukuran halfX x halfZ.
+ * Panggilan dari setiap floor() (termasuk lewat roomShell) sehingga seluruh
+ * scene otomatis punya batas tanpa data terpisah di naskah.
+ */
+export function expandBounds(kit: Kit, halfX: number, halfZ: number): void {
+  if (kit.boundsFixed) return;
+  const b = kit.bounds;
+  b.x0 = Math.min(b.x0, -halfX);
+  b.x1 = Math.max(b.x1, halfX);
+  b.z0 = Math.min(b.z0, -halfZ);
+  b.z1 = Math.max(b.z1, halfZ);
+}
+
+/**
+ * Set batas jelajah secara eksplisit (mengabaikan hasil union floor).
+ * Dipakai builder scene luar yang ingin mengunci persegi halaman sendiri,
+ * misal pekarangan rumah yang ditutup pagar kayu di ±17.
+ */
+export function setSceneBounds(kit: Kit, x0: number, x1: number, z0: number, z1: number): void {
+  kit.bounds = { x0, x1, z0, z1 };
+  kit.boundsFixed = true;
 }
 
 export const palette = {
@@ -308,6 +353,7 @@ export function floor(kit: Kit, w: number, d: number, color: number, y = 0): voi
   mesh.position.set(0, y - 0.1, 0);
   kit.group.add(mesh);
   kit.colliders.push(mesh);
+  expandBounds(kit, w / 2, d / 2);
 }
 
 export function wall(kit: Kit, w: number, h: number, d: number, x: number, z: number, color = palette.wall): THREE.Mesh {

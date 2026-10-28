@@ -15,7 +15,14 @@ export class SceneFactory {
     // mesh scene lama sudah dibongkar.
     resetFigures();
     resetDynamics();
-    const kit: Kit = { group: new THREE.Group(), colliders: [], anchors: {}, doors: [] };
+    const kit: Kit = {
+      group: new THREE.Group(),
+      colliders: [],
+      anchors: {},
+      doors: [],
+      bounds: { x0: 0, x1: 0, z0: 0, z1: 0 },
+      boundsFixed: false
+    };
     const builder = builders[sceneId];
 
     if (builder) {
@@ -55,7 +62,10 @@ export class SceneFactory {
       colliders: kit.colliders,
       spawn: { pos: [0, 0, 0], yaw: 0 },
       anchors: kit.anchors,
-      doors: kit.doors
+      doors: kit.doors,
+      bounds: (kit.boundsFixed || kit.bounds.x1 > kit.bounds.x0)
+        ? kit.bounds
+        : { x0: -7, x1: 7, z0: -6, z1: 6 }
     };
   }
 }
