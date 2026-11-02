@@ -1,19 +1,43 @@
 <div align="center">
+  <h1>Asap yang Tak Padam</h1>
+  <p><b>Game horor naratif psikologis 3D yang berjalan di browser.<br/>
+  Api bisa padam. Rasa bersalah tidak.</b></p>
 
-# 🔥 Asap yang Tak Padam
-
-**Game horor naratif psikologis 3D yang berjalan di browser. Api bisa padam. Rasa bersalah tidak.**
-
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-![Three.js](https://img.shields.io/badge/Three.js-0.186-black?style=flat-square&logo=three.js&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Web-orange?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
-![CI](https://github.com/nekonaru/gametech26/actions/workflows/ci.yml/badge.svg)
-
+  <a href="https://github.com/nekonaru/gametech26/actions"><img src="https://github.com/nekonaru/gametech26/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <img src="https://img.shields.io/badge/Three.js-0.186-black?style=flat-square&logo=three.js&logoColor=white" alt="Three.js" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Platform-Web-orange?style=flat-square" alt="Platform" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square" alt="Status" />
 </div>
 
-## ✨ Tentang
+<br />
+
+[English](README.md) | **Bahasa Indonesia**
+
+> [!NOTE]
+> Kamu bisa langsung main di browser lewat [nekonaru.github.io/gametech26](https://nekonaru.github.io/gametech26/), tanpa install apa pun.
+
+---
+
+## Daftar Isi
+
+- [Tentang](#tentang)
+- [Fitur](#fitur)
+- [Syarat](#syarat)
+- [Memainkan](#memainkan)
+- [Kontrol](#kontrol)
+- [Struktur Proyek](#struktur-proyek)
+- [Pengembangan](#pengembangan)
+- [Pengujian](#pengujian)
+- [Continuous Integration](#continuous-integration)
+- [FAQ](#faq)
+- [Tim BD Games](#tim-bd-games)
+- [Lisensi](#lisensi)
+
+---
+
+## Tentang
 
 **Asap yang Tak Padam** adalah game horor naratif psikologis orang pertama bergaya PS1. Kamu bergantian menjadi **Dimas** dan **Raka** selama 7 hari di sebuah desa: memeriksa benda, mengajak warga bicara, mengumpulkan clue ke jurnal, memecahkan puzzle, dan menentukan salah satu dari **10 ending** lewat pilihan dan nuranimu sendiri.
 
@@ -21,30 +45,58 @@
 
 Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca dari JSON (24 berkas bab, dua bahasa), jadi penulis cerita bisa menambah bab tanpa menyentuh kode.
 
-## 🎯 Fitur
+---
+
+## Fitur
+
+### Cerita dan Konten
 
 | Fitur | Keterangan |
 |-------|------------|
-| 📖 **24 bab JSON** | B1 sampai B20 plus B5B, B10ALT, B12B, dan B15-ALT; dua POV (Dimas/Raka), 2 bab cabang opsional |
-| 🔚 **10 ending + epilog** | Pohon keputusan diuji unit untuk semua cabang, termasuk true ending |
-| 🌍 **Indonesia + English** | Seluruh teks lewat i18n, simetri ID/EN diaudit otomatis |
-| 🔶 **Penanda 3 bentuk** | NPC (ketupat di atas kepala), objek dinding (ketupat bersayap), objek meja/lantai (chevron + pilar cahaya): beda bentuk, bukan cuma warna |
-| 📓 **Jurnal & papan petunjuk** | Clue, evidence board dengan penarikan kartu, ringkasan hari + daftar clue terlewat |
-| 🧩 **6 puzzle unik** | Dial laci, struk robek, kalender dinding, papan petunjuk, jalan berputar, timing cincin; semua punya Bantuan dan Lewati |
-| 🎨 **Gaya PS1** | Render internal 360p, vertex snapping, dithering, kuantisasi warna, kabut |
-| 🔊 **Audio adaptif** | 36 rekaman Mixkit + sintesis prosedural sebagai fallback; boot hanya memuat 8 SFX kecil, sisanya menyusul per bab |
-| ⚡ **Muat cepat** | Bundle game (±940 KB) baru diunduh sesudah tombol MULAI ditekan; halaman awal ±10 KB |
-| 💾 **Simpan fleksibel** | 3 slot manual, autosave, checkpoint (IndexedDB); pengaturan di localStorage |
-| 📱 **Desktop + mobile** | WASD/mouse pointer-lock, atau joystick sentuh + tombol aksi; manifest PWA |
-| 🗺️ **Pilih Babak & galeri** | Ulangi babak terbuka dari menu utama; galeri ending + pencapaian Detektif |
+| **24 bab JSON** | B1 sampai B20 plus B5B, B10ALT, B12B, dan B15-ALT; dua POV (Dimas/Raka), 2 bab cabang opsional |
+| **10 ending + epilog** | Pohon keputusan diuji unit untuk semua cabang, termasuk true ending |
+| **Indonesia + English** | Seluruh teks lewat i18n, simetri ID/EN diaudit otomatis |
+| **Pilih Babak & galeri** | Ulangi babak terbuka dari menu utama; galeri ending + pencapaian Detektif |
 
-## 📦 Syarat
+### Gameplay
 
-- **Node.js** 22 atau lebih baru
-- **npm** (ikut bersama Node.js)
-- Browser modern dengan WebGL (Chrome/Edge/Firefox terbaru)
+| Fitur | Keterangan |
+|-------|------------|
+| **Penanda 3 bentuk** | NPC (ketupat di atas kepala), objek dinding (ketupat bersayap), objek meja/lantai (chevron + pilar cahaya): beda bentuk, bukan cuma warna |
+| **Jurnal & papan petunjuk** | Clue, evidence board dengan penarikan kartu, ringkasan hari + daftar clue terlewat |
+| **6 puzzle unik** | Dial laci, struk robek, kalender dinding, papan petunjuk, jalan berputar, timing cincin; semua punya Bantuan dan Lewati |
 
-## 🚀 Memainkan
+### Tampilan
+
+| Fitur | Keterangan |
+|-------|------------|
+| **Gaya PS1** | Render internal 360p, vertex snapping, dithering, kuantisasi warna, kabut |
+| **Audio adaptif** | 36 rekaman Mixkit + sintesis prosedural sebagai fallback; boot hanya memuat 8 SFX kecil, sisanya menyusul per bab |
+
+### Teknis
+
+| Fitur | Keterangan |
+|-------|------------|
+| **Muat cepat** | Bundle game (±940 KB) baru diunduh sesudah tombol MULAI ditekan; halaman awal ±10 KB |
+| **Simpan fleksibel** | 3 slot manual, autosave, checkpoint (IndexedDB); pengaturan di localStorage |
+| **Desktop + mobile** | WASD/mouse pointer-lock, atau joystick sentuh + tombol aksi; manifest PWA |
+
+---
+
+## Syarat
+
+| Dependensi | Versi Minimum | Catatan |
+|------------|---------------|---------|
+| **Node.js** | 22 | Hanya diperlukan untuk menjalankan dari source atau menyajikan secara lokal |
+| **npm** | apa saja | Ikut bersama Node.js |
+| **Browser** | modern, dengan WebGL | Chrome/Edge/Firefox terbaru |
+
+> [!TIP]
+> Kalau kamu hanya ingin bermain, Node.js tidak diperlukan. Buka versi browser di Opsi A di bawah.
+
+---
+
+## Memainkan
 
 ### Opsi A: Main di browser (termudah)
 
@@ -64,7 +116,7 @@ node serve.cjs   # sajikan dist tanpa dependensi, http://localhost:8000
 
 ### Opsi C: Jalan dari source (untuk development / membaca kode)
 
-**1. Ambil kode proyek**
+#### 1. Ambil kode proyek
 
 <details>
 <summary><b>Sudah install Git</b></summary>
@@ -96,7 +148,7 @@ cd gametech26/Game
 
 </details>
 
-**2. Install dependensi dan jalankan**
+#### 2. Install dependensi dan jalankan
 
 ```bash
 npm install
@@ -110,14 +162,17 @@ npm run build    # cek tsc lalu bundel ke dist/
 npm run preview  # sajikan dist memakai Vite, http://localhost:4173
 ```
 
-> **Penting: jangan klik dua kali `index.html`.** Browser memblokir modul JavaScript dan file data pada protocol `file:`, jadi layar akan berhenti. Selalu jalankan lewat server HTTP seperti di atas.
+> [!IMPORTANT]
+> **Jangan klik dua kali `index.html`.** Browser memblokir modul JavaScript dan file data pada protocol `file:`, jadi layar akan berhenti. Selalu jalankan lewat server HTTP seperti di atas.
 
-## 🖥️ Kontrol
+---
 
-Desktop:
+## Kontrol
+
+### Desktop
 
 | Aksi | Tombol |
-|---|---|
+|------|--------|
 | Bergerak | W A S D |
 | Menoleh | Mouse (klik layar untuk pointer lock) |
 | Interaksi | E |
@@ -128,9 +183,18 @@ Desktop:
 | Lanjut dialog | Klik, Spasi, atau Enter |
 | Pilihan dialog | 1 sampai 4 |
 
-Mobile: joystick kiri untuk bergerak (dorong ke tepi = lari), geser kanan untuk menoleh, tap untuk berinteraksi, tombol aksi di tepi kanan untuk lari, interaksi, senter, ponsel, jurnal, inventaris, dan jeda.
+### Mobile
 
-## 🗂️ Struktur Proyek
+| Aksi | Kontrol |
+|------|---------|
+| Bergerak | Joystick kiri (dorong ke tepi = lari) |
+| Menoleh | Geser di sisi kanan |
+| Interaksi | Tap |
+| Lari, interaksi, senter, ponsel, jurnal, inventaris, jeda | Tombol aksi di tepi kanan |
+
+---
+
+## Struktur Proyek
 
 ```
 gametech26/
@@ -158,11 +222,21 @@ gametech26/
 └── README.md                 # dokumentasi ini
 ```
 
-**Menambah bab baru:** salin pola `b15alt` (bab cabang kecil): satu JSON naskah di `public/data/chapters/`, satu JSON locale di `public/locales/chapters/`, satu baris definisi `branch: true` di `src/game/chapter.ts`. Kontrak lengkapnya ada di `Game/docs/chapter-spec.md`.
+---
 
-## 🧪 Pengujian
+## Pengembangan
 
-Verifikasi statis sebelum setiap push (semuanya juga jalan di CI):
+### Menambah bab baru
+
+Salin pola `b15alt` (bab cabang kecil): satu JSON naskah di `public/data/chapters/`, satu JSON locale di `public/locales/chapters/`, satu baris definisi `branch: true` di `src/game/chapter.ts`. Kontrak lengkapnya ada di `Game/docs/chapter-spec.md`.
+
+---
+
+## Pengujian
+
+### Verifikasi statis
+
+Sebelum setiap push (semuanya juga jalan di CI):
 
 ```bash
 npm run lint        # eslint, harus 0 errors
@@ -173,7 +247,7 @@ npm run audit       # 7 suite validator: referensi konten, simetri locale,
 npm run lighthouse  # budget bobot + skor (LH_RUNS=3 di CI untuk meredam noise)
 ```
 
-Verifikasi runtime:
+### Verifikasi runtime
 
 ```bash
 node tools/auto-play-ci.mjs     # main penuh b01 sampai ending tanpa error/stall
@@ -183,7 +257,19 @@ UPDATE_BASELINE=1 node tools/visual-regression.mjs  # tulis ulang baseline
                                                     #   bila perubahan visual disengaja
 ```
 
-## ❓ FAQ
+---
+
+## Continuous Integration
+
+| Workflow | Fungsi |
+|----------|--------|
+| `ci.yml` | Lint, test, audit, Lighthouse, auto-play, dan visual regression |
+| Deploy Pages | Men-deploy game ke GitHub Pages setiap push ke `main` |
+| Dependabot | Pembaruan dependensi |
+
+---
+
+## FAQ
 
 <details>
 <summary><b>Layar berhenti di "Memuat aset"?</b></summary>
@@ -213,11 +299,13 @@ Sengaja. Bab cabang (`branch: true`, mis. B10ALT dan B15-ALT) hanya bisa dicapai
 
 </details>
 
-## 👥 Tim BD Games
+---
+
+## Tim BD Games
 
 <div align="center">
 
-| [![Nicolas Dwi Dharma](https://github.com/nekonaru.png?size=100)](https://github.com/nekonaru) | 👤 | 👤 |
+| [![Nicolas Dwi Dharma](https://github.com/nekonaru.png?size=100)](https://github.com/nekonaru) | &nbsp; | &nbsp; |
 |:---:|:---:|:---:|
 | **[Nicolas Dwi Dharma](https://github.com/nekonaru)** | **Aigy** | **Nabil** |
 
@@ -225,14 +313,8 @@ Sengaja. Bab cabang (`branch: true`, mis. B10ALT dan B15-ALT) hanya bisa dicapai
 
 </div>
 
-## 📄 Lisensi
+---
+
+## Lisensi
 
 Kode di bawah [Lisensi MIT](LICENSE). Lihat [`LICENSE`](LICENSE) untuk info lengkap.
-
-<div align="center">
-
-Dibuat oleh **BD Games**
-
-*Star repo ini kalau game-nya berkesan!*
-
-</div>
