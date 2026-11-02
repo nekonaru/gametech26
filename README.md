@@ -13,8 +13,6 @@
 
 <br />
 
-[English](README.md) | **Bahasa Indonesia**
-
 > [!NOTE]
 > Kamu bisa langsung main di browser lewat [nekonaru.github.io/gametech26](https://nekonaru.github.io/gametech26/), tanpa install apa pun.
 
