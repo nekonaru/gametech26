@@ -59,6 +59,14 @@
       "pulang": {
         "1": "Aku menyusul Rudi ke jalan setapak. Malam masih panjang.",
         "2": "Dadaku berat, tapi kakiku terus melangkah."
+      },
+      "batu": {
+        "1": "Batu besar di tepi jalan ditandai kapur. Angkanya sudah memudar.",
+        "2": "Tanda warga supaya tidak tersesat. Aku justru merasa kehilangan arah."
+      },
+      "rumput": {
+        "1": "Rumput tinggi penuh embun. Setiap langkah meninggalkan bekas basah.",
+        "2": "Kalau ada yang mengejar, jejakku akan mudah sekali diikuti."
       }
     }
   },
@@ -122,6 +130,14 @@
       "pulang": {
         "1": "I follow Rudi to the footpath. The night is still long.",
         "2": "My chest is heavy, but my feet keep moving."
+      },
+      "batu": {
+        "1": "A big rock at the roadside is marked in chalk. Its number has faded.",
+        "2": "A marker so villagers do not lose their way. Yet I feel the one who lost direction."
+      },
+      "rumput": {
+        "1": "Tall grass is full of dew. Every step leaves a wet trace.",
+        "2": "If anyone chases me, my trail will be easy to follow."
       }
     }
   }

@@ -19,7 +19,11 @@
       { "op": "cameraAnim", "kind": "sleep", "duration": 1600, "eyeHeight": 0.5, "pitch": 0.35 },
       { "op": "dialog", "node": "b05b.tidur" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "wastafel", "prompt": "ui.examine", "position": [-2.8, 0, -1.4],
+      "onUse": [{ "op": "dialog", "node": "b05b.wastafel" }] },
+    { "id": "lampu_teras", "prompt": "ui.examine", "position": [2.8, 0, 1.2],
+      "onUse": [{ "op": "dialog", "node": "b05b.teras" }] }
   ],
   "dialogs": {
     "b05b.piring": [
@@ -76,6 +80,14 @@
     "b05b.tidur": [
       { "speaker": "Raka", "text": "b05b.tidur.1", "onEnter": [{ "op": "objective", "id": "tidur", "text": "b05b.obj.tidur" }] },
       { "speaker": "Raka", "text": "b05b.tidur.2" }
+    ],
+    "b05b.wastafel": [
+      { "speaker": "Raka", "text": "b05b.wastafel.1" },
+      { "speaker": "Raka", "text": "b05b.wastafel.2" }
+    ],
+    "b05b.teras": [
+      { "speaker": "Raka", "text": "b05b.teras.1" },
+      { "speaker": "Raka", "text": "b05b.teras.2" }
     ]
   }
 }

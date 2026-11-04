@@ -32,7 +32,11 @@
           ] }
       ] },
     { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true, "goalFor": ["pulang"],
-      "onUse": [{ "op": "dialog", "node": "b10.pulang" }, { "op": "chapterEnd" }] }
+      "onUse": [{ "op": "dialog", "node": "b10.pulang" }, { "op": "chapterEnd" }] },
+    { "id": "tong_galon", "prompt": "ui.examine", "position": [2.6, 0, -1.8],
+      "onUse": [{ "op": "dialog", "node": "b10.tong" }] },
+    { "id": "rumput_gosong", "prompt": "ui.examine", "position": [-0.8, 0, -4.8],
+      "onUse": [{ "op": "dialog", "node": "b10.rumput" }] }
   ],
   "dialogs": {
     "b10.jalur": [
@@ -120,6 +124,14 @@
     "b10.pulang": [
       { "speaker": "Dimas", "text": "b10.pulang.1" },
       { "speaker": "Dimas", "text": "b10.pulang.2" }
+    ],
+    "b10.tong": [
+      { "speaker": "Narator", "text": "b10.tong.1" },
+      { "speaker": "Dimas", "text": "b10.tong.2" }
+    ],
+    "b10.rumput": [
+      { "speaker": "Narator", "text": "b10.rumput.1" },
+      { "speaker": "Dimas", "text": "b10.rumput.2" }
     ]
   }
 }

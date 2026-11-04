@@ -29,7 +29,11 @@
       { "op": "dialog", "node": "b16.pulang" },
       { "op": "echo", "from": "b16", "to": "b18", "data": { "item": "kalung_bulan_sabit", "place": "tepi_hutan" } },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "tumpukan_batu", "prompt": "ui.examine", "position": [-2.4, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b16.tumpuk" }] },
+    { "id": "sarang_burung", "prompt": "ui.examine", "position": [2.6, 1.4, -4.4],
+      "onUse": [{ "op": "dialog", "node": "b16.sarang" }] }
   ],
   "dialogs": {
     "b16.makanan": [
@@ -104,6 +108,14 @@
       { "speaker": "Dimas", "text": "b16.pulang.1" },
       { "speaker": "Dimas", "text": "b16.pulang.2" },
       { "speaker": "Dimas", "text": "b16.pulang.3" }
+    ],
+    "b16.tumpuk": [
+      { "speaker": "Narator", "text": "b16.tumpuk.1" },
+      { "speaker": "Dimas", "text": "b16.tumpuk.2" }
+    ],
+    "b16.sarang": [
+      { "speaker": "Narator", "text": "b16.sarang.1" },
+      { "speaker": "Dimas", "text": "b16.sarang.2" }
     ]
   }
 }

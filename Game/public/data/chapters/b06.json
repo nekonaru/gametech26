@@ -23,7 +23,11 @@
     { "id": "kasur_dimas", "prompt": "ui.interact", "position": [-2.8, 0, -4.6], "once": true, "goalFor": ["keputusan"], "onUse": [
       { "op": "dialog", "node": "b06.tidur" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "gitar_tua", "prompt": "ui.examine", "position": [-1.2, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b06.gitar" }] },
+    { "id": "topi_proyek", "prompt": "ui.examine", "position": [-2.6, 0, -1.2],
+      "onUse": [{ "op": "dialog", "node": "b06.topi" }] }
   ],
   "dialogs": {
     "b06.kasur": [
@@ -114,6 +118,14 @@
     "b06.tidur": [
       { "speaker": "Dimas", "text": "b06.tidur.1" },
       { "speaker": "Dimas", "text": "b06.tidur.2" }
+    ],
+    "b06.gitar": [
+      { "speaker": "Narator", "text": "b06.gitar.1" },
+      { "speaker": "Dimas", "text": "b06.gitar.2" }
+    ],
+    "b06.topi": [
+      { "speaker": "Narator", "text": "b06.topi.1" },
+      { "speaker": "Dimas", "text": "b06.topi.2" }
     ]
   }
 }

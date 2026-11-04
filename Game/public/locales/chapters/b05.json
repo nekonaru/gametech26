@@ -82,6 +82,14 @@
       "keluar": {
         "1": "Aku berdiri di pintu warung. Di kejauhan, lampu ladang menyala satu per satu.",
         "2": "Malam ini cukup. Aku pulang sebelum pikiran jalan sendiri."
+      },
+      "kursi": {
+        "1": "Kursi bambu di pojok warung sudah mengkilap karena usia.",
+        "2": "Dulu aku sering duduk di sini waktu masih kecil."
+      },
+      "kecap": {
+        "1": "Botol kecap di rak tinggal sedikit.",
+        "2": "Mak Yah hemat apa-apa, tapi kecap selalu habis duluan."
       }
     }
   },
@@ -168,6 +176,14 @@
       "keluar": {
         "1": "I stand at the warung door. Far away, the field lights come on one by one.",
         "2": "Tonight is enough. I go home before my thoughts start running on their own."
+      },
+      "kursi": {
+        "1": "The bamboo corner stool is polished smooth by age.",
+        "2": "I used to sit here when I was still small."
+      },
+      "kecap": {
+        "1": "The soy sauce bottle on the shelf is almost empty.",
+        "2": "Mak Yah saves on everything, but the soy sauce always runs out first."
       }
     }
   }

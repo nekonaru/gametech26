@@ -21,7 +21,11 @@
     { "id": "tanah_malam", "prompt": "ui.examine", "position": [0.6, 0, -1.4],
       "onUse": [{ "op": "dialog", "node": "b12b.tanah" }] },
     { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true, "goalFor": ["titik"],
-      "onUse": [{ "op": "dialog", "node": "b12b.pulang" }, { "op": "chapterEnd" }] }
+      "onUse": [{ "op": "dialog", "node": "b12b.pulang" }, { "op": "chapterEnd" }] },
+    { "id": "batu_tanda", "prompt": "ui.examine", "position": [2.2, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b12b.batu" }] },
+    { "id": "rumput_berembun", "prompt": "ui.examine", "position": [-0.6, 0, -4.8],
+      "onUse": [{ "op": "dialog", "node": "b12b.rumput" }] }
   ],
   "dialogs": {
     "b12b.rudi": [
@@ -76,6 +80,14 @@
     "b12b.pulang": [
       { "speaker": "Dimas", "text": "b12b.pulang.1" },
       { "speaker": "Dimas", "text": "b12b.pulang.2" }
+    ],
+    "b12b.batu": [
+      { "speaker": "Narator", "text": "b12b.batu.1" },
+      { "speaker": "Dimas", "text": "b12b.batu.2" }
+    ],
+    "b12b.rumput": [
+      { "speaker": "Narator", "text": "b12b.rumput.1" },
+      { "speaker": "Dimas", "text": "b12b.rumput.2" }
     ]
   }
 }

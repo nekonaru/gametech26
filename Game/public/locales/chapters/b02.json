@@ -70,6 +70,14 @@
         "ctunggu": "Tinggal sebentar lagi",
         "pergi": { "1": "Makasih kopinya, Di. Gue duluan ya." },
         "tunggu": { "1": "Sebentar lagi. Masih ada yang mau kutanya ke Rudi." }
+      },
+      "papan_menu": {
+        "1": "Papan menu ditulis kapur. Harga kopi tubruk naik lima rupiah minggu ini.",
+        "2": "Kalau harga naik terus, duduk di sini juga jadi kemewahan."
+      },
+      "bangku": {
+        "1": "Bangku di pojok itu paling banyak goresannya. Tiga angkatan sudah pernah duduk di sini.",
+        "2": "Rudi dulu sering duduk di sini sampai kedai tutup."
       }
     }
   },
@@ -144,6 +152,14 @@
         "ctunggu": "Stay a while longer",
         "pergi": { "1": "Thanks for the coffee, Di. I am off." },
         "tunggu": { "1": "A little longer. I still want to ask Rudi something." }
+      },
+      "papan_menu": {
+        "1": "The menu board is written in chalk. The price of tubruk coffee rose five rupiah this week.",
+        "2": "If prices keep climbing, just sitting here becomes a luxury."
+      },
+      "bangku": {
+        "1": "The corner bench has the most scratches. Three generations have sat on it.",
+        "2": "Rudi used to sit here until the shop closed."
       }
     }
   }

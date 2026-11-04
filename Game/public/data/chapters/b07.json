@@ -29,7 +29,11 @@
     { "id": "jalan_keluar", "prompt": "ui.interact", "position": [0, 0, 1.5], "once": true, "goalFor": ["briefing"], "onUse": [
       { "op": "dialog", "node": "b07.keluar" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "termos_kopi", "prompt": "ui.examine", "position": [-2.4, 0, -4.6],
+      "onUse": [{ "op": "dialog", "node": "b07.termos" }] },
+    { "id": "gantungan_kunci", "prompt": "ui.examine", "position": [2.4, 0, -4.4],
+      "onUse": [{ "op": "dialog", "node": "b07.kunci" }] }
   ],
   "dialogs": {
     "b07.rudi": [
@@ -78,6 +82,14 @@
     "b07.keluar": [
       { "speaker": "Dimas", "text": "b07.keluar.1", "onEnter": [{ "op": "objective", "id": "malam", "text": "b07.obj.malam" }] },
       { "speaker": "Dimas", "text": "b07.keluar.2" }
+    ],
+    "b07.termos": [
+      { "speaker": "Narator", "text": "b07.termos.1" },
+      { "speaker": "Dimas", "text": "b07.termos.2" }
+    ],
+    "b07.kunci": [
+      { "speaker": "Narator", "text": "b07.kunci.1" },
+      { "speaker": "Dimas", "text": "b07.kunci.2" }
     ]
   }
 }

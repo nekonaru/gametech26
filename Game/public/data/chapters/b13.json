@@ -357,6 +357,37 @@
           "op": "chapterEnd"
         }
       ]
+    },
+    {
+      "id": "kotak_sepatu",
+      "prompt": "ui.examine",
+      "position": [
+        -2.6,
+        0,
+        -1.4
+      ],
+      "onUse": [
+        {
+          "op": "dialog",
+          "node": "b13.kotak"
+        }
+      ]
+    },
+    {
+      "id": "piagam_sekolah",
+      "surface": "wall",
+      "prompt": "ui.read",
+      "position": [
+        -2.9,
+        1.6,
+        -2.6
+      ],
+      "onUse": [
+        {
+          "op": "dialog",
+          "node": "b13.piagam"
+        }
+      ]
     }
   ],
   "dialogs": {
@@ -676,6 +707,26 @@
       {
         "speaker": "Raka",
         "text": "b13.keluar.2"
+      }
+    ],
+    "b13.kotak": [
+      {
+        "speaker": "Narator",
+        "text": "b13.kotak.1"
+      },
+      {
+        "speaker": "Raka",
+        "text": "b13.kotak.2"
+      }
+    ],
+    "b13.piagam": [
+      {
+        "speaker": "Narator",
+        "text": "b13.piagam.1"
+      },
+      {
+        "speaker": "Raka",
+        "text": "b13.piagam.2"
       }
     ]
   }

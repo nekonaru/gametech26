@@ -42,7 +42,11 @@
       { "op": "dialog", "node": "b20.pilihan" },
       { "op": "calculateKeyakinan" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "kembang_api", "prompt": "ui.examine", "position": [-2.6, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b20.kembang" }] },
+    { "id": "sisa_unggun", "prompt": "ui.examine", "position": [2.6, 0, -4.6],
+      "onUse": [{ "op": "dialog", "node": "b20.unggun" }] }
   ],
   "dialogs": {
     "b20.catatan": [
@@ -114,6 +118,14 @@
     "b20.pilihan.akhir": [
       { "speaker": "Raka", "text": "b20.pilihan.akhir.1" },
       { "speaker": "Raka", "text": "b20.pilihan.akhir.2" }
+    ],
+    "b20.kembang": [
+      { "speaker": "Narator", "text": "b20.kembang.1" },
+      { "speaker": "Raka", "text": "b20.kembang.2" }
+    ],
+    "b20.unggun": [
+      { "speaker": "Narator", "text": "b20.unggun.1" },
+      { "speaker": "Raka", "text": "b20.unggun.2" }
     ]
   }
 }

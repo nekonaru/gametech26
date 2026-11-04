@@ -192,6 +192,36 @@
           "op": "chapterEnd"
         }
       ]
+    },
+    {
+      "id": "sumur_tua",
+      "prompt": "ui.examine",
+      "position": [
+        -2.6,
+        0,
+        -1.6
+      ],
+      "onUse": [
+        {
+          "op": "dialog",
+          "node": "b19.sumur"
+        }
+      ]
+    },
+    {
+      "id": "lapak_bunga",
+      "prompt": "ui.examine",
+      "position": [
+        2.6,
+        0,
+        -4.6
+      ],
+      "onUse": [
+        {
+          "op": "dialog",
+          "node": "b19.bunga"
+        }
+      ]
     }
   ],
   "dialogs": {
@@ -327,6 +357,26 @@
       {
         "speaker": "Dimas",
         "text": "b19.keluar.3"
+      }
+    ],
+    "b19.sumur": [
+      {
+        "speaker": "Narator",
+        "text": "b19.sumur.1"
+      },
+      {
+        "speaker": "Dimas",
+        "text": "b19.sumur.2"
+      }
+    ],
+    "b19.bunga": [
+      {
+        "speaker": "Narator",
+        "text": "b19.bunga.1"
+      },
+      {
+        "speaker": "Dimas",
+        "text": "b19.bunga.2"
       }
     ]
   }

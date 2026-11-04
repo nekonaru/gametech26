@@ -68,6 +68,14 @@
       "kasur": {
         "1": "Aku berbaring menghadap pintu.",
         "2": "Mataku terbuka sampai langit di jendela berubah."
+      },
+      "gelas": {
+        "1": "Gelas berisi air di meja masih penuh. Debu tipis di permukaannya.",
+        "2": "Tadi malam aku menuang tapi tidak sempat minum."
+      },
+      "sepatu": {
+        "1": "Sepatu kerja berdiri berpasangan di depan pintu, masih berbau tanah proyek.",
+        "2": "Besok pagi aku akan mengenakannya lagi."
       }
     }
   },
@@ -140,6 +148,14 @@
       "kasur": {
         "1": "I lie down facing the door.",
         "2": "My eyes stay open until the sky at the window changes."
+      },
+      "gelas": {
+        "1": "A glass of water on the table is still full. A thin dust sits on its surface.",
+        "2": "Last night I poured it but never got to drink."
+      },
+      "sepatu": {
+        "1": "Work shoes stand in pairs by the door, still smelling of construction soil.",
+        "2": "Tomorrow morning I will put them on again."
       }
     }
   }

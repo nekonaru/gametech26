@@ -92,6 +92,14 @@
       "pintu": {
         "1": "Aku keluar dari balai. Jalan desa terang, tapi rasanya gelap.",
         "2": "Di saku ada satu nama yang belum selesai: Joy."
+      },
+      "bangku": {
+        "1": "Bangku ruang tunggu penuh bekas duduk yang berdebu.",
+        "2": "Sudah banyak warga yang lewat sini."
+      },
+      "poster": {
+        "1": "Poster posyandu menempel di dinding, tanggalnya sudah lewat setahun.",
+        "2": "Balai desa ini memang selalu terakhir mengikuti jadwal."
       }
     }
   },
@@ -188,6 +196,14 @@
       "pintu": {
         "1": "I step out of the hall. The village road is bright, but it feels dark.",
         "2": "In my pocket there is one unfinished name: Joy."
+      },
+      "bangku": {
+        "1": "The waiting room bench is covered in dusty seat marks.",
+        "2": "So many villagers have passed through here."
+      },
+      "poster": {
+        "1": "A posyandu poster sticks to the wall, its date a year past.",
+        "2": "This village hall is always the last to follow the schedule."
       }
     }
   }

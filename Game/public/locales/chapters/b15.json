@@ -77,6 +77,14 @@
       "keluar": {
         "1": "Piring di meja sudah kosong. Aku ambil tas.",
         "2": "Hari ini belum selesai. Aku keluar rumah."
+      },
+      "galon": {
+        "1": "Galon di dispenser tinggal seperempat.",
+        "2": "Nanti beli lagi sepulang dari sana. Kalau ada yang bisa dibeli."
+      },
+      "foto": {
+        "1": "Foto keluarga di dinding, kaca depannya sudah berembun.",
+        "2": "Di foto ini semua orang tersenyum. Termasuk aku."
       }
     }
   },
@@ -158,6 +166,14 @@
       "keluar": {
         "1": "The plate on the table is empty. I pick up my bag.",
         "2": "This day is not finished. I leave the house."
+      },
+      "galon": {
+        "1": "The jug in the dispenser is down to a quarter.",
+        "2": "I will buy another after I get back from there. If there is anything left to buy with."
+      },
+      "foto": {
+        "1": "A family photo on the wall, its front glass already fogged.",
+        "2": "In this photo everyone is smiling. Me included."
       }
     }
   }

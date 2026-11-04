@@ -76,6 +76,14 @@
       "pulang": {
         "1": "Jalur pulang tertutup asap. Aku tunggu sebentar, lalu jalan.",
         "2": "Malam ini aku tidak akan tidur nyenyak."
+      },
+      "tong": {
+        "1": "Tong air kosong di pinggir ladang. Tutupnya tergeletak jauh.",
+        "2": "Musim kering begini, air lebih mahal dari beras."
+      },
+      "rumput": {
+        "1": "Rumput di sini gosong. Hangatnya masih terasa lewat alas kaki.",
+        "2": "Api belum lama lewat sini."
       }
     }
   },
@@ -156,6 +164,14 @@
       "pulang": {
         "1": "The way home is covered in smoke. I wait a while, then walk.",
         "2": "I will not sleep well tonight."
+      },
+      "tong": {
+        "1": "An empty water drum at the edge of the field. Its lid lies far away.",
+        "2": "In a dry season like this, water costs more than rice."
+      },
+      "rumput": {
+        "1": "The grass here is scorched. Its heat still comes through the soles.",
+        "2": "The fire passed here not long ago."
       }
     }
   }

@@ -62,6 +62,18 @@
           "then": [ { "op": "chapterEnd" } ]
         }
       ]
+    },
+    {
+      "id": "tiket_bus",
+      "prompt": "ui.read",
+      "position": [-0.9, 0.5, -2.2],
+      "onUse": [ { "op": "dialog", "node": "b03.tiket" } ]
+    },
+    {
+      "id": "koper_lorong",
+      "prompt": "ui.examine",
+      "position": [2.6, 0, -4.4],
+      "onUse": [ { "op": "dialog", "node": "b03.koper" } ]
     }
   ],
   "dialogs": {
@@ -222,6 +234,14 @@
     ],
     "b03.turun.pergi": [
       { "speaker": "Raka", "text": "b03.turun.pergi.1" }
+    ],
+    "b03.tiket": [
+      { "speaker": "Narator", "text": "b03.tiket.1" },
+      { "speaker": "Raka", "text": "b03.tiket.2" }
+    ],
+    "b03.koper": [
+      { "speaker": "Narator", "text": "b03.koper.1" },
+      { "speaker": "Raka", "text": "b03.koper.2" }
     ]
   }
 }

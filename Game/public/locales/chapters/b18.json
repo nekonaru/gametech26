@@ -78,6 +78,14 @@
         "1": "Aku ambil tas dan senter dari teras.",
         "2": "Kalung di sakuku terasa dingin walaupun matahari sudah tinggi.",
         "3": "Matahari sudah tinggi. Waktunya mencari Abang."
+      },
+      "becak": {
+        "1": "Becak tua diparkir di bawah pohon. Terpalnya sudah tipis kena matahari.",
+        "2": "Pak Becak biasanya lewat jam segini. Hari ini jalannya kosong."
+      },
+      "iklan": {
+        "1": "Papan iklan desa menempel beberapa selebaran. Sebagian sudah disobek orang.",
+        "2": "Ada foto Joy di antara sobekan itu. Aku menunduk sebelum membaca sampai habis."
       }
     }
   },
@@ -160,6 +168,14 @@
         "1": "I take my bag and the flashlight from the terrace.",
         "2": "The necklace in my pocket feels cold even though the sun is high.",
         "3": "The sun is high. Time to find my brother."
+      },
+      "becak": {
+        "1": "An old pedicab is parked under a tree. Its tarp is thinned by the sun.",
+        "2": "Pak Becak usually passes at this hour. Today the road is empty."
+      },
+      "iklan": {
+        "1": "The village board holds several flyers. Some have already been torn away.",
+        "2": "There is a photo of Joy among the tears. I look down before reading to the end."
       }
     }
   }

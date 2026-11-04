@@ -40,6 +40,14 @@
       "pulang": {
         "1": "Api kupadamkan. Pita tetap di pergelanganku.",
         "2": "Aku pulang ke desa sebelum warga bangun."
+      },
+      "batu": {
+        "1": "Batu-batu mengelilingi unggun. Masih menyimpan panas.",
+        "2": "Duduk di sini membuat mata tidak mau mengantuk."
+      },
+      "kayu": {
+        "1": "Tumpukan kayu bakar menunggu diganti.",
+        "2": "Kalau api padam sebelum pagi, warga pasti curiga."
       }
     }
   },
@@ -84,6 +92,14 @@
       "pulang": {
         "1": "I put out the fire. The ribbon stays on my wrist.",
         "2": "I walk home to the village before anyone wakes."
+      },
+      "batu": {
+        "1": "Stones circle the campfire. They still hold their heat.",
+        "2": "Sitting here keeps my eyes from getting sleepy."
+      },
+      "kayu": {
+        "1": "A pile of firewood waits to be replaced.",
+        "2": "If the fire dies before morning, the villagers will be suspicious."
       }
     }
   }

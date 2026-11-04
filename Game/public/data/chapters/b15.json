@@ -86,6 +86,19 @@
         { "op": "dialog", "node": "b15.keluar" },
         { "op": "chapterEnd" }
       ]
+    },
+    {
+      "id": "galon_air",
+      "prompt": "ui.examine",
+      "position": [-2.6, 0, -4.4],
+      "onUse": [ { "op": "dialog", "node": "b15.galon" } ]
+    },
+    {
+      "id": "foto_keluarga",
+      "surface": "wall",
+      "prompt": "ui.read",
+      "position": [-2.8, 1.6, -1.4],
+      "onUse": [ { "op": "dialog", "node": "b15.foto" } ]
     }
   ],
   "dialogs": {
@@ -175,6 +188,14 @@
     "b15.keluar": [
       { "speaker": "Raka", "text": "b15.keluar.1" },
       { "speaker": "Raka", "text": "b15.keluar.2" }
+    ],
+    "b15.galon": [
+      { "speaker": "Narator", "text": "b15.galon.1" },
+      { "speaker": "Dimas", "text": "b15.galon.2" }
+    ],
+    "b15.foto": [
+      { "speaker": "Narator", "text": "b15.foto.1" },
+      { "speaker": "Dimas", "text": "b15.foto.2" }
     ]
   }
 }

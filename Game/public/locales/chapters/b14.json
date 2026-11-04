@@ -78,6 +78,14 @@
           "2": "Sudah, Ran. Aku mau tidur.",
           "3": "Suaraku serak. Raka diam sejenak, lalu langkahnya menjauh. Aku menjawabnya."
         }
+      },
+      "radio": {
+        "1": "Radio kecil di rak menyiarkan lagu lama tanpa suara.",
+        "2": "Aku mematikannya. Malam ini suara apa pun terasa asing."
+      },
+      "toples": {
+        "1": "Toples koin di meja hampir penuh. Uang jajan Raka sejak kecil.",
+        "2": "Kami dulu menabung untuk hal yang sama: supaya listrik tidak mati."
       }
     }
   },
@@ -160,6 +168,14 @@
           "2": "It is fine, Ran. I am going to sleep.",
           "3": "My voice is rough. Raka is quiet for a moment, then his steps move away. I answered him."
         }
+      },
+      "radio": {
+        "1": "The small radio on the shelf plays an old song without sound.",
+        "2": "I turn it off. Tonight every voice feels foreign."
+      },
+      "toples": {
+        "1": "The coin jar on the table is nearly full. Raka's pocket money since he was small.",
+        "2": "We once saved for the same thing: so the power would not go out."
       }
     }
   }

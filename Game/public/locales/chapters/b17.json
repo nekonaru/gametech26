@@ -91,6 +91,14 @@
         "1": "Aku menyusup lewat pintu dapur yang sengaja tidak kukunci.",
         "2": "Raka sudah di kamarnya. Lampunya menyala tipis di bawah pintu.",
         "3": "Aku menutup pintu pelan. Malam ini aku masih di rumah. Besok, belum tentu."
+      },
+      "gerobak": {
+        "1": "Gerobak bakso ditutup terpal biru. Pemiliknya sudah pulang lebih dulu.",
+        "2": "Malam begini tidak ada yang berjualan. Hanya warga yang berjalan cepat."
+      },
+      "layangan": {
+        "1": "Layangan putus tertancap di pagar. Sayapnya sobek separuh.",
+        "2": "Pemiliknya pasti sudah lupa. Layangan memang selalu tinggal di tempat jatuhnya."
       }
     }
   },
@@ -186,6 +194,14 @@
         "1": "I slip in through the kitchen door, the one I left unlocked on purpose.",
         "2": "Raka is already in his room. A thin light under his door.",
         "3": "I close the door softly. Tonight I am still home. Tomorrow, maybe not."
+      },
+      "gerobak": {
+        "1": "The meatball cart is covered with a blue tarp. Its owner already went home first.",
+        "2": "At this hour nobody sells anything. Only villagers walking fast."
+      },
+      "layangan": {
+        "1": "A lost kite is stuck on the fence. Half of its wing is torn.",
+        "2": "Its owner must have forgotten. Kites always stay where they fall."
       }
     }
   }

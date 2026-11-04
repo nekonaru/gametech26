@@ -70,6 +70,14 @@
         "1": "Aku sampai di pinggir jalan desa. Lampu rumahku masih menyala.",
         "2": "Tanganku meraba saku. Kalung yang selama ini kubawa tidak ada lagi.",
         "3": "Aku berhenti sebentar. Lalu melanjutkan langkah. Biar saja malam ini."
+      },
+      "tumpuk": {
+        "1": "Tumpukan batu kecil di tanah. Ditandai warga sebagai penunjuk arah.",
+        "2": "Batu ini lebih bisa diandalkan daripada ingatanku malam ini."
+      },
+      "sarang": {
+        "1": "Sarang burung kosong di ranting rendah. Tidak ada suara di dalamnya.",
+        "2": "Semua yang tinggal di hutan ini sudah pergi untuk malam ini."
       }
     }
   },
@@ -144,6 +152,14 @@
         "1": "I reach the edge of the village road. The light in my house is still on.",
         "2": "My hand pats my pocket. The necklace I always carried is gone.",
         "3": "I stop for a moment. Then I keep walking. Let tonight be."
+      },
+      "tumpuk": {
+        "1": "A small stack of stones on the ground. Villagers mark it as a direction sign.",
+        "2": "These stones are more reliable than my memory tonight."
+      },
+      "sarang": {
+        "1": "An empty bird nest on a low branch. There is no sound inside.",
+        "2": "Everything that lives in this forest has left for the night."
       }
     }
   }

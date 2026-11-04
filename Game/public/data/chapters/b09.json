@@ -59,7 +59,11 @@
         { "op": "setEcho", "key": "b09_sepatu_diperiksa", "value": true }
       ] },
     { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.4], "once": true, "goalFor": ["pola"],
-      "onUse": [{ "op": "dialog", "node": "b09.pulang" }, { "op": "chapterEnd" }] }
+      "onUse": [{ "op": "dialog", "node": "b09.pulang" }, { "op": "chapterEnd" }] },
+    { "id": "sepeda_tua", "prompt": "ui.examine", "position": [-3, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b09.sepeda" }] },
+    { "id": "kucing_tidur", "prompt": "ui.examine", "position": [-0.6, 0, -1.4],
+      "onUse": [{ "op": "dialog", "node": "b09.kucing" }] }
   ],
   "dialogs": {
     "b09.ember": [
@@ -118,6 +122,14 @@
     "b09.pulang": [
       { "speaker": "Raka", "text": "b09.pulang.1" },
       { "speaker": "Raka", "text": "b09.pulang.2" }
+    ],
+    "b09.sepeda": [
+      { "speaker": "Raka", "text": "b09.sepeda.1" },
+      { "speaker": "Raka", "text": "b09.sepeda.2" }
+    ],
+    "b09.kucing": [
+      { "speaker": "Raka", "text": "b09.kucing.1" },
+      { "speaker": "Raka", "text": "b09.kucing.2" }
     ]
   }
 }

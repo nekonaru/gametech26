@@ -59,6 +59,14 @@
       "keluar": {
         "1": "Di teras rumah, sepatuku berlumpur dan baunya menempel. Aku tidak mencucinya malam ini.",
         "2": "Malam ini aku tidur tanpa mimpi. Itu bagian yang paling aneh."
+      },
+      "semut": {
+        "1": "Sarang semut di kaki pohon. Koloninya bergerak tanpa suara.",
+        "2": "Semua di hutan ini sibuk dengan urusannya sendiri."
+      },
+      "akar": {
+        "1": "Akar pohon menjalar sampai ke jalan setapak.",
+        "2": "Kalau akar ini diinjak, hutan pasti terbangun."
       }
     }
   },
@@ -122,6 +130,14 @@
       "keluar": {
         "1": "On the terrace my shoes are muddy and the smell sticks. I don't wash them tonight.",
         "2": "Tonight I sleep without dreams. That's the strangest part."
+      },
+      "semut": {
+        "1": "An ant nest at the foot of a tree. Its colony moves without a sound.",
+        "2": "Everything in this forest is busy with its own business."
+      },
+      "akar": {
+        "1": "Tree roots creep all the way onto the path.",
+        "2": "If these roots get stepped on, the forest will surely wake."
       }
     }
   }

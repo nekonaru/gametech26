@@ -112,6 +112,14 @@
         "1": "Struk, kalender, kartu nama. Semua sudah masuk jurnal.",
         "2": "Siang ini terasa lebih berat dari kemarin. Aku keluar kamar."
       },
+      "kotak": {
+        "1": "Kotak sepatu di bawah lemari masih berisi rapat kaki Abang.",
+        "2": "Kakinya dulu tidak pernah cukup pakai sepatu, sampai dia berhenti bekerja."
+      },
+      "piagam": {
+        "1": "Piagam sekolah tertempel rapi di dinding. Namaku sendiri, tahun lalu.",
+        "2": "Waktu itu semuanya masih terasa mungkin."
+      },
       "p2": {
         "title": "Struk Robek",
         "desc": "Rakit kembali struk itu. Baca jumlah dan tanggalnya.",
@@ -253,6 +261,14 @@
       "keluar": {
         "1": "Receipt, calendar, business card. All of it is in the journal.",
         "2": "This afternoon feels heavier than yesterday. I leave the room."
+      },
+      "kotak": {
+        "1": "The shoe box under the wardrobe still holds a tight fit of Bang's feet.",
+        "2": "His feet never fit shoes right, until he stopped working."
+      },
+      "piagam": {
+        "1": "A school certificate hangs neatly on the wall. My own name, from last year.",
+        "2": "Back then everything still felt possible."
       },
       "p2": {
         "title": "Torn Receipt",

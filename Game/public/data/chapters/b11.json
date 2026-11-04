@@ -37,7 +37,11 @@
           ] }
       ] },
     { "id": "pintu_balai", "prompt": "ui.interact", "position": [0.4, 0, -5.8], "once": true, "goalFor": ["daftar"],
-      "onUse": [{ "op": "dialog", "node": "b11.pintu" }, { "op": "chapterEnd" }] }
+      "onUse": [{ "op": "dialog", "node": "b11.pintu" }, { "op": "chapterEnd" }] },
+    { "id": "bangku_tunggu", "prompt": "ui.examine", "position": [-2.8, 0, -1.4],
+      "onUse": [{ "op": "dialog", "node": "b11.bangku" }] },
+    { "id": "poster_posyandu", "surface": "wall", "prompt": "ui.read", "position": [-3, 1.5, -4.6],
+      "onUse": [{ "op": "dialog", "node": "b11.poster" }] }
   ],
   "dialogs": {
     "b11.ibu": [
@@ -124,6 +128,14 @@
     "b11.pintu": [
       { "speaker": "Raka", "text": "b11.pintu.1" },
       { "speaker": "Raka", "text": "b11.pintu.2" }
+    ],
+    "b11.bangku": [
+      { "speaker": "Narator", "text": "b11.bangku.1" },
+      { "speaker": "Raka", "text": "b11.bangku.2" }
+    ],
+    "b11.poster": [
+      { "speaker": "Narator", "text": "b11.poster.1" },
+      { "speaker": "Raka", "text": "b11.poster.2" }
     ]
   }
 }

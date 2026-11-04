@@ -86,6 +86,14 @@
       "tidur": {
         "1": "Aku berbaring tanpa menyalakan lampu. Ponselku di cas, layarnya gelap.",
         "2": "Besok semua ini akan terasa lebih jelas. Atau tidak."
+      },
+      "gitar": {
+        "1": "Gitar tua bersandar di dinding. Senarnya berdebu.",
+        "2": "Dulu Raka sering pinjam ini. Sekarang jarang ada yang menyentuh."
+      },
+      "topi": {
+        "1": "Topi proyek bekas tergeletak di dekat lemari, debunya setebal uang saku.",
+        "2": "Besok pakai ini lagi. Kalau mandor masih mau terima."
       }
     }
   },
@@ -176,6 +184,14 @@
       "tidur": {
         "1": "I lie down without turning on the light. My phone is charging, screen dark.",
         "2": "Tomorrow all of this will feel clearer. Or not."
+      },
+      "gitar": {
+        "1": "An old guitar leans against the wall. Its strings are dusty.",
+        "2": "Raka used to borrow it often. Now nobody touches it."
+      },
+      "topi": {
+        "1": "An old work helmet lies near the wardrobe, its dust as thick as pocket money.",
+        "2": "Tomorrow I will wear it again. If the foreman still wants me."
       }
     }
   }

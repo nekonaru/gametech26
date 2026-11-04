@@ -114,7 +114,11 @@
     { "id": "cari_dimas", "prompt": "ui.interact", "position": [2, 0, -1.5], "once": true, "goalFor": ["simpulan"], "onUse": [
       { "op": "dialog", "node": "b18.selesai" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "becak_tua", "prompt": "ui.examine", "position": [-2.6, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b18.becak" }] },
+    { "id": "papan_iklan", "surface": "wall", "prompt": "ui.read", "position": [2.8, 1.5, -4.6],
+      "onUse": [{ "op": "dialog", "node": "b18.iklan" }] }
   ],
   "dialogs": {
     "b18.jejak": [
@@ -180,6 +184,14 @@
       { "speaker": "Raka", "text": "b18.selesai.1" },
       { "speaker": "Raka", "text": "b18.selesai.2" },
       { "speaker": "Raka", "text": "b18.selesai.3" }
+    ],
+    "b18.becak": [
+      { "speaker": "Narator", "text": "b18.becak.1" },
+      { "speaker": "Raka", "text": "b18.becak.2" }
+    ],
+    "b18.iklan": [
+      { "speaker": "Narator", "text": "b18.iklan.1" },
+      { "speaker": "Raka", "text": "b18.iklan.2" }
     ]
   }
 }

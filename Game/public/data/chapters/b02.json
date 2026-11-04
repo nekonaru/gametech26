@@ -66,6 +66,19 @@
           "then": [ { "op": "chapterEnd" } ]
         }
       ]
+    },
+    {
+      "id": "papan_menu",
+      "surface": "wall",
+      "prompt": "ui.read",
+      "position": [-1, 1.5, -5],
+      "onUse": [ { "op": "dialog", "node": "b02.papan_menu" } ]
+    },
+    {
+      "id": "bangku_kayu",
+      "prompt": "ui.examine",
+      "position": [-2.4, 0, -4.2],
+      "onUse": [ { "op": "dialog", "node": "b02.bangku" } ]
     }
   ],
   "dialogs": {
@@ -189,6 +202,14 @@
     ],
     "b02.keluar.pergi": [
       { "speaker": "Dimas", "text": "b02.keluar.pergi.1" }
+    ],
+    "b02.papan_menu": [
+      { "speaker": "Narator", "text": "b02.papan_menu.1" },
+      { "speaker": "Dimas", "text": "b02.papan_menu.2" }
+    ],
+    "b02.bangku": [
+      { "speaker": "Narator", "text": "b02.bangku.1" },
+      { "speaker": "Dimas", "text": "b02.bangku.2" }
     ]
   }
 }

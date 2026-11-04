@@ -107,6 +107,19 @@
           "then": [ { "op": "chapterEnd" } ]
         }
       ]
+    },
+    {
+      "id": "teko_air",
+      "prompt": "ui.examine",
+      "position": [-1.8, 0.7, -4.4],
+      "onUse": [ { "op": "dialog", "node": "b04.teko" } ]
+    },
+    {
+      "id": "jam_dinding",
+      "surface": "wall",
+      "prompt": "ui.read",
+      "position": [0, 1.7, -5.2],
+      "onUse": [ { "op": "dialog", "node": "b04.jam" } ]
     }
   ],
   "dialogs": {
@@ -239,6 +252,14 @@
     ],
     "b04.keluar.pergi": [
       { "speaker": "Raka", "text": "b04.keluar.pergi.1" }
+    ],
+    "b04.teko": [
+      { "speaker": "Narator", "text": "b04.teko.1" },
+      { "speaker": "Raka", "text": "b04.teko.2" }
+    ],
+    "b04.jam": [
+      { "speaker": "Narator", "text": "b04.jam.1" },
+      { "speaker": "Raka", "text": "b04.jam.2" }
     ]
   }
 }

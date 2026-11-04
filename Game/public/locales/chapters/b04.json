@@ -67,6 +67,14 @@
         "ctunggu": "Cek lagi dulu",
         "pergi": { "1": "Kunci pintunya. Nanti Abang pulang, dia yang buka." },
         "tunggu": { "1": "Masih ada yang belum kubuka. Lacinya belum selesai." }
+      },
+      "teko": {
+        "1": "Teh di teko sudah dingin sejak sore.",
+        "2": "Nanti panaskan lagi kalau Abang pulang."
+      },
+      "jam": {
+        "1": "Jam dinding berhenti di setengah lima.",
+        "2": "Baterainya lama tidak diganti. Rumah ini penuh barang yang berhenti jalan."
       }
     }
   },
@@ -138,6 +146,14 @@
         "ctunggu": "Check once more",
         "pergi": { "1": "Lock the door. When Bang comes home, he opens it." },
         "tunggu": { "1": "There is still something I have not opened. The drawer is not done." }
+      },
+      "teko": {
+        "1": "The tea in the kettle has been cold since afternoon.",
+        "2": "I will heat it again when Bang comes home."
+      },
+      "jam": {
+        "1": "The wall clock has stopped at half past four.",
+        "2": "The battery has not been changed in ages. This house is full of things that stopped working."
       }
     }
   }

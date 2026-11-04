@@ -80,6 +80,14 @@
         "ctunggu": "Duduk sebentar lagi",
         "pergi": { "1": "Turun dulu. Rumah tinggal jalan kaki lima menit." },
         "tunggu": { "1": "Belum kirim pesan ke Bang. Nanti dia mikir aku cuek." }
+      },
+      "tiket": {
+        "1": "Tiket perjalanan tertempel di kaca dekat kursimu. Tujuannya kota sebelah.",
+        "2": "Besok mungkin aku ikut turun di sini."
+      },
+      "koper": {
+        "1": "Koper tua tertumpuk di lorong bus. Pemiliknya tertidur pulas.",
+        "2": "Isinya pasti penuh oleh-oleh buat keluarga di rumah."
       }
     }
   },
@@ -164,6 +172,14 @@
         "ctunggu": "Sit a moment longer",
         "pergi": { "1": "Time to get off. Home is only a five minute walk." },
         "tunggu": { "1": "I never sent the message to Bang. He will think I do not care." }
+      },
+      "tiket": {
+        "1": "A travel ticket is stuck to the window near your seat. Its destination is the next city.",
+        "2": "Maybe tomorrow I will get off here too."
+      },
+      "koper": {
+        "1": "An old suitcase is piled in the bus aisle. Its owner sleeps soundly.",
+        "2": "It must be full of gifts for the family back home."
       }
     }
   }

@@ -60,6 +60,14 @@
         "2": "Bukan luka. Kelelahan, kabut, dan api yang tidak kelihatan.",
         "3": "Kami yang menemukannya di pinggir. Tidak usah dibicarakan panjang.",
         "4": "Aku berdiri di pemakaman. Aku terlambat sedikit."
+      },
+      "sepeda": {
+        "1": "Sepeda tua diparkir miring di depan rumah warga.",
+        "2": "Masih saja dipakai. Desa ini berjalan pelan, tapi tidak berhenti."
+      },
+      "ronda": {
+        "1": "Papan ronda menampilkan giliran malam ini. Namaku belum ada di situ.",
+        "2": "Aku masih dianggap anak. Anak tidak perlu menjaga malam."
       }
     }
   },
@@ -124,6 +132,14 @@
         "2": "Not wounds. Exhaustion, fog, and a fire nobody could see.",
         "3": "We were the ones who found him at the edge. No need to talk about it long.",
         "4": "I stand at the funeral. I am a little too late."
+      },
+      "sepeda": {
+        "1": "An old bicycle is parked leaning against a villager's house.",
+        "2": "Still in use. This village moves slowly, but it never stops."
+      },
+      "ronda": {
+        "1": "The watch board shows tonight's rotation. My name is not on it yet.",
+        "2": "I am still counted as a kid. Kids do not keep the night."
       }
     }
   }

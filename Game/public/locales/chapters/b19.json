@@ -60,6 +60,14 @@
         "1": "Aku keluar dari rimba dan berdiri di pinggir kebun warga.",
         "2": "Di arah ladang, langit oranye. Bukan lampu desa.",
         "3": "Aku berjalan ke sana. Kali ini aku tidak berlari."
+      },
+      "sumur": {
+        "1": "Sumur tua ditutup papan. Tali katrolnya putus sejak lama.",
+        "2": "Kalau aku menengok ke dalam, mungkin aku tidak melihat pantulan wajahku sendiri."
+      },
+      "bunga": {
+        "1": "Lapak bunga peninggalan ibu Joy. Kuncupnya masih segar pagi ini.",
+        "2": "Seseorang masih menyiraminya. Artinya seseorang masih peduli."
       }
     }
   },
@@ -124,6 +132,14 @@
         "1": "I come out of the thicket and stand at the edge of a villager's garden.",
         "2": "Toward the field, the sky is orange. Not from village lamps.",
         "3": "I walk that way. This time I do not run."
+      },
+      "sumur": {
+        "1": "The old well is covered with planks. Its pulley rope broke long ago.",
+        "2": "If I look down inside, maybe I will not see my own reflection."
+      },
+      "bunga": {
+        "1": "A flower stall left by Joy's mother. Its buds are still fresh this morning.",
+        "2": "Someone still waters it. Which means someone still cares."
       }
     }
   }

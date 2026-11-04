@@ -311,6 +311,28 @@
       "prompt": "ui.read",
       "position": [0, 0, 13],
       "onUse": [ { "op": "dialog", "node": "b01.spanduk_pasar" } ]
+    },
+    {
+      "id": "kipas_dinding",
+      "surface": "wall",
+      "scene": "rumah_dimas",
+      "prompt": "ui.examine",
+      "position": [-2.8, 1.6, -1.2],
+      "onUse": [ { "op": "dialog", "node": "b01.kipas" } ]
+    },
+    {
+      "id": "batu_bata",
+      "scene": "proyek",
+      "prompt": "ui.examine",
+      "position": [-1.8, 0, 2.2],
+      "onUse": [ { "op": "dialog", "node": "b01.batu" } ]
+    },
+    {
+      "id": "bangku_pasar",
+      "scene": "pasar",
+      "prompt": "ui.examine",
+      "position": [3.3, 0, 4.6],
+      "onUse": [ { "op": "dialog", "node": "b01.bangku" } ]
     }
   ],
   "dialogs": {
@@ -591,6 +613,18 @@
     ],
     "b01.jalan_pasar.tunggu": [
       { "speaker": "Narator", "text": "b01.jalan_pasar.tunggu.1" }
+    ],
+    "b01.kipas": [
+      { "speaker": "Narator", "text": "b01.kipas.1" },
+      { "speaker": "Dimas", "text": "b01.kipas.2" }
+    ],
+    "b01.batu": [
+      { "speaker": "Narator", "text": "b01.batu.1" },
+      { "speaker": "Dimas", "text": "b01.batu.2" }
+    ],
+    "b01.bangku": [
+      { "speaker": "Narator", "text": "b01.bangku.1" },
+      { "speaker": "Dimas", "text": "b01.bangku.2" }
     ]
   }
 }

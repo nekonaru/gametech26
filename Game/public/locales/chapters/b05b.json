@@ -63,6 +63,14 @@
       "tidur": {
         "1": "Aku masuk kamar. Di ruang makan, Abang masih duduk memandang ponselnya yang gelap.",
         "2": "Malam ini tidak ada yang dijelaskan. Tapi setidaknya kita makan bersama."
+      },
+      "wastafel": {
+        "1": "Wastafel penuh gelas yang belum dicuci.",
+        "2": "Cuci dulu sekalian, biar Abang lihat rumah rapi."
+      },
+      "teras": {
+        "1": "Lampu teras menyala kuning menunggu Abang pulang.",
+        "2": "Biasanya Abang berhenti dulu di teras sebelum masuk."
       }
     }
   },
@@ -130,6 +138,14 @@
       "tidur": {
         "1": "I go to my room. In the dining room, Abang still sits staring at his dark phone.",
         "2": "Nothing was explained tonight. But at least we ate together."
+      },
+      "wastafel": {
+        "1": "The sink is full of unwashed glasses.",
+        "2": "Might as well wash them, so Bang sees a tidy house."
+      },
+      "teras": {
+        "1": "The porch light glows yellow, waiting for Bang to come home.",
+        "2": "Bang always stops at the porch first before coming in."
       }
     }
   }

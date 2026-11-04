@@ -33,7 +33,11 @@
         { "op": "cameraAnim", "kind": "sleep", "duration": 1600, "eyeHeight": 0.5, "pitch": 0.35 },
         { "op": "dialog", "node": "b12.kasur" },
         { "op": "chapterEnd" }
-      ] }
+      ] },
+    { "id": "gelas_di_meja", "prompt": "ui.examine", "position": [-0.8, 0, -1.4],
+      "onUse": [{ "op": "dialog", "node": "b12.gelas" }] },
+    { "id": "sepatu_di_depan", "prompt": "ui.examine", "position": [-2.4, 0, -1.2],
+      "onUse": [{ "op": "dialog", "node": "b12.sepatu" }] }
   ],
   "dialogs": {
     "b12.jejak": [
@@ -105,6 +109,14 @@
     "b12.kasur": [
       { "speaker": "Dimas", "text": "b12.kasur.1" },
       { "speaker": "Dimas", "text": "b12.kasur.2" }
+    ],
+    "b12.gelas": [
+      { "speaker": "Narator", "text": "b12.gelas.1" },
+      { "speaker": "Dimas", "text": "b12.gelas.2" }
+    ],
+    "b12.sepatu": [
+      { "speaker": "Narator", "text": "b12.sepatu.1" },
+      { "speaker": "Dimas", "text": "b12.sepatu.2" }
     ]
   }
 }

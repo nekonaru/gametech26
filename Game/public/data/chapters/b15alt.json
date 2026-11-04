@@ -59,6 +59,19 @@
         { "op": "dialog", "node": "b15alt.akhir" },
         { "op": "ending", "id": "ending_2" }
       ]
+    },
+    {
+      "id": "sepeda_parkir",
+      "prompt": "ui.examine",
+      "position": [-2.6, 0, -1.6],
+      "onUse": [ { "op": "dialog", "node": "b15alt.sepeda" } ]
+    },
+    {
+      "id": "papan_ronda",
+      "surface": "wall",
+      "prompt": "ui.read",
+      "position": [2.6, 1.5, -4.8],
+      "onUse": [ { "op": "dialog", "node": "b15alt.ronda" } ]
     }
   ],
   "dialogs": {
@@ -113,6 +126,14 @@
       { "speaker": "Ketua RT", "text": "b15alt.pemakaman.2" },
       { "speaker": "Ketua RT", "text": "b15alt.pemakaman.3" },
       { "speaker": "Raka", "text": "b15alt.pemakaman.4" }
+    ],
+    "b15alt.sepeda": [
+      { "speaker": "Narator", "text": "b15alt.sepeda.1" },
+      { "speaker": "Raka", "text": "b15alt.sepeda.2" }
+    ],
+    "b15alt.ronda": [
+      { "speaker": "Narator", "text": "b15alt.ronda.1" },
+      { "speaker": "Raka", "text": "b15alt.ronda.2" }
     ]
   }
 }

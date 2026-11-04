@@ -58,6 +58,14 @@
       "keluar": {
         "1": "Aku keluar dari gubuk. Cahaya pagi masih lembut, kebun terlihat seperti kebun biasa.",
         "2": "Malam nanti semuanya akan terlihat berbeda. Setidaknya begitu kata mereka."
+      },
+      "termos": {
+        "1": "Termos kopi hampir habis. Aromanya masih hangat.",
+        "2": "Rudi pasti menyiapkan ini sejak pagi."
+      },
+      "kunci": {
+        "1": "Gantungan kunci tertinggal di rak gubuk. Label namanya sudah pudar.",
+        "2": "Barang siapa ya. Nanti kutanyakan ke warga."
       }
     }
   },
@@ -120,6 +128,14 @@
       "keluar": {
         "1": "I step out of the hut. The morning light is still soft, the garden looks like any garden.",
         "2": "Tonight everything will look different. Or so they say."
+      },
+      "termos": {
+        "1": "The thermos is almost empty of coffee. Its aroma is still warm.",
+        "2": "Rudi must have prepared this since morning."
+      },
+      "kunci": {
+        "1": "A keychain was left on the hut shelf. Its name tag has faded.",
+        "2": "Whose could this be. I will ask the villagers later."
       }
     }
   }

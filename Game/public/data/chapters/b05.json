@@ -21,7 +21,11 @@
     { "id": "pintu_warung", "prompt": "ui.interact", "position": [0, 0, 1.5], "once": true, "goalFor": ["pulang"], "onUse": [
       { "op": "dialog", "node": "b05.keluar" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "kursi_bambu", "prompt": "ui.examine", "position": [2.6, 0, -4.4],
+      "onUse": [{ "op": "dialog", "node": "b05.kursi" }] },
+    { "id": "botol_kecap", "prompt": "ui.examine", "position": [-2.8, 0, -4.4],
+      "onUse": [{ "op": "dialog", "node": "b05.kecap" }] }
   ],
   "dialogs": {
     "b05.joy": [
@@ -121,6 +125,14 @@
     "b05.keluar": [
       { "speaker": "Raka", "text": "b05.keluar.1" },
       { "speaker": "Raka", "text": "b05.keluar.2" }
+    ],
+    "b05.kursi": [
+      { "speaker": "Narator", "text": "b05.kursi.1" },
+      { "speaker": "Raka", "text": "b05.kursi.2" }
+    ],
+    "b05.kecap": [
+      { "speaker": "Narator", "text": "b05.kecap.1" },
+      { "speaker": "Raka", "text": "b05.kecap.2" }
     ]
   }
 }

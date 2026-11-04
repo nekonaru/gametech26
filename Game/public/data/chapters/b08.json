@@ -23,7 +23,11 @@
       { "op": "dialog", "node": "b08.keluar" },
       { "op": "echo", "from": "b08", "to": "b09", "data": { "jejak": "sepatu_berlumpur", "teras": true } },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "sarang_semut", "prompt": "ui.examine", "position": [-2.2, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b08.semut" }] },
+    { "id": "akar_pohon", "prompt": "ui.examine", "position": [2.8, 0, -2.8],
+      "onUse": [{ "op": "dialog", "node": "b08.akar" }] }
   ],
   "dialogs": {
     "b08.peta": [
@@ -77,6 +81,14 @@
     "b08.keluar": [
       { "speaker": "Dimas", "text": "b08.keluar.1" },
       { "speaker": "Dimas", "text": "b08.keluar.2" }
+    ],
+    "b08.semut": [
+      { "speaker": "Narator", "text": "b08.semut.1" },
+      { "speaker": "Dimas", "text": "b08.semut.2" }
+    ],
+    "b08.akar": [
+      { "speaker": "Narator", "text": "b08.akar.1" },
+      { "speaker": "Dimas", "text": "b08.akar.2" }
     ]
   }
 }

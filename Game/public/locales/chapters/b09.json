@@ -61,6 +61,14 @@
       "pulang": {
         "1": "Jalan mulai ramai. Aku pulang dulu, jurnal harus diisi sebelum lupa.",
         "2": "Tiga tanggal, satu arah. Nanti aku tanya Abang pelan-pelan."
+      },
+      "sepeda": {
+        "1": "Sepeda tua bersandar di pagar warung. Rodanya sudah kempes.",
+        "2": "Masih dipakai warga buat pergi ke pasar."
+      },
+      "kucing": {
+        "1": "Kucing tetangga tidur melingkar di depan warung.",
+        "2": "Enak ya. Tidak ada tagihan yang mengejar."
       }
     }
   },
@@ -126,6 +134,14 @@
       "pulang": {
         "1": "The road is filling up. I head home, the journal has to be written before I forget.",
         "2": "Three dates, one direction. Later I will ask Abang, gently."
+      },
+      "sepeda": {
+        "1": "An old bicycle leans against the warung fence. Its tires are flat.",
+        "2": "The villagers still use it to get to the market."
+      },
+      "kucing": {
+        "1": "The neighbor's cat sleeps curled up in front of the warung.",
+        "2": "Must be nice. No bills chasing it."
       }
     }
   }

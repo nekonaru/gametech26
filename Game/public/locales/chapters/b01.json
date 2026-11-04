@@ -23,6 +23,18 @@
         "proyek": "Proyek Bangunan",
         "pasar": "Pasar Desa"
       },
+      "kipas": {
+        "1": "Kipas dinding berputar lambat. Anginnya membawa bau dapur.",
+        "2": "Sudah bertahun-tahun kipas ini. Masih saja setia."
+      },
+      "batu": {
+        "1": "Tumpukan batu bata menunggu tangan pekerja.",
+        "2": "Kalau kuangkat satu, mungkin besok dapat bagian."
+      },
+      "bangku": {
+        "1": "Bangku kayu di pasar penuh goresan nama anak sekolah.",
+        "2": "Rudi dulu sering duduk di sini sampai penjual bubar."
+      },
       "kasur": {
         "1": "Jam dinding menunjuk tujuh lewat lima. Sinar pagi masuk lewat celah jendela.",
         "2": "Hari baru. Semoga hari ini beda.",
@@ -199,6 +211,18 @@
         "rumah": "Dimas's House",
         "proyek": "Construction Site",
         "pasar": "Village Market"
+      },
+      "kipas": {
+        "1": "The wall fan turns slowly. Its wind carries the smell of the kitchen.",
+        "2": "This fan has run for years. Still as loyal as ever."
+      },
+      "batu": {
+        "1": "A pile of bricks waits for workers' hands.",
+        "2": "If I lift one, maybe tomorrow I get a share of the work."
+      },
+      "bangku": {
+        "1": "The wooden bench at the market is covered in schoolkids' scratched names.",
+        "2": "Rudi used to sit here until the sellers packed up."
       },
       "kasur": {
         "1": "The wall clock reads five past seven. Morning light slips through the window gap.",

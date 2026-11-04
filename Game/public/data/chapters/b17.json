@@ -26,7 +26,11 @@
     { "id": "gerbang_pulang", "prompt": "ui.interact", "position": [1, 0, -1], "once": true, "goalFor": ["selinap"], "onUse": [
       { "op": "dialog", "node": "b17.pulang" },
       { "op": "chapterEnd" }
-    ] }
+    ] },
+    { "id": "gerobak_bakso", "prompt": "ui.examine", "position": [-2.6, 0, -1.6],
+      "onUse": [{ "op": "dialog", "node": "b17.gerobak" }] },
+    { "id": "layangan_patah", "prompt": "ui.examine", "position": [2.6, 0, -4.6],
+      "onUse": [{ "op": "dialog", "node": "b17.layangan" }] }
   ],
   "dialogs": {
     "b17.semak": [
@@ -135,6 +139,14 @@
       { "speaker": "Dimas", "text": "b17.pulang.1" },
       { "speaker": "Dimas", "text": "b17.pulang.2" },
       { "speaker": "Dimas", "text": "b17.pulang.3" }
+    ],
+    "b17.gerobak": [
+      { "speaker": "Narator", "text": "b17.gerobak.1" },
+      { "speaker": "Dimas", "text": "b17.gerobak.2" }
+    ],
+    "b17.layangan": [
+      { "speaker": "Narator", "text": "b17.layangan.1" },
+      { "speaker": "Dimas", "text": "b17.layangan.2" }
     ]
   }
 }

@@ -59,6 +59,18 @@
         { "op": "dialog", "node": "b10alt.pulang" },
         { "op": "chapterEnd" }
       ]
+    },
+    {
+      "id": "batu_bakar",
+      "prompt": "ui.examine",
+      "position": [-2.6, 0, -1.6],
+      "onUse": [ { "op": "dialog", "node": "b10alt.batu" } ]
+    },
+    {
+      "id": "kayu_bakar",
+      "prompt": "ui.examine",
+      "position": [1.8, 0, -1.4],
+      "onUse": [ { "op": "dialog", "node": "b10alt.kayu" } ]
     }
   ],
   "dialogs": {
@@ -86,6 +98,14 @@
     "b10alt.pulang": [
       { "speaker": "Dimas", "text": "b10alt.pulang.1" },
       { "speaker": "Dimas", "text": "b10alt.pulang.2" }
+    ],
+    "b10alt.batu": [
+      { "speaker": "Narator", "text": "b10alt.batu.1" },
+      { "speaker": "Dimas", "text": "b10alt.batu.2" }
+    ],
+    "b10alt.kayu": [
+      { "speaker": "Narator", "text": "b10alt.kayu.1" },
+      { "speaker": "Dimas", "text": "b10alt.kayu.2" }
     ]
   }
 }

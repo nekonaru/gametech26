@@ -82,6 +82,14 @@
           "1": "Cahaya berdenyut terakhir, lalu redup.",
           "2": "Aku tidak menoleh lagi."
         }
+      },
+      "kembang": {
+        "1": "Sisa kembang api tergeletak di tanah, ujungnya hangus tapi belum dingin.",
+        "2": "Ada yang merayakan sesuatu malam ini. Aku tidak tahu apa."
+      },
+      "unggun": {
+        "1": "Bekas unggun kecil di dekat cincin api. Abu belum sepenuhnya mati.",
+        "2": "Api di tempat ini tidak pernah benar-benar padam. Itu masalahnya."
       }
     }
   },
@@ -168,6 +176,14 @@
           "1": "The light gives one last pulse, then fades.",
           "2": "I do not look back again."
         }
+      },
+      "kembang": {
+        "1": "Spent fireworks lie on the ground, their tips scorched but not yet cold.",
+        "2": "Someone is celebrating something tonight. I do not know what."
+      },
+      "unggun": {
+        "1": "A small fire pit near the ring of fire. The ash is not fully dead.",
+        "2": "Fire here never truly goes out. That is the problem."
       }
     }
   }

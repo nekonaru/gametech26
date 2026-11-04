@@ -78,6 +78,18 @@
         { "op": "dialog", "node": "b14.pintu" },
         { "op": "chapterEnd" }
       ]
+    },
+    {
+      "id": "radio_kecil",
+      "prompt": "ui.examine",
+      "position": [-2.6, 0, -1.4],
+      "onUse": [ { "op": "dialog", "node": "b14.radio" } ]
+    },
+    {
+      "id": "toples_koin",
+      "prompt": "ui.examine",
+      "position": [2.4, 0, -1.6],
+      "onUse": [ { "op": "dialog", "node": "b14.toples" } ]
     }
   ],
   "dialogs": {
@@ -164,6 +176,14 @@
       },
       { "speaker": "Dimas", "text": "b14.pintu.buka.2" },
       { "speaker": "Dimas", "text": "b14.pintu.buka.3" }
+    ],
+    "b14.radio": [
+      { "speaker": "Narator", "text": "b14.radio.1" },
+      { "speaker": "Dimas", "text": "b14.radio.2" }
+    ],
+    "b14.toples": [
+      { "speaker": "Narator", "text": "b14.toples.1" },
+      { "speaker": "Dimas", "text": "b14.toples.2" }
     ]
   }
 }
