@@ -18,9 +18,9 @@
       { "op": "playSound", "key": "radio_berita", "options": { "category": "sfx", "volume": 0.3 } },
       { "op": "dialog", "node": "b06.radio" }
     ] },
-    { "id": "ponsel_rudi", "prompt": "ui.interact", "position": [0, 0, -3.2], "once": true, "onUse": [{ "op": "dialog", "node": "b06.rudi" }] },
+    { "id": "ponsel_rudi", "prompt": "ui.interact", "position": [0, 0, -3.2], "once": true, "goalFor": ["jawab"], "onUse": [{ "op": "dialog", "node": "b06.rudi" }] },
     { "id": "pintu_raka", "prompt": "ui.talk", "position": [2.8, 0, -5], "once": true, "onUse": [{ "op": "dialog", "node": "b06.cerita" }] },
-    { "id": "kasur_dimas", "prompt": "ui.interact", "position": [-2.8, 0, -4.6], "once": true, "onUse": [
+    { "id": "kasur_dimas", "prompt": "ui.interact", "position": [-2.8, 0, -4.6], "once": true, "goalFor": ["keputusan"], "onUse": [
       { "op": "dialog", "node": "b06.tidur" },
       { "op": "chapterEnd" }
     ] }

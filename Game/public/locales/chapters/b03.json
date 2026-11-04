@@ -9,7 +9,7 @@
     },
     "b03": {
       "obj": {
-        "jalan": "Duduk, lihat keluar, atur earphone",
+        "jalan": "Perjalanan masih panjang. Lihat-lihat dulu, lalu balas pesan Bang",
         "chat": "Kirim pesan ke Bang",
         "tiba": "Siap-siap turun di terminal"
       },
@@ -93,7 +93,7 @@
     },
     "b03": {
       "obj": {
-        "jalan": "Sit down, look out, set the earphone",
+        "jalan": "The ride is still long. Look around first, then reply to Bang's message",
         "chat": "Send a message to Bang",
         "tiba": "Get ready to leave at the terminal"
       },

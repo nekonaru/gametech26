@@ -93,6 +93,7 @@
         -1.5
       ],
       "once": false,
+      "goalFor": ["geledah"],
       "onUse": [
         {
           "op": "startPuzzle",
@@ -200,6 +201,7 @@
         -4.5
       ],
       "once": false,
+      "goalFor": ["kalender"],
       "onUse": [
         {
           "op": "startPuzzle",
@@ -316,6 +318,7 @@
         -4.8
       ],
       "once": true,
+      "goalFor": ["keputusan"],
       "onUse": [
         {
           "op": "if",
@@ -344,6 +347,7 @@
         -4
       ],
       "once": true,
+      "goalFor": ["keputusan"],
       "onUse": [
         {
           "op": "dialog",

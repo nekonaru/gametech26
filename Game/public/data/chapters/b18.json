@@ -12,7 +12,7 @@
   ],
   "interactables": [
     { "id": "jejak_semalam", "prompt": "ui.examine", "position": [1.5, 0, -3], "onUse": [{ "op": "dialog", "node": "b18.jejak" }] },
-    { "id": "kalung_bulan_sabit", "prompt": "ui.take", "position": [0.6, 0, -3.6], "onUse": [
+    { "id": "kalung_bulan_sabit", "prompt": "ui.take", "position": [0.6, 0, -3.6], "goalFor": ["telusuri"], "onUse": [
       { "op": "dialog", "node": "b18.kalung" },
       { "op": "addVar", "name": "buktiKalung", "value": true },
       { "op": "calculateKeyakinan" },
@@ -23,7 +23,7 @@
         "then": [{ "op": "dialog", "node": "b18.foto.yes" }],
         "else": [{ "op": "dialog", "node": "b18.foto.no" }] }
     ] },
-    { "id": "papan_petunjuk", "surface": "wall", "prompt": "ui.open", "position": [0, 0, -4.5], "onUse": [
+    { "id": "papan_petunjuk", "surface": "wall", "prompt": "ui.open", "position": [0, 0, -4.5], "goalFor": ["susun_papan"], "onUse": [
       { "op": "dialog", "node": "b18.papan" },
       { "op": "if", "condition": "clues.includes('c7')",
         "then": [
@@ -106,12 +106,12 @@
         ] }
     ] },
     { "id": "rumah_rudi", "prompt": "ui.examine", "position": [-2, 0, -5], "onUse": [{ "op": "dialog", "node": "b18.rudi" }] },
-    { "id": "keputusan_pulang", "prompt": "ui.interact", "position": [1, 0, -5.6], "onUse": [
+    { "id": "keputusan_pulang", "prompt": "ui.interact", "position": [1, 0, -5.6], "goalFor": ["simpulan"], "onUse": [
       { "op": "if", "condition": "vars.keyakinan < 4",
         "then": [{ "op": "dialog", "node": "b18.keputusan" }],
         "else": [{ "op": "dialog", "node": "b18.keputusan_yakin" }] }
     ] },
-    { "id": "cari_dimas", "prompt": "ui.interact", "position": [2, 0, -1.5], "once": true, "onUse": [
+    { "id": "cari_dimas", "prompt": "ui.interact", "position": [2, 0, -1.5], "once": true, "goalFor": ["simpulan"], "onUse": [
       { "op": "dialog", "node": "b18.selesai" },
       { "op": "chapterEnd" }
     ] }

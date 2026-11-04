@@ -23,7 +23,7 @@
         "else": [{ "op": "dialog", "node": "b17.patroli.tanpa" }] }
     ] },
     { "id": "sosok_raka", "surface": "npc", "prompt": "ui.examine", "position": [-2, 0, -4.5], "onUse": [{ "op": "dialog", "node": "b17.raka" }] },
-    { "id": "gerbang_pulang", "prompt": "ui.interact", "position": [1, 0, -1], "once": true, "onUse": [
+    { "id": "gerbang_pulang", "prompt": "ui.interact", "position": [1, 0, -1], "once": true, "goalFor": ["selinap"], "onUse": [
       { "op": "dialog", "node": "b17.pulang" },
       { "op": "chapterEnd" }
     ] }

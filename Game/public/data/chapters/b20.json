@@ -13,7 +13,7 @@
   "interactables": [
     { "id": "catatan_raka", "prompt": "ui.read", "position": [-1.5, 0, -2], "onUse": [{ "op": "dialog", "node": "b20.catatan" }] },
     { "id": "ponsel_raka", "prompt": "ui.examine", "position": [1.4, 0, -2.4], "onUse": [{ "op": "dialog", "node": "b20.ponsel" }] },
-    { "id": "cincin_api", "prompt": "ui.use", "position": [0, 0, -3.5], "onUse": [
+    { "id": "cincin_api", "prompt": "ui.use", "position": [0, 0, -3.5], "goalFor": ["capai_dimas"], "onUse": [
       { "op": "dialog", "node": "b20.cincin" },
       { "op": "startPuzzle", "id": "p6", "config": {
         "type": "timing",
@@ -34,11 +34,11 @@
         "then": [{ "op": "dialog", "node": "b20.joy.kenal" }],
         "else": [{ "op": "dialog", "node": "b20.joy.asing" }] }
     ] },
-    { "id": "suara_dimas", "surface": "npc", "prompt": "ui.talk", "position": [1, 0, -5], "onUse": [
+    { "id": "suara_dimas", "surface": "npc", "prompt": "ui.talk", "position": [1, 0, -5], "goalFor": ["capai_dimas"], "onUse": [
       { "op": "dialog", "node": "b20.dimas" },
       { "op": "objective", "id": "pilih", "text": "b20.obj.pilih" }
     ] },
-    { "id": "pilihan_akhir", "prompt": "ui.interact", "position": [0, 0, -5.8], "once": true, "onUse": [
+    { "id": "pilihan_akhir", "prompt": "ui.interact", "position": [0, 0, -5.8], "once": true, "goalFor": ["pilih"], "onUse": [
       { "op": "dialog", "node": "b20.pilihan" },
       { "op": "calculateKeyakinan" },
       { "op": "chapterEnd" }

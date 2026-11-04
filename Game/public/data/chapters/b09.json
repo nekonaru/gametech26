@@ -16,7 +16,7 @@
       "onUse": [{ "op": "dialog", "node": "b09.sapu" }] },
     { "id": "papan_pengumuman", "surface": "wall", "prompt": "ui.read", "position": [2.4, 0, -4.2],
       "onUse": [{ "op": "dialog", "node": "b09.papan" }] },
-    { "id": "radio_warung", "prompt": "ui.interact", "position": [-2.6, 0, -4.4],
+    { "id": "radio_warung", "prompt": "ui.interact", "position": [-2.6, 0, -4.4], "goalFor": ["bersih"],
       "onUse": [
         {
           "op": "if",
@@ -58,7 +58,7 @@
         { "op": "echo", "from": "b08", "to": "b09", "data": { "jejak": "sepatu_berlumpur" } },
         { "op": "setEcho", "key": "b09_sepatu_diperiksa", "value": true }
       ] },
-    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.4], "once": true,
+    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.4], "once": true, "goalFor": ["pola"],
       "onUse": [{ "op": "dialog", "node": "b09.pulang" }, { "op": "chapterEnd" }] }
   ],
   "dialogs": {

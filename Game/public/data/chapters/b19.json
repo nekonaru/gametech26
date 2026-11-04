@@ -73,6 +73,7 @@
         0,
         -4
       ],
+      "goalFor": ["keluar"],
       "onUse": [
         {
           "op": "dialog",
@@ -181,6 +182,7 @@
         -1.5
       ],
       "once": true,
+      "goalFor": ["menuju_cahaya"],
       "onUse": [
         {
           "op": "dialog",

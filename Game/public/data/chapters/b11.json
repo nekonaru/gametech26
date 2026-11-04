@@ -19,7 +19,7 @@
       ] },
     { "id": "teman_lama", "surface": "npc", "prompt": "ui.talk", "position": [2.8, 0, -4.4],
       "onUse": [{ "op": "dialog", "node": "b11.teman" }] },
-    { "id": "daftar_pencarian", "surface": "wall", "prompt": "ui.use", "position": [-1.2, 0, -1.8],
+    { "id": "daftar_pencarian", "surface": "wall", "prompt": "ui.use", "position": [-1.2, 0, -1.8], "goalFor": ["balai"],
       "onUse": [
         { "op": "dialog", "node": "b11.daftar" },
         { "op": "objective", "id": "daftar", "text": "obj.b11.daftar" }
@@ -36,7 +36,7 @@
               "else": [{ "op": "dialog", "node": "b11.dimas.none" }] }
           ] }
       ] },
-    { "id": "pintu_balai", "prompt": "ui.interact", "position": [0.4, 0, -5.8], "once": true,
+    { "id": "pintu_balai", "prompt": "ui.interact", "position": [0.4, 0, -5.8], "once": true, "goalFor": ["daftar"],
       "onUse": [{ "op": "dialog", "node": "b11.pintu" }, { "op": "chapterEnd" }] }
   ],
   "dialogs": {

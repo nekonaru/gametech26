@@ -39,6 +39,7 @@
       "id": "kamar_dimas",
       "prompt": "ui.open",
       "position": [0, 0, -4.5],
+      "goalFor": ["jelajahi"],
       "onUse": [ { "op": "dialog", "node": "b04.kamar" } ]
     },
     {
@@ -52,6 +53,7 @@
       "id": "laci",
       "prompt": "ui.use",
       "position": [1.5, 0, -4.5],
+      "goalFor": ["laci", "kwitansi"],
       "onUse": [
         {
           "op": "if",
@@ -96,6 +98,7 @@
       "id": "pintu_keluar",
       "prompt": "ui.open",
       "position": [0, 0, 0.5],
+      "goalFor": ["keluar"],
       "onUse": [
         { "op": "dialog", "node": "b04.keluar" },
         {

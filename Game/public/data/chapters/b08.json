@@ -11,15 +11,15 @@
   ],
   "interactables": [
     { "id": "peta", "surface": "wall", "prompt": "ui.read", "position": [1.4, 0, -2], "onUse": [{ "op": "dialog", "node": "b08.peta" }] },
-    { "id": "pita_1", "prompt": "ui.examine", "position": [-1.8, 0, -3.4], "once": true, "onUse": [{ "op": "dialog", "node": "b08.pita1" }] },
-    { "id": "pita_2", "prompt": "ui.examine", "position": [2, 0, -4.6], "once": true, "onUse": [{ "op": "dialog", "node": "b08.pita2" }] },
+    { "id": "pita_1", "prompt": "ui.examine", "position": [-1.8, 0, -3.4], "once": true, "goalFor": ["pita"], "onUse": [{ "op": "dialog", "node": "b08.pita1" }] },
+    { "id": "pita_2", "prompt": "ui.examine", "position": [2, 0, -4.6], "once": true, "goalFor": ["pita"], "onUse": [{ "op": "dialog", "node": "b08.pita2" }] },
     { "id": "semak", "prompt": "ui.examine", "position": [-2.6, 0, -5], "onUse": [
       { "op": "playSound", "key": "langkah_kering", "options": { "category": "sfx", "volume": 0.5 } },
       { "op": "dialog", "node": "b08.suara" }
     ] },
-    { "id": "pita_3", "prompt": "ui.examine", "position": [0.6, 0, -5.5], "once": true, "onUse": [{ "op": "dialog", "node": "b08.pita3" }] },
-    { "id": "titik", "prompt": "ui.use", "position": [-0.8, 0, -5.8], "once": true, "onUse": [{ "op": "dialog", "node": "b08.titik" }] },
-    { "id": "jalur_pulang", "prompt": "ui.interact", "position": [0, 0, 1.5], "once": true, "onUse": [
+    { "id": "pita_3", "prompt": "ui.examine", "position": [0.6, 0, -5.5], "once": true, "goalFor": ["pita"], "onUse": [{ "op": "dialog", "node": "b08.pita3" }] },
+    { "id": "titik", "prompt": "ui.use", "position": [-0.8, 0, -5.8], "once": true, "goalFor": ["jangan"], "onUse": [{ "op": "dialog", "node": "b08.titik" }] },
+    { "id": "jalur_pulang", "prompt": "ui.interact", "position": [0, 0, 1.5], "once": true, "goalFor": ["pulang"], "onUse": [
       { "op": "dialog", "node": "b08.keluar" },
       { "op": "echo", "from": "b08", "to": "b09", "data": { "jejak": "sepatu_berlumpur", "teras": true } },
       { "op": "chapterEnd" }

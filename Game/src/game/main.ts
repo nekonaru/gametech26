@@ -357,14 +357,9 @@ export class Game {
       if (data && data.id === 'laci' && gameState.hasInventory('senter')) {
         setDrawerSenterVisible(false);
       }
-      // Tandai penanda objek yang sudah dipakai: setelah objektif pindah,
-      // penanda itu tak lagi kandidat penanda utama sehingga hanya meredup,
-      // bukan tetap menyala kuning penuh di antara tujuan yang lain.
-      if (data && typeof data.id === 'string') {
-        for (const prop of this.propMeshes) {
-          if (prop.userData.interactableId === data.id) prop.userData.goalUsed = true;
-        }
-      }
+      // Catatan: penanda tujuan TIDAK dimatikan saat dipakai. Ia hanya tampil
+      // selama objektifnya aktif (goalFor), jadi checklist seperti 3 benda wajib
+      // di b01 tetap menyala sampai objektif berpindah.
     });
     // Laci ruang tengah hanya meluncur terbuka setelah kunci angka dipecahkan
     // (b01: dial 0705 dari jam dinding; b04: dial kwitansi): persis seperti
@@ -1721,13 +1716,15 @@ export class Game {
       const pos = anchorPos
         ? this.sanitizeAnchor(anchorPos, PROP_HALF, boxes, occluders, eye)
         : this.resolvePropPosition(authored, PROP_HALF, boxes, occluders, eye);
-      const role = inter.role === 'flavor' && !inter.goalFor ? 'flavor' : 'goal';
-      // `goalFor` = tujuan dinamis: penanda ini hanya menyala selama objektif
-      // sedang berlaku cocok dengan daftarnya, dan labelnya selalu berisi
-      // teks objektif tersebut. Tanpa itu, tujuan/flavor bersifat statis.
+      // `goalFor` = tujuan wajib progresi: hanya penanda ini yang tampil emas,
+      // hanya selama objektif aktif cocok dengan daftarnya, dan boleh lebih
+      // dari satu sekaligus (mis. 3 benda wajib di b01). Interaktif lain
+      // dibuat bergaya flavor dan tak pernah menyala; pemain tetap bisa
+      // memakainya lewat aim + E.
       const goalFor = Array.isArray(inter.goalFor) ? inter.goalFor
         : typeof inter.goalFor === 'string' ? [inter.goalFor]
         : null;
+      const role = goalFor ? 'goal' : 'flavor';
       const dynamicLabel = !!goalFor && !inter.label;
       const labelKey = dynamicLabel
         ? (scriptRunner.getObjective().text || undefined)
@@ -1739,7 +1736,6 @@ export class Game {
       const mesh = this.createPropMesh(index, pos, role, labelKey, dynamicLabel, surface);
       mesh.userData.interactableId = inter.id;
       mesh.userData.goalFor = goalFor;
-      mesh.userData.staticGoal = role === 'goal';
       // Belum disinkronkan: frame pertama updatePropPulse akan menerapkan
       // gaya (warna + label) sesuai status tujuan yang sebenarnya.
       mesh.userData.goalActive = null;
@@ -2162,26 +2158,27 @@ export class Game {
   }
 
   /**
-   * Apakah penanda ini sedang berperan sebagai tujuan?
+   * Apakah penanda ini WAJIB untuk progresi objektif yang sedang berjalan?
    *
-   * Penanda `goalFor` menyala hanya selama objektif aktif cocok dengan
-   * daftarnya; selain itu memakai peran statis dari naskah.
+   * Hanya penanda `goalFor` yang cocok dengan objektif aktif yang berperan
+   * tujuan (penanda emas yang tampil di dunia). Interaktif lain, termasuk
+   * tujuan statis lama, tak lagi pernah menyala: pemain tetap bisa memakainya
+   * lewat aim + E, tanpa penanda.
    */
   private isMarkerGoal(marker: THREE.Object3D): boolean {
     const goalFor = marker.userData.goalFor as string[] | null | undefined;
-    if (goalFor) return goalFor.includes(scriptRunner.getObjective().id);
-    return marker.userData.staticGoal !== false;
+    if (!goalFor || !goalFor.length) return false;
+    return goalFor.includes(scriptRunner.getObjective().id);
   }
 
   /**
-   * Ganti warna penanda ketika status tujuan atau status UTAMA berubah.
+   * Ganti warna penanda ketika status tujuan berubah.
    *
-   * Emas hanya untuk penanda utama; sisanya netral abu-abu. Perbedaan warna
-   * (bukan sekadar kecerahan) yang membuat mata langsung tertuju ke satu
-   * tujuan, sesuai harapan "cuma satu yang kuning".
+   * Emas hanya untuk penanda wajib objektif aktif; penanda lain netral
+   * abu-abu (dan memang disembunyikan total oleh updatePropPulse).
    */
-  private applyMarkerGoalStyle(marker: THREE.Object3D, isPrimary: boolean): void {
-    const color = isPrimary ? MARKER_GOLD : MARKER_NEUTRAL;
+  private applyMarkerGoalStyle(marker: THREE.Object3D, isGoal: boolean): void {
+    const color = isGoal ? MARKER_GOLD : MARKER_NEUTRAL;
     const diamond = marker.userData.diamond as THREE.Mesh | undefined;
     if (diamond) {
       (diamond.material as THREE.MeshBasicMaterial).color.setHex(color);
@@ -2197,48 +2194,52 @@ export class Game {
   }
 
   /**
-   * Pilih penanda utama: satu-satunya yang menyala kuning penuh dan menjadi
-   * sasaran pip kompas. Prioritas: (1) interaktif yang sedang diarahkan selama
-   * ia tujuan cerita, (2) penanda `goalFor` objektif aktif terdekat, (3)
-   * tujuan statis terdekat yang interaktifnya belum pernah dipakai. Objek
-   * yang sudah diinteraksi tersingkir dari daftar, jadi setelah objektif
-   * berpindah penandanya hanya tinggal meredup.
+   * Pilih SEMUA penanda wajib objektif aktif (boleh lebih dari satu), lalu
+   * urutkan: yang sedang diarahkan lebih dulu, baru yang terdekat. Inilah
+   * satu-satunya penanda yang tampil di dunia dan berwarna emas; interaktif
+   * lain (termasuk tujuan statis lama) tak pernah menyala karena progresi
+   * scene kini ditandai eksplisit lewat `goalFor` di naskah bab.
+   *
+   * Objek yang sudah diambil (looted) atau marker yatim tersingkir; penanda
+   * yang sudah pernah dipakai TIDAK disingkirkan selama objektifnya masih
+   * berlaku, karena ia tetap bagian dari checklist (mis. 3 benda wajib di
+   * b01) sampai objektif berpindah.
    */
-  private findPrimaryMarker(targetId: string | null, camPos: THREE.Vector3): number {
-    if (targetId !== null) {
-      const idx = this.propMeshes.findIndex(m =>
-        !m.userData.looted && !!m.parent && m.userData.interactableId === targetId && this.isMarkerGoal(m));
-      if (idx >= 0) return idx;
-    }
-
+  private findGoalMarkers(targetId: string | null, camPos: THREE.Vector3): number[] {
     const objectiveId = scriptRunner.getObjective().id;
     const dist2 = (m: THREE.Object3D) =>
       (m.position.x - camPos.x) ** 2 + (m.position.z - camPos.z) ** 2;
 
-    let primary = -1;
-    let best = Number.POSITIVE_INFINITY;
-    // Tahap 1: penanda yang terikat pada objektif yang sedang berlaku.
+    const goalIdx: number[] = [];
+    const dists: number[] = [];
     for (let i = 0; i < this.propMeshes.length; i++) {
       const m = this.propMeshes[i];
       if (m.userData.looted || !m.parent) continue;
       const goalFor = m.userData.goalFor as string[] | null | undefined;
       if (!goalFor || !goalFor.includes(objectiveId)) continue;
-      const d = dist2(m);
-      if (d < best) { best = d; primary = i; }
+      goalIdx.push(i);
+      dists.push(dist2(m));
     }
-    if (primary >= 0) return primary;
+    if (!goalIdx.length) return goalIdx;
 
-    // Tahap 2: tujuan statis terdekat yang belum pernah dipakai.
-    for (let i = 0; i < this.propMeshes.length; i++) {
-      const m = this.propMeshes[i];
-      if (m.userData.looted || !m.parent) continue;
-      if (m.userData.goalFor) continue;
-      if (m.userData.staticGoal === false) continue;
-      if (m.userData.goalUsed) continue;
-      const d = dist2(m);
-      if (d < best) { best = d; primary = i; }
+    // Urutkan selection-sort kecil: indeks di-depan = penanda utama (pip
+    // kompas + kandidat label), sisanya tetap tampil penuh di dunia.
+    const aimed = targetId !== null
+      ? goalIdx.findIndex(i => this.propMeshes[i].userData.interactableId === targetId)
+      : -1;
+    if (aimed > 0) {
+      [goalIdx[0], goalIdx[aimed]] = [goalIdx[aimed], goalIdx[0]];
+      [dists[0], dists[aimed]] = [dists[aimed], dists[0]];
     }
-    return primary;
+    for (let a = 1; a < goalIdx.length; a++) {
+      let best = a;
+      for (let b = a + 1; b < goalIdx.length; b++) if (dists[b] < dists[best]) best = b;
+      if (best !== a) {
+        [goalIdx[a], goalIdx[best]] = [goalIdx[best], goalIdx[a]];
+        [dists[a], dists[best]] = [dists[best], dists[a]];
+      }
+    }
+    return goalIdx;
   }
 
   /**
@@ -2365,12 +2366,12 @@ export class Game {
   /**
    * Animasi penanda: denyut, melayang, dan sorotan ketika sedang diarahkan.
    *
-   * Hanya SATU penanda yang menyala kuning penuh tiap waktu (penanda
-   * utama, lihat findPrimaryMarker): objektif yang sedang berlaku. Penanda
-   * tujuan lain yang warnanya tetap kuning dibuat meredup, dan objek yang
-   * sudah diinteraksi ikut meredup begitu objektif berpindah. Interaksi
-   * biasa (flavor) tetap samar dan baru muncul saat pemain mendekat atau
-   * memandang ke arahnya.
+   * SEMUA penanda wajib objektif aktif (goalFor, boleh lebih dari satu)
+   * menyala emas penuh; di antaranya, yang terdekat/berada di depan kamera
+   * menjadi penanda utama untuk pip kompas dan label teks. Interaktif lain,
+   * termasuk penanda tujuan objektif yang sedang tidak berlaku, disembunyikan
+   * total: pemain menemukannya lewat penglihatan dan prompt E, bukan lewat
+   * penanda.
    */
   private updatePropPulse(): void {
     const now = performance.now();
@@ -2393,16 +2394,19 @@ export class Game {
       return;
     }
 
-    // Penanda utama: satu-satunya yang menyala kuning penuh, tampil di dunia,
-    // menjadi sasaran pip kompas HUD, dan (lewat labelIdx) satu-satunya yang
-    // menampilkan teks tujuan mengambang.
-    const primaryIdx = this.findPrimaryMarker(targetId, camPos);
+    // Semua penanda wajib objektif aktif (boleh lebih dari satu). Di depan
+    // daftar: yang sedang diarahkan, lalu yang terdekat; elemen itulah yang
+    // menjadi sasaran pip kompas dan satu-satunya label tujuan mengambang.
+    const goalIdx = this.findGoalMarkers(targetId, camPos);
+    const primaryIdx = goalIdx.length ? goalIdx[0] : -1;
+    const goalSet = new Set(goalIdx);
     this.updateCompass(fwd, camPos, primaryIdx >= 0 ? this.propMeshes[primaryIdx] : null);
 
     // Hanya SATU label yang tampil tiap frame, dan harus milik penanda
-    // utama yang benar-benar terlihat di depan kamera. Tujuan lain dan
-    // interaksi biasa tidak lagi menampilkan label: teksnya hanya muncul
-    // lewat prompt E saat pemain mengarahkan pandangan ke objeknya.
+    // utama yang benar-benar terlihat di depan kamera. Penanda wajib lain
+    // tetap tampil sebagai belah ketupat emas tanpa teks; interaksi biasa
+    // sama sekali tanpa penanda - teksnya muncul lewat prompt E saat pemain
+    // mengarahkan pandangan ke objeknya.
     let labelIdx = -1;
     let labelScore = Number.POSITIVE_INFINITY;
     for (let i = 0; i < this.propMeshes.length; i++) {
@@ -2445,10 +2449,11 @@ export class Game {
       if (!marker.parent) continue;
 
       const active = targetId !== null && marker.userData.interactableId === targetId;
-      const isGoal = this.isMarkerGoal(marker);
-      // Hanya penanda utama yang berwarna emas; tujuan lain netral abu-abu
-      // supaya mata hanya tertuju ke satu objektif (lihat applyMarkerGoalStyle).
-      const bright = i === primaryIdx;
+      // Hanya penanda wajib objektif aktif yang tampil; sisanya (interaksi
+      // flavor, penanda tujuan objektif lain) disembunyikan total. Pemain
+      // menemukan benda flavor lewat penglihatan dan prompt E, bukan lewat
+      // hutan belah ketupat yang memenuhi layar.
+      const isGoal = goalSet.has(i);
       const dist = cam
         ? Math.hypot(marker.position.x - camPos.x, marker.position.z - camPos.z)
         : Number.POSITIVE_INFINITY;
@@ -2464,24 +2469,14 @@ export class Game {
         continue;
       }
 
-      // Status tujuan bisa berubah kapan saja (objektif baru), dan status
-      // UTAMA bisa berganti tiap kali pemain menoleh atau objektif berganti.
-      // Gaya disegarkan hanya saat salah satunya berubah agar tidak menulis
-      // material tiap frame.
-      if (marker.userData.goalActive !== isGoal
-        || marker.userData.primaryActive !== bright) {
+      // Status tujuan bisa berubah kapan saja (objektif baru); gaya
+      // disegarkan hanya saat transisi agar tidak menulis material tiap frame.
+      if (marker.userData.goalActive !== isGoal) {
         marker.userData.goalActive = isGoal;
-        marker.userData.primaryActive = bright;
-        this.applyMarkerGoalStyle(marker, bright);
+        this.applyMarkerGoalStyle(marker, isGoal);
       }
 
-      // Hanya penanda UTAMA yang tampil di dunia. Tujuan cerita lain dan
-      // interaksi biasa (flavor) disembunyikan total: pemain menemukannya
-      // lewat penglihatan dan prompt E saat mengarahkan pandangan, bukan
-      // lewat hutan belah ketupat yang memenuhi layar (kebocoran lama di
-      // mana marker goal non-utama jatuh ke `visible = true` tanpa gaya
-      // emas). Label ikut disembunyikan bersamanya.
-      if (!bright) {
+      if (!isGoal) {
         if (marker.visible) marker.visible = false;
         const hidden = marker.userData.label as THREE.Sprite | undefined;
         if (hidden && hidden.visible) hidden.visible = false;
@@ -2490,8 +2485,8 @@ export class Game {
       if (!marker.visible) marker.visible = true;
 
       const baseY = marker.userData.baseY as number;
-      marker.position.y = baseY + Math.sin(now * 0.0021 + i * 1.7) * (bright ? 0.05 : 0.03);
-      const scale = (active ? 1.3 + Math.sin(now * 0.006) * 0.05 : 1) * (bright ? 1 : 0.72);
+      marker.position.y = baseY + Math.sin(now * 0.0021 + i * 1.7) * 0.05;
+      const scale = active ? 1.3 + Math.sin(now * 0.006) * 0.05 : 1;
       marker.scale.setScalar(scale);
 
       // Belah ketupat selalu menghadap kamera (billboard) supaya terbaca dari
@@ -2501,25 +2496,16 @@ export class Game {
       if (diamond) {
         if (camQuat) diamond.quaternion.copy(camQuat);
         const diamondMat = diamond.material as THREE.MeshBasicMaterial;
-        if (bright) {
-          // Denyut halus: tujuan terasa "hidup" tanpa berkedip agresif.
-          const pulse = 0.72 + Math.sin(now * 0.003 + i) * 0.2;
-          diamondMat.opacity = active ? 0.98 : pulse;
-        } else {
-          // Bukan penanda utama: netral dan jauh lebih redup.
-          diamondMat.opacity = active ? 0.6 : isGoal ? 0.3 : 0.2;
-        }
+        // Denyut halus: tujuan terasa "hidup" tanpa berkedip agresif.
+        const pulse = 0.72 + Math.sin(now * 0.003 + i) * 0.2;
+        diamondMat.opacity = active ? 0.98 : pulse;
       }
 
       const beam = marker.userData.beam as THREE.Mesh | undefined;
       if (beam) {
         const beamMat = beam.material as THREE.MeshBasicMaterial;
-        if (bright) {
-          const pulse = 0.32 + Math.sin(now * 0.0026 + i) * 0.1;
-          beamMat.opacity = active ? 0.5 : pulse;
-        } else {
-          beamMat.opacity = active ? 0.26 : isGoal ? 0.14 : 0.1;
-        }
+        const pulse = 0.32 + Math.sin(now * 0.0026 + i) * 0.1;
+        beamMat.opacity = active ? 0.5 : pulse;
       }
 
       const core = marker.userData.core as THREE.Sprite | undefined;
@@ -2528,9 +2514,7 @@ export class Game {
         // Nafas cahaya: kepadatan sprite berdenyut pelan. Sprite radial tidak
         // perlu diputar: putaran hanya memutar gradasinya dan tak terlihat.
         const coreBase = marker.userData.coreBase as number;
-        coreMat.opacity = active
-          ? 0.9
-          : (bright ? 0.5 + Math.sin(now * 0.003 + i) * 0.16 : isGoal ? 0.34 : 0.3);
+        coreMat.opacity = active ? 0.9 : 0.5 + Math.sin(now * 0.003 + i) * 0.16;
         core.scale.setScalar(coreBase * (active ? 1.18 : 1 + Math.sin(now * 0.0024 + i) * 0.05));
       }
 

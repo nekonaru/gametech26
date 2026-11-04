@@ -11,8 +11,7 @@
     "b01": {
       "obj": {
         "bangun": "Bangun dari kasur",
-        "rumah": "Periksa rumah: dapur, amplop, dompet",
-        "tagih": "Catat tagihan di amplop, lalu cek dapur dan dompet",
+        "rumah": "Periksa rumah: dapur, amplop, dan dompet",
         "kerja": "Cari kerja: proyek bangunan, lalu pasar",
         "konstruksi": "Datang ke proyek, tanya pekerjaan ke mandor",
         "ke_pasar": "Tawarkan jasa di pasar",
@@ -189,8 +188,7 @@
     "b01": {
       "obj": {
         "bangun": "Get up from the bed",
-        "rumah": "Check the house: kitchen, envelopes, wallet",
-        "tagih": "Note the bills in the envelopes, then check kitchen and wallet",
+        "rumah": "Check the house: kitchen, envelopes, and wallet",
         "kerja": "Look for work: building site, then the market",
         "konstruksi": "Go to the site and ask the foreman for work",
         "ke_pasar": "Offer your services at the market",

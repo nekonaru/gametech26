@@ -10,7 +10,7 @@
     { "op": "playSound", "key": "ambience_fire_distant", "options": { "category": "ambience", "loop": true, "volume": 0.35 } }
   ],
   "interactables": [
-    { "id": "jalur_asap", "prompt": "ui.interact", "position": [0.8, 0, -3],
+    { "id": "jalur_asap", "prompt": "ui.interact", "position": [0.8, 0, -3], "goalFor": ["cari"],
       "onUse": [{ "op": "dialog", "node": "b10.jalur" }] },
     { "id": "pondok_joy", "prompt": "ui.examine", "position": [2.8, 0, -4.6],
       "onUse": [{ "op": "dialog", "node": "b10.pondok" }] },
@@ -31,7 +31,7 @@
               "else": [{ "op": "dialog", "node": "b10.belum" }] }
           ] }
       ] },
-    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true,
+    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true, "goalFor": ["pulang"],
       "onUse": [{ "op": "dialog", "node": "b10.pulang" }, { "op": "chapterEnd" }] }
   ],
   "dialogs": {
@@ -59,7 +59,8 @@
         "onEnter": [{ "op": "playSound", "key": "heat_wave", "options": { "category": "sfx", "volume": 0.6 } }] },
       { "speaker": "Dimas", "text": "b10.tolong.3" },
       { "speaker": "Dimas", "text": "b10.tolong.4" },
-      { "speaker": "Dimas", "text": "b10.tolong.5" }
+      { "speaker": "Dimas", "text": "b10.tolong.5",
+        "onEnter": [{ "op": "objective", "id": "pulang", "text": "obj.b10.pulang" }] }
     ],
     "b10.lari": [
       { "speaker": "Dimas", "text": "b10.lari.1" },
@@ -67,7 +68,8 @@
         "onEnter": [{ "op": "playSound", "key": "run_fast", "options": { "category": "sfx", "volume": 0.5 } }] },
       { "speaker": "Dimas", "text": "b10.lari.3" },
       { "speaker": "Dimas", "text": "b10.lari.4" },
-      { "speaker": "Dimas", "text": "b10.lari.5" }
+      { "speaker": "Dimas", "text": "b10.lari.5",
+        "onEnter": [{ "op": "objective", "id": "pulang", "text": "obj.b10.pulang" }] }
     ],
     "b10.pondok": [
       { "speaker": "Dimas", "text": "b10.pondok.1" },

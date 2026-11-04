@@ -54,6 +54,7 @@
       "prompt": "ui.interact",
       "position": [1.4, 0.4, -5.8],
       "once": true,
+      "goalFor": ["kejar"],
       "onUse": [
         { "op": "dialog", "node": "b15alt.akhir" },
         { "op": "ending", "id": "ending_2" }

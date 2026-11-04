@@ -22,12 +22,14 @@
       "surface": "wall",
       "prompt": "ui.examine",
       "position": [-3, 0, -2],
+      "goalFor": ["jelajahi"],
       "onUse": [ { "op": "dialog", "node": "b02.foto_sungai" } ]
     },
     {
       "id": "korek_api",
       "prompt": "ui.examine",
       "position": [1.5, 0, -2.5],
+      "goalFor": ["jelajahi"],
       "onUse": [ { "op": "dialog", "node": "b02.korek_api" } ]
     },
     {
@@ -41,6 +43,7 @@
       "surface": "npc",
       "prompt": "ui.talk",
       "position": [0, 0, -4.5],
+      "goalFor": ["jelajahi", "obrol"],
       "onUse": [
         {
           "op": "if",
@@ -54,6 +57,7 @@
       "id": "pintu_keluar",
       "prompt": "ui.open",
       "position": [1, 0, 0],
+      "goalFor": ["pulang"],
       "onUse": [
         { "op": "dialog", "node": "b02.keluar" },
         {

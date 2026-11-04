@@ -2,7 +2,8 @@
   "id": {
     "obj": {
       "b10": {
-        "cari": "Ikuti suara minta tolong menuju ladang"
+        "cari": "Ikuti suara minta tolong menuju ladang",
+        "pulang": "Kembali ke rumah sebelum larut malam"
       }
     },
     "ui": {
@@ -81,7 +82,8 @@
   "en": {
     "obj": {
       "b10": {
-        "cari": "Follow the cry for help toward the field"
+        "cari": "Follow the cry for help toward the field",
+        "pulang": "Head home before the night gets later"
       }
     },
     "ui": {

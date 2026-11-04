@@ -27,7 +27,7 @@
       ] },
     { "id": "jendela", "surface": "wall", "prompt": "ui.examine", "position": [-2.8, 0, -4.6],
       "onUse": [{ "op": "dialog", "node": "b12.jendela" }] },
-    { "id": "kasur", "prompt": "ui.interact", "position": [3.2, 0, -4.2], "once": true,
+    { "id": "kasur", "prompt": "ui.interact", "position": [3.2, 0, -4.2], "once": true, "goalFor": ["jejak"],
       "onUse": [
         { "op": "setLighting", "preset": "malam_rumah", "transition": 2 },
         { "op": "cameraAnim", "kind": "sleep", "duration": 1600, "eyeHeight": 0.5, "pitch": 0.35 },

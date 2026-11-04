@@ -20,12 +20,12 @@
       { "op": "playSound", "key": "footstep", "options": { "category": "sfx", "volume": 0.6 } },
       { "op": "dialog", "node": "b16.ranting" }
     ] },
-    { "id": "bayangan", "surface": "npc", "prompt": "ui.interact", "position": [0.8, 0, -5], "onUse": [
+    { "id": "bayangan", "surface": "npc", "prompt": "ui.interact", "position": [0.8, 0, -5], "goalFor": ["cari_jalan"], "onUse": [
       { "op": "dialog", "node": "b16.bayangan" },
       { "op": "objective", "id": "lari", "text": "b16.obj.lari" }
     ] },
-    { "id": "ujung_lari", "prompt": "ui.interact", "position": [0, 0, -5.8], "onUse": [{ "op": "dialog", "node": "b16.lari" }] },
-    { "id": "pulang", "prompt": "ui.interact", "position": [2, 0, -1.2], "once": true, "onUse": [
+    { "id": "ujung_lari", "prompt": "ui.interact", "position": [0, 0, -5.8], "goalFor": ["lari"], "onUse": [{ "op": "dialog", "node": "b16.lari" }] },
+    { "id": "pulang", "prompt": "ui.interact", "position": [2, 0, -1.2], "once": true, "goalFor": ["lari"], "onUse": [
       { "op": "dialog", "node": "b16.pulang" },
       { "op": "echo", "from": "b16", "to": "b18", "data": { "item": "kalung_bulan_sabit", "place": "tepi_hutan" } },
       { "op": "chapterEnd" }

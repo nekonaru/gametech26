@@ -10,7 +10,7 @@
     { "op": "playSound", "key": "ambience_forest_night", "options": { "category": "ambience", "loop": true, "volume": 0.4 } }
   ],
   "interactables": [
-    { "id": "rudi", "surface": "npc", "prompt": "ui.talk", "position": [1.2, 0, -2.4],
+    { "id": "rudi", "surface": "npc", "prompt": "ui.talk", "position": [1.2, 0, -2.4], "goalFor": ["titik"],
       "onUse": [{ "op": "dialog", "node": "b12b.rudi" }] },
     { "id": "semak_berlindung", "prompt": "ui.use", "position": [-1.8, 0, -3],
       "onUse": [{ "op": "dialog", "node": "b12b.semak" }] },
@@ -20,7 +20,7 @@
       "onUse": [{ "op": "dialog", "node": "b12b.catatan" }] },
     { "id": "tanah_malam", "prompt": "ui.examine", "position": [0.6, 0, -1.4],
       "onUse": [{ "op": "dialog", "node": "b12b.tanah" }] },
-    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true,
+    { "id": "jalan_pulang", "prompt": "ui.interact", "position": [0, 0, -5.6], "once": true, "goalFor": ["titik"],
       "onUse": [{ "op": "dialog", "node": "b12b.pulang" }, { "op": "chapterEnd" }] }
   ],
   "dialogs": {
