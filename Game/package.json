@@ -1,9 +1,31 @@
 {
   "name": "asap-yang-tak-padam",
   "version": "1.0.0",
-  "description": "Psychological horror narrative game - Asap yang Tak Padam",
+  "description": "Game horor naratif psikologis 3D Asap yang Tak Padam",
+  "author": "BD Games",
   "license": "MIT",
   "type": "module",
+  "homepage": "https://nekonaru.github.io/gametech26/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nekonaru/gametech26.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nekonaru/gametech26/issues"
+  },
+  "keywords": [
+    "game",
+    "horror",
+    "narrative-game",
+    "indonesian",
+    "ps1",
+    "threejs",
+    "webgl",
+    "browser-game"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
