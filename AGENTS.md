@@ -5,6 +5,7 @@
 - `PROJECT_REPO`: nekonaru/gametech26
 - `PROJECT_LANG`: Indonesian (project language; docs and in-game text are Indonesian, code and commit messages are English)
 - One line: Indonesian 3D psychological horror narrative game running in the browser, PS1-style, deployed to GitHub Pages from `main`.
+- `PIPELINE`: pr (gh authenticated, CI exists; branch, PR, CI, auto-merge).
 
 ## Stack
 
