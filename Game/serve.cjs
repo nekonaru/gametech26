@@ -103,7 +103,10 @@ const server = http.createServer((req, res) => {
     const headers = {
       'Content-Type': type,
       'Content-Length': data.length,
-      'Cache-Control': rangeRoot === 'dist' && ext !== '.html' ? 'no-cache' : 'no-store'
+      'Cache-Control': rangeRoot === 'dist' && ext !== '.html' ? 'no-cache' : 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'no-referrer'
     };
     if (req.method === 'HEAD') {
       res.writeHead(200, headers);
