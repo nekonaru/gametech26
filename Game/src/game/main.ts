@@ -45,6 +45,7 @@ type ScreenName =
 const PROP_HALF = 0.28;
 /** Vektor sementara untuk posisi dunia kamera (dihitung tiap frame). */
 const _camWorldPos = new THREE.Vector3();
+const _camWorldDir = new THREE.Vector3();
 
 /**
  * Palet penanda tujuan.
@@ -891,6 +892,14 @@ export class Game {
     // tegangan tinggi justru menatap pemain. Registri figure dibersihkan
     // tiap ganti scene oleh SceneFactory.build.
     this.engine?.camera?.getWorldPosition(_camWorldPos);
+    this.engine?.camera?.getWorldDirection(_camWorldDir);
+    // Pendengar mengikuti kepala pemain: tanpa ini semua suara spasial
+    // (bisikan, langkah di belakang, napas) dihitung relatif titik dunia (0,0,0)
+    // dan terdengar arahnya salah dari layar mana pun pemain berdiri.
+    audioManager.setListenerPosition(
+      [_camWorldPos.x, _camWorldPos.y, _camWorldPos.z],
+      [_camWorldDir.x, _camWorldDir.y, _camWorldDir.z, 0, 1, 0]
+    );
     updateFigures(performance.now() / 1000, {
       tension: tensionNow,
       playerPos: { x: _camWorldPos.x, z: _camWorldPos.z }
