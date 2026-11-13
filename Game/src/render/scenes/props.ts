@@ -326,6 +326,7 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
     depthWrite: false
   });
   const segs = 40;
+  const glowPuffs: THREE.Sprite[] = [];
   for (let i = 0; i < segs; i++) {
     const a = (i / segs) * Math.PI * 2;
     const px = x + Math.cos(a) * radius;
@@ -334,6 +335,7 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
     const puff = new THREE.Sprite(glowMat);
     puff.position.set(px, 0.5, pz);
     puff.scale.set(s, s * 1.3, 1);
+    glowPuffs.push(puff);
     kit.group.add(puff);
     if (i % 2 === 0) {
       const core = new THREE.Sprite(coreMat);
@@ -345,6 +347,7 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
 
   // Lidah api bergradasi di sekeliling cincin.
   const tongue = flameMat();
+  const flames: THREE.Mesh[] = [];
   for (let i = 0; i < 14; i++) {
     const a = (i / 14) * Math.PI * 2;
     const flame = new THREE.Mesh(
@@ -352,6 +355,10 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
       tongue
     );
     flame.position.set(x + Math.cos(a) * radius, 0.6, z + Math.sin(a) * radius);
+    // Lidah api diskala tiap frame: matriks lokalnya harus tetap hidup
+    // (SceneFactory mematikan matrixAutoUpdate untuk mesh statis).
+    flame.userData.animatedLocal = true;
+    flames.push(flame);
     kit.group.add(flame);
   }
 
@@ -367,17 +374,59 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
     opacity: t.opacity,
     depthWrite: false
   }));
+  const smokeBase: Array<{ puff: THREE.Sprite; y0: number; s0: number; phase: number }> = [];
   for (let i = 0; i < 12; i++) {
     const t = i / 12;
     const a = i * 1.9;
     const drift = 1.0 + t * 3.0;
     const tier = smokeTiers[t < 0.33 ? 0 : t < 0.7 ? 1 : 2];
-    const puff = new THREE.Sprite(tier);
+    const puff = new THREE.Sprite(tier.clone());
     puff.position.set(x + Math.cos(a) * drift, 1.6 + t * 9, z + Math.sin(a) * drift);
     const s = 2.4 + t * 4.4;
     puff.scale.set(s, s, 1);
+    // Opasitas tiap kepulan dianimasikan sendiri, jadi materialnya tidak
+    // boleh dibagi: tiga tier berbagi satu material akan ikut berkedip serentak.
+    smokeBase.push({ puff, y0: puff.position.y, s0: s, phase: t * Math.PI * 2 });
     kit.group.add(puff);
   }
+
+  // Napas cincin api: lidah api naik-turun tak beraturan, kepulan asap
+  // menanjak pelan lalu membesar, dan bara di tanah ikut berdenyut. Tanpa
+  // ini cincin terlihat seperti gambar statis yang ditempel di tanah.
+  const baseGlow: number[] = [];
+  for (const puff of glowPuffs) baseGlow.push(puff.scale.x);
+
+  addDynamicTick((t) => {
+    flames.forEach((flame, i) => {
+      // Dua frekuensi tak harmonis + fase per lidah: api tidak pernah
+      // bergerak serempak seperti satu objek.
+      const n =
+        Math.sin(t * (5.3 + (i % 4) * 0.7) + i * 1.7) * 0.5 +
+        Math.sin(t * (9.1 + (i % 3) * 1.1) + i * 0.6) * 0.3;
+      const sy = 1 + n * 0.35;
+      const sx = 1 - n * 0.12;
+      flame.scale.set(sx, sy, sx);
+      flame.position.y = 0.6 + n * 0.1;
+    });
+
+    smokeBase.forEach(({ puff, y0, s0, phase }) => {
+      // Naik melingkar pelan: y berayun di sekitar posisi dasar, skala
+      // membesar mengikuti kenaikan supaya asap terasa menyebar.
+      const rise = (Math.sin(t * 0.5 + phase) + 1) * 0.5;
+      puff.position.y = y0 + rise * 1.6;
+      const s = s0 * (0.92 + rise * 0.22);
+      puff.scale.set(s, s, 1);
+      const mat0 = puff.material as THREE.SpriteMaterial;
+      mat0.opacity = (mat0.userData.baseOpacity ?? (mat0.userData.baseOpacity = mat0.opacity))
+        * (0.75 + rise * 0.35);
+    });
+
+    glowPuffs.forEach((puff, i) => {
+      const n = Math.sin(t * 6.7 + i * 0.9) * 0.6 + Math.sin(t * 11.3 + i * 2.1) * 0.4;
+      const s = baseGlow[i] * (1 + n * 0.18);
+      puff.scale.set(s, s * 1.3 * (1 + n * 0.1), 1);
+    });
+  });
 
   const light = new THREE.PointLight(palette.ember, 1.8, radius * 3.5);
   light.position.set(x, 2.2, z);
