@@ -88,7 +88,7 @@ Mobile: joystick sentuh di sisi kiri untuk bergerak (dorong ke tepi = lari), ges
 
 - Tidak ada file audio per babak. 36 rekaman umum dipakai lintas babak, dimuat malas per bab di latar; sintesis prosedural hanya dipakai sebagai fallback bila unduhan gagal atau belum tiba
 - Tidak ada aset 3D, tekstur, atau font eksternal. Semua adegan dibangun prosedural dari geometri sederhana; folder `assets/` hanya berisi audio
-- Ikon PWA memakai SVG satu berkas, tanpa PNG 192 dan 512 piksel
+- Ikon PWA lengkap: `favicon.svg` + `favicon.ico` (16/32/48), PNG 192 dan 512 untuk purpose any maupun maskable, Apple touch icon 180 px, serta `og-image.png` 1200x630 untuk pratinjau tautan. Sumber vektor di folder `brand/` pada repo root
 - Konfirmasi dan pilihan destruktif memakai dialog dalam game (`confirmAction`), bukan dialog bawaan browser
 - Tidak ada sistem pencapaian selain "Detektif", baru ada satu pencapaian karena GDD hanya menyebut satu
 - Profil pencapaian dan galeri ending memakai localStorage, belum tersinkron antar perangkat

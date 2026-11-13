@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="brand/app-icon.svg" width="120" alt="Logo Asap yang Tak Padam: lilin tak padam" />
   <h1>Asap yang Tak Padam</h1>
   <p><b>Game horor naratif psikologis 3D yang berjalan di browser.<br/>
   Api bisa padam. Rasa bersalah tidak.</b></p>
@@ -75,7 +76,7 @@ Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca 
 
 | Fitur | Keterangan |
 |-------|------------|
-| **Muat cepat** | Bundle game (±940 KB) baru diunduh sesudah tombol MULAI ditekan; halaman awal ±10 KB |
+| **Muat cepat** | Bundle game (±1,0 MB, ±266 KB gzip) baru diunduh sesudah tombol MULAI ditekan; halaman awal ±10 KB |
 | **Simpan fleksibel** | 3 slot manual, autosave, checkpoint (IndexedDB); pengaturan di localStorage |
 | **Desktop + mobile** | WASD/mouse pointer-lock, atau joystick sentuh + tombol aksi; manifest PWA |
 
@@ -198,6 +199,7 @@ npm run preview  # sajikan dist memakai Vite, http://localhost:4173
 gametech26/
 ├── .github/workflows/      # CI (lint, test, audit, Lighthouse, auto-play,
 │                           #   visual regression) + Deploy Pages + Dependabot
+├── brand/                  # logo (simbol, lockup, app icon) + panduan singkat
 ├── Game/
 │   ├── src/
 │   │   ├── shell.ts          # gerbang boot 3 KB: tombol MULAI + impor dinamis game
@@ -215,7 +217,7 @@ gametech26/
 │   ├── tools/                # 7 suite audit, auto-play, visual regression,
 │   │                         #   Lighthouse budget, bangun audio
 │   ├── docs/                 # kontrak penulisan babak untuk penulis naskah
-│   └── shots/                # arsip screenshot verifikasi gameplay
+│   └── dist/                 # hasil build, ikut terkirim di repo ini
 ├── LICENSE
 └── README.md                 # dokumentasi ini
 ```
