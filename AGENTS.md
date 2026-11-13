@@ -14,12 +14,12 @@
 
 ## Commands (run from `Game/`)
 
-- `npm run dev` — dev server, port 3000
-- `npm run build` — `tsc` then `vite build` to `dist/`
-- `npm run lint` — eslint, must report 0 errors
-- `npm test` — vitest, 45 tests
-- `npm run audit` — 7 content validator suites
-- `node serve.cjs` — static server for `dist/`, port 8000, no dependencies
+- `npm run dev` - dev server, port 3000
+- `npm run build` - `tsc` then `vite build` to `dist/`
+- `npm run lint` - eslint, must report 0 errors
+- `npm test` - vitest, 45 tests
+- `npm run audit` - 7 content validator suites
+- `node serve.cjs` - static server for `dist/`, port 8000, no dependencies
 - CI: `.github/workflows/ci.yml` (lint, test, audit, Lighthouse, auto-play, visual regression) + `deploy-pages.yml` (deploy to GitHub Pages on every push to `main`)
 
 ## Conventions

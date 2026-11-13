@@ -1671,7 +1671,7 @@ export class Game {
   /**
    * Ambil preset pencahayaan dari naskah bab, lengkap dengan durasi
    * transisinya. Sebelumnya `transition` dibuang sehingga semua perpindahan
-   * terjadi mendadak meski naskah minta perlahan 2–3 detik.
+   * terjadi mendadak meski naskah minta perlahan 2-3 detik.
    */
   private currentLighting(): { preset: string; transition: number } {
     const script = scriptRunner.getCurrentScript();
