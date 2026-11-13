@@ -28,7 +28,7 @@ jobs:
         working-directory: Game
         run: npm run lint
 
-      - name: Unit test core (Vitest, 41 test)
+      - name: Unit test core (Vitest, 45 test)
         working-directory: Game
         run: npm test
 
