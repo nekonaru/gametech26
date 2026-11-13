@@ -424,7 +424,14 @@ export class Game {
     eventBus.on<any>('ui:sensoryText', (data) => {
       if (data && typeof data.text === 'string') this.hud?.showSensoryText(data.text);
     });
-    eventBus.on<any>('horror:flicker', (data) => this.hud?.flashHorror(0.55, data?.duration || 900));
+    eventBus.on<any>('horror:flicker', (data) => {
+      const duration = data?.duration || 900;
+      this.hud?.flashHorror(0.55, duration);
+      // Lampu benar-benar berkedip, bukan hanya vignette HUD. Horor lembut
+      // memakai kerlipan pelan supaya tidak mengejutkan pemain peka.
+      const soft = settingsManager.get('accessibility').softHorror;
+      this.lighting?.flicker(duration, soft ? 0.3 : 0.8);
+    });
     eventBus.on<any>('horror:breath', (data) => {
       this.hud?.flashHorror(0.8, data?.duration || 1200);
       audioManager.playProcedural('breath', {

@@ -203,6 +203,16 @@ export class LightingManager {
    */
   private transition: { from: LightPreset; to: LightPreset; elapsed: number; duration: number } | null = null;
 
+  /**
+   * Kerlipan lampu horor. Saat aktif, `update()` mengalikan intensitas semua
+   * lampu preset dengan pola denyut acak lalu mengembalikannya ke nilai
+   * awal. Faktor pengali disimpan terpisah (`applied`) sehingga kerlipan
+   * selalu berjalan dari intensitas asli, bukan dari nilai yang sudah
+   * terlipat ganda dari kerlipan sebelumnya.
+   */
+  private flickerState: { remaining: number; duration: number; strength: number } | null = null;
+  private applied = 1;
+
   constructor(scene: THREE.Scene, settings: SettingsManager) {
     this.scene = scene;
     this.settings = settings;
@@ -253,6 +263,9 @@ export class LightingManager {
 
     const from = this.currentPreset ? LIGHT_PRESETS[this.currentPreset] : null;
     if (transitionTime > 0 && from && from !== preset) {
+      // Transisi menulis intensitas tiap frame: kerlipan yang masih berjalan
+      // harus dilepas lebih dulu, bukan dibiarkan membagi nilai transisi.
+      this.endFlicker();
       this.ensureLights(from, preset);
       this.transition = { from, to: preset, elapsed: 0, duration: transitionTime };
       this.applyTransition(0);
@@ -480,6 +493,9 @@ export class LightingManager {
       }
     });
     this.lights.clear();
+    // Lampu lama dibuang, faktor pengali lama tidak boleh terbawa ke preset
+    // berikutnya (dibagi dengan angka yang bukan miliknya).
+    this.applied = 1;
   }
 
   /** Tulis ulang nilai mentah preset aktif (dipanggil saat pengaturan berubah). */
@@ -493,7 +509,92 @@ export class LightingManager {
     }
   }
 
+  /**
+   * Kerlipan lampu untuk peristiwa horor (`horror:flicker`).
+   *
+   * @param durationMs lamanya kerlipan
+   * @param strength 0..1 seberapa dalam intensitas ditekan (1 = sampai nyaris
+   *   padam). Aksesibilitas "horor lembut" memakai nilai kecil dari main.
+   */
+  flicker(durationMs: number, strength = 0.75): void {
+    // Transisi preset sedang berjalan: intensitas ditulis tiap frame oleh
+    // transisi, jadi kerlipan hanya akan bertengkar dan hasilnya berkedip
+    // liar. Peristiwa horor ini kemungkinan besar juga dimulai transisi bab.
+    if (this.transition) return;
+    const duration = Math.max(0.2, Math.min(durationMs / 1000, 6));
+    const s = Math.max(0, Math.min(Number.isFinite(strength) ? strength : 0.75, 1));
+    if (s <= 0) return;
+    // Perpanjang kerlipan yang masih berjalan, jangan mulai ulang dari nol.
+    if (this.flickerState) {
+      this.flickerState.remaining = Math.max(this.flickerState.remaining, duration);
+      this.flickerState.strength = Math.max(this.flickerState.strength, s);
+      return;
+    }
+    this.flickerState = { remaining: duration, duration, strength: s };
+  }
+
+  /** Apakah kerlipan horor sedang berjalan (untuk pengujian/diagnostik). */
+  isFlickering(): boolean {
+    return this.flickerState !== null;
+  }
+
+  /** Lepas kerlipan dan kembalikan intensitas asli lampu yang tersentuh. */
+  private endFlicker(): void {
+    this.flickerState = null;
+    if (this.applied !== 1) {
+      this.lights.forEach((light, key) => {
+        if (!key.startsWith('point_') && key !== 'ambient' && key !== 'hemisphere' && key !== 'directional') return;
+        light.intensity /= this.applied;
+      });
+      this.applied = 1;
+    }
+  }
+
+  private applyFlicker(deltaTime: number): void {
+    const state = this.flickerState;
+    if (!state) {
+      // Sudah selesai: kembalikan intensitas asli tepat satu kali.
+      if (this.applied !== 1) {
+        this.lights.forEach((light, key) => {
+          if (!key.startsWith('point_') && key !== 'ambient' && key !== 'hemisphere' && key !== 'directional') return;
+          light.intensity /= this.applied;
+        });
+        this.applied = 1;
+      }
+      return;
+    }
+
+    state.remaining -= deltaTime;
+    const t = state.duration - Math.max(0, state.remaining);
+    // Tiga gelombang tak harmonis + denyut cepat: pola terlihat acak namun
+    // deterministik dari waktu, jadi kerlipan tidak pernah terasa seperti
+    // sinus teratur.
+    const noise =
+      Math.sin(t * 31.7) * 0.45 +
+      Math.sin(t * 74.3 + 1.7) * 0.3 +
+      Math.sin(t * 13.1 + 0.6) * 0.25;
+    // noise di [-1,1] -> redupkan ke (1 - strength) dengan puncak sesekali
+    // menyala lagi supaya tidak sekadar "mati hidup".
+    const dip = (1 - noise) * 0.5;
+    let factor = 1 - state.strength * dip;
+    // Ujung kerlipan meredup naik kembali supaya tidak putus mendadak.
+    const fadeIn = Math.min(1, t / 0.12);
+    const fadeOut = Math.min(1, Math.max(0, state.remaining) / 0.25);
+    factor = 1 - (1 - factor) * fadeIn * fadeOut;
+
+    this.lights.forEach((light, key) => {
+      // Api/lampu dinamis (properti) diredupkan oleh addFireFlicker sendiri;
+      // mengalinya dua kali membuat bara padam total saat transisi bab.
+      if (!key.startsWith('point_') && key !== 'ambient' && key !== 'hemisphere' && key !== 'directional') return;
+      light.intensity = light.intensity / this.applied * factor;
+    });
+    this.applied = factor;
+
+    if (state.remaining <= 0) this.flickerState = null;
+  }
+
   update(deltaTime: number): void {
+    this.applyFlicker(deltaTime);
     if (!this.transition) return;
     this.transition.elapsed += deltaTime;
     const t = Math.min(this.transition.elapsed / this.transition.duration, 1);
