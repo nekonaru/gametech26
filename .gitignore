@@ -1,6 +1,5 @@
-# Dependensi & hasil build (bisa dibuat ulang: npm install / npm run build)
+# Dependensi (bisa dibuat ulang: npm install)
 node_modules/
-dist/
 
 # Laporan lokal audit Lighthouse (tools/lighthouse-audit.mjs / lhci)
 .lighthouseci/

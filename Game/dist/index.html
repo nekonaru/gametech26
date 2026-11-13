@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="Asap yang Tak Padam - game horor naratif psikologis 3D berlatar desa Indonesia. Api bisa padam. Rasa bersalah tidak.">
+  <meta name="author" content="BD Games">
+  <!-- Tampilan web-app penuh di iOS: tanpa bar alamat, dan bilah status ikut
+       memakai inset aman (notch) berkat viewport-fit=cover. -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Asap yang Tak Padam">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Asap yang Tak Padam">
+  <meta property="og:title" content="Asap yang Tak Padam">
+  <meta property="og:description" content="Game horor naratif psikologis orang pertama bergaya PS1, berbahasa Indonesia dan Inggris. Api bisa padam. Rasa bersalah tidak.">
+  <meta property="og:url" content="https://nekonaru.github.io/gametech26/">
+  <meta property="og:image" content="https://nekonaru.github.io/gametech26/assets/brand/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="id_ID">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://nekonaru.github.io/gametech26/assets/brand/og-image.png">
+  <title>Asap yang Tak Padam</title>
+  <!-- styles.css game (±43 KB) TIDAK dimuat di sini: ia diimpor modul game
+       (src/main.ts) sehingga ikut chunk tunda-muat. Gerbang awal memakai
+       gaya inline di bawah supaya first paint tanpa menunggu apa pun. -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="apple-touch-icon" href="apple-touch-icon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>*{box-sizing:border-box;margin:0;padding:0}html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;background:#000;width:100%;height:100%;font-family:PixelFont,monospace;overflow:hidden}#app{width:100%;height:100%;position:relative}#game-canvas{width:100%;height:100%;display:block}#loading-screen{z-index:10000;color:#ccc;background:#0a0a0a;flex-direction:column;justify-content:center;align-items:center;gap:16px;font-family:PixelFont,monospace;display:flex;position:fixed;inset:0}#loading-screen.hidden{display:none}.loading-bar{background:#222;border:1px solid #333;width:200px;height:4px;overflow:hidden}.loading-bar-fill{background:#ff6b35;width:0%;height:100%;transition:width .3s}.loading-text{letter-spacing:.1em;text-transform:uppercase;font-size:14px}.version{color:#999;margin-top:8px;font-size:10px}.file-note{color:#e0ddd5;background:#0a0a0a;flex-direction:column;justify-content:center;gap:14px;padding:6vh 8vw;font-family:PixelFont,Courier New,monospace;line-height:1.7;display:flex;position:fixed;inset:0;overflow:auto}.file-note h1{letter-spacing:6px;color:#ff6b35;font-size:22px;font-weight:400}.file-note h2{letter-spacing:4px;color:#999689;margin-top:8px;font-size:14px;font-weight:400}.file-note p,.file-note li{max-width:70ch;font-size:14px}.file-note .lead{color:#ff6b35;font-size:16px}.file-note ol{flex-direction:column;gap:10px;max-width:70ch;padding-left:22px;font-size:14px;display:flex}.file-note code{color:#fc0;background:#1e1e1e;border:1px solid #333;padding:1px 6px}.file-note .muted{color:#555;font-size:12px}#gateway{z-index:10000;color:#ccc;text-align:center;background:#0a0a0a;flex-direction:column;justify-content:center;align-items:center;gap:18px;padding:0 24px;font-family:PixelFont,monospace;display:flex;position:fixed;inset:0}#gateway.hidden{display:none}.gateway-title{letter-spacing:6px;color:#ff6b35;font-size:28px}.gateway-sub{letter-spacing:3px;color:#999689;font-size:12px}#gateway-start{letter-spacing:4px;color:#0a0a0a;cursor:pointer;background:#ff6b35;border:none;padding:14px 44px;font-family:inherit;font-size:18px}#gateway-start:hover:not(:disabled),#gateway-start:focus-visible{background:#fc0;outline:none}#gateway-start:disabled{opacity:.6;cursor:wait}.gateway-note{color:#999;max-width:60ch;font-size:12px;line-height:1.7}</style>
+  <script>
+    // Opening index.html by double click uses the file: protocol, which browsers
+    // block for module scripts and data fetches. Show instructions instead of a
+    // black loading screen that never finishes.
+    if (location.protocol === 'file:') {
+      document.addEventListener('DOMContentLoaded', function () {
+        var loading = document.getElementById('loading-screen');
+        if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+        var app = document.getElementById('app');
+        if (!app) return;
+        app.innerHTML = [
+          '<div class="file-note">',
+          '<h1>ASAP YANG TAK PADAM</h1>',
+          '<p class="lead">Game ini tidak bisa dibuka dengan klik ganda.</p>',
+          '<p><code>index.html</code> harus disajikan lewat server HTTP. '
+            + 'Browser memblokir modul JavaScript dan file data pada protocol <code>file:</code>, '
+            + 'itu sebabnya layar berhenti di "Memuat aset". Pesan merah di console bisa diabaikan.</p>',
+          '<h2>CARA MENJALANKAN</h2>',
+          '<ol>',
+          '<li><strong>Cara paling mudah:</strong> klik dua kali <code>MAINKAN.bat</code>, '
+            + 'tunggu sampai browser terbuka sendiri di <code>http://localhost:8000</code>.</li>',
+          '<li>Versi pengembangan: buka terminal di folder ini, jalankan '
+            + '<code>npm install</code> lalu <code>npm run dev</code>, '
+            + 'lalu buka <code>http://localhost:3000</code>.</li>',
+          '<li>Manual: jalankan <code>node serve.cjs</code> untuk menyajikan folder '
+            + '<code>dist</code> di <code>http://localhost:8000</code>.</li>',
+          '</ol>',
+          '<p class="muted">Folder <code>dist</code> sudah ikut terkirim. Tidak perlu build ulang '
+            + 'kalau hanya ingin memainkannya.</p>',
+          '</div>'
+        ].join('');
+      });
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/index-Eq2Ia6I3.js"></script>
+</head>
+<body>
+  <div id="gateway">
+    <div class="gateway-title">ASAP YANG TAK PADAM</div>
+    <div class="gateway-sub">PSYCHOLOGICAL HORROR NARRATIVE GAME</div>
+    <button id="gateway-start" type="button">MULAI / START</button>
+    <div class="gateway-note">Ketuk MULAI untuk mengunduh dan menjalankan game. Progres tersimpan di perangkat ini.</div>
+    <div class="version">v1.0.0</div>
+  </div>
+  <div id="loading-screen" class="hidden" role="status" aria-live="polite">
+    <div class="loading-text">ASAP YANG TAK PADAM</div>
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-bar-fill"></div>
+    </div>
+    <div class="loading-text" id="loading-status">Memuat aset...</div>
+    <div class="version">v1.0.0</div>
+  </div>
+  <div id="app">
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <!-- Cangkang boot ringan: game penuh dimuat hanya sesudah MULAI ditekan. -->
+</body>
+</html>
