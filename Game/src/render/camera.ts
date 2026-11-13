@@ -132,6 +132,19 @@ export class FPSController {
   private fallPeak = 0;
   private wasGrounded = true;
 
+  /**
+   * Guncangan kamera ala amatan (trauma): nilainya 0..1, amplitudo
+   * diakarkan supaya getaran terasa mengejutkan di puncak lalu meredap
+   * halus. Roll menyeberang (strafe) ditambahkan ke rotasi lokal kamera
+   * yang memang tidak ditulis sistem lain.
+   */
+  private trauma = 0;
+  private traumaDecay = 1.6;
+  private shakeTime = 0;
+  private strafeRoll = 0;
+  private readonly maxTraumaShake = 0.035;
+  private readonly maxStrafeRoll = 0.022;
+
   constructor(camera: THREE.PerspectiveCamera, input: InputManager, settings: SettingsManager) {
     this.camera = camera;
     this.input = input;
@@ -192,6 +205,23 @@ export class FPSController {
     this.landingCb = cb;
   }
 
+  /**
+   * Tambah guncangan kamera (0..1, menumpuk dan dibatasi 1). Dipakai momen
+   * horor dan pendaratan keras. Diamankan oleh "kurangi guncangan kamera":
+   * pemain yang mematikan getaran sama sekali tidak akan merasakannya.
+   */
+  addShake(amount: number): void {
+    if (!this.headBobActive) return;
+    const a = Number.isFinite(amount) ? amount : 0;
+    if (a <= 0) return;
+    this.trauma = Math.min(1, this.trauma + a);
+  }
+
+  /** Guncangan tersisa (0..1), untuk pengujian dan diagnostik. */
+  getTrauma(): number {
+    return this.trauma;
+  }
+
   setCollisionObjects(objects: THREE.Object3D[]): void {
     this.collisionObjects = objects;
 
@@ -231,6 +261,54 @@ export class FPSController {
     this.updateFovKick(dt);
     this.updateStride(dt);
     this.sanitizeTransform();
+  }
+
+  /**
+   * Guncangan trauma dan roll menyeberang, dipanggil tiap frame dari main
+   * (termasuk saat dialog mematikan `update`, supaya guncangan yang terjadi
+   * di tengah dialog tetap meredap, bukan membeku).
+   *
+   * Rotasi yang ditulis adalah rotasi lokal kamera (di bawah pitchObject);
+   * yaw/pitch tetap milik objek induk sehingga keduanya tidak berebut.
+   */
+  updateCameraFx(deltaTime: number): void {
+    const dt = Math.min(Math.max(deltaTime, 0), 0.1);
+    this.shakeTime += dt;
+
+    if (this.trauma > 0) {
+      this.trauma = Math.max(0, this.trauma - this.traumaDecay * dt);
+    }
+
+    // Roll halus mengikuti arah menyeberang: memberi bobot berat badan saat
+    // bergeser kiri/kanan, bukan kamera yang meluncur datar.
+    let rollTarget = 0;
+    if (this.headBobActive) {
+      const strafe = (this.input.isPressed('right') ? 1 : 0) - (this.input.isPressed('left') ? 1 : 0);
+      const moving = Math.abs(this.velocity.x) + Math.abs(this.velocity.z) > 0.6;
+      rollTarget = moving ? strafe * this.maxStrafeRoll : 0;
+    }
+    const rollK = 1 - Math.exp(-8 * dt);
+    this.strafeRoll += (rollTarget - this.strafeRoll) * rollK;
+
+    const shakeAmp = this.trauma * this.trauma * this.maxTraumaShake;
+    if (shakeAmp < 1e-5 && Math.abs(this.strafeRoll) < 1e-5) {
+      // Diam total: pastikan tidak ada sisa rotasi yang tersangkut.
+      if (this.camera.rotation.x !== 0 || this.camera.rotation.y !== 0 || this.camera.rotation.z !== 0) {
+        this.camera.rotation.set(0, 0, 0);
+      }
+      return;
+    }
+
+    const t = this.shakeTime;
+    // Dua frekuensi tak harmonis per sumbu: getaran terasa kasar alami,
+    // bukan denyut tunggal yang berirama.
+    const sx = Math.sin(t * 41.3) + Math.sin(t * 27.7) * 0.6;
+    const sy = Math.sin(t * 37.1 + 1.3) + Math.sin(t * 23.9) * 0.6;
+    const sz = Math.sin(t * 31.9 + 0.7) * 0.7;
+
+    this.camera.rotation.x = sx * shakeAmp;
+    this.camera.rotation.y = sy * shakeAmp;
+    this.camera.rotation.z = sz * shakeAmp + this.strafeRoll;
   }
 
   /**

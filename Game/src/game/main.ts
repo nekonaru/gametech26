@@ -150,6 +150,7 @@ export class Game {
         volume: 0.3 + 0.5 * impact,
         playbackRate: 0.85 - 0.15 * impact
       });
+      this.fpsController?.addShake(0.25 + impact * 0.55);
     });
 
     this.lighting = new LightingManager(this.engine.scene, settingsManager);
@@ -431,16 +432,21 @@ export class Game {
       // memakai kerlipan pelan supaya tidak mengejutkan pemain peka.
       const soft = settingsManager.get('accessibility').softHorror;
       this.lighting?.flicker(duration, soft ? 0.3 : 0.8);
+      this.fpsController?.addShake(soft ? 0.12 : 0.3);
     });
     eventBus.on<any>('horror:breath', (data) => {
       this.hud?.flashHorror(0.8, data?.duration || 1200);
+      this.fpsController?.addShake(0.45);
       audioManager.playProcedural('breath', {
         category: 'ambience', volume: 0.3, spatial: true,
         position: this.relativeToHead(0.7, -0.35, -0.05)
       });
     });
     eventBus.on<any>('horror:temperature', (data) => this.hud?.flashHorror(0.4, data?.duration || 1500));
-    eventBus.on<any>('horror:jumpscare', (data) => this.hud?.flashHorror(1, Math.min(data?.duration || 700, 900)));
+    eventBus.on<any>('horror:jumpscare', (data) => {
+      this.hud?.flashHorror(1, Math.min(data?.duration || 700, 900));
+      this.fpsController?.addShake(1);
+    });
     eventBus.on<any>('horror:whisper', (data) => {
       if (data && typeof data.text === 'string') {
         this.hud?.showSensoryText(data.text, data.duration || 4000);
@@ -451,8 +457,12 @@ export class Game {
         category: 'ambience', volume: 0.3, spatial: true,
         position: this.relativeToHead(0.5, 1.1, 0.1)
       });
+      this.fpsController?.addShake(0.2);
     });
-    eventBus.on<any>('horror:shadow', () => this.hud?.flashHorror(0.45, 800));
+    eventBus.on<any>('horror:shadow', () => {
+      this.hud?.flashHorror(0.45, 800);
+      this.fpsController?.addShake(0.35);
+    });
     eventBus.on<any>('horror:footsteps', () => {
       this.hud?.flashHorror(0.3, 700);
       // Tiga langkah mendekat dari belakang, masing-masing lebih dekat dan
@@ -467,10 +477,14 @@ export class Game {
             category: 'sfx', volume: 0.35 + i * 0.1, spatial: true,
             position: this.relativeToHead(back, 0.3 - i * 0.15, -1.5)
           });
+          this.fpsController?.addShake(0.12 + i * 0.06);
         }, i * 900);
       });
     });
-    eventBus.on<any>('horror:door', () => this.hud?.flashHorror(0.35, 700));
+    eventBus.on<any>('horror:door', () => {
+      this.hud?.flashHorror(0.35, 700);
+      this.fpsController?.addShake(0.2);
+    });
 
     // Kamera desktop hanya bergerak saat pointer terkunci; beri petunjuk bila
     // kuncinya lepas (Esc, alt-tab, klik di luar canvas, dst).
@@ -903,6 +917,9 @@ export class Game {
     // Animasi pandangan (bangun, menghadap lawan bicara) maju tanpa syarat:
     // momen itu justru terjadi saat dialog mengunci WASD dan menoleh.
     this.fpsController?.updateView(deltaTime);
+    // Guncangan trauma dan roll menyeberang juga tanpa syarat: peristiwa
+    // horor bisa terpicu di tengah dialog dan harus tetap meredap di sana.
+    this.fpsController?.updateCameraFx(deltaTime);
 
     if (!busy) {
       this.fpsController?.update(deltaTime);
