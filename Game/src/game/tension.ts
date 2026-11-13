@@ -235,18 +235,17 @@ export class TensionDirector {
 
   private executeFootsteps(): void {
     eventBus.emit('horror:footsteps', { direction: 'behind', duration: 5000 });
-    audioManager.playProcedural('footstep', { category: 'sfx', volume: 0.4, spatial: true, position: [0, 0, -5] });
+    // Bunyinya diputar di main (posisi relatif kamera): koordinat dunia tetap
+    // di sini membuat langkah hantu terdengar dari arah yang sama terus.
   }
 
   private executeWhisper(): void {
     const name = gameState.get('pov') === 'dimas' ? 'Dimas' : 'Raka';
     eventBus.emit('horror:whisper', { text: `${name}...`, duration: 4000 });
-    audioManager.playProcedural('whisper', { category: 'ambience', volume: 0.3, spatial: true, position: [2, 1.5, -3] });
   }
 
   private executeBreath(): void {
     eventBus.emit('horror:breath', { duration: 3000 });
-    audioManager.playProcedural('breath', { category: 'ambience', volume: 0.3, spatial: true, position: [0, 1.6, -1] });
   }
 
   private executeDoorCreak(): void {

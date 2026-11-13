@@ -425,7 +425,13 @@ export class Game {
       if (data && typeof data.text === 'string') this.hud?.showSensoryText(data.text);
     });
     eventBus.on<any>('horror:flicker', (data) => this.hud?.flashHorror(0.55, data?.duration || 900));
-    eventBus.on<any>('horror:breath', (data) => this.hud?.flashHorror(0.8, data?.duration || 1200));
+    eventBus.on<any>('horror:breath', (data) => {
+      this.hud?.flashHorror(0.8, data?.duration || 1200);
+      audioManager.playProcedural('breath', {
+        category: 'ambience', volume: 0.3, spatial: true,
+        position: this.relativeToHead(0.7, -0.35, -0.05)
+      });
+    });
     eventBus.on<any>('horror:temperature', (data) => this.hud?.flashHorror(0.4, data?.duration || 1500));
     eventBus.on<any>('horror:jumpscare', (data) => this.hud?.flashHorror(1, Math.min(data?.duration || 700, 900)));
     eventBus.on<any>('horror:whisper', (data) => {
@@ -433,9 +439,30 @@ export class Game {
         this.hud?.showSensoryText(data.text, data.duration || 4000);
       }
       this.hud?.flashHorror(0.35, 700);
+      // Bisikan dari samping kanan kepala: arah terasa salah dan dekat.
+      audioManager.playProcedural('whisper', {
+        category: 'ambience', volume: 0.3, spatial: true,
+        position: this.relativeToHead(0.5, 1.1, 0.1)
+      });
     });
     eventBus.on<any>('horror:shadow', () => this.hud?.flashHorror(0.45, 800));
-    eventBus.on<any>('horror:footsteps', () => this.hud?.flashHorror(0.3, 700));
+    eventBus.on<any>('horror:footsteps', () => {
+      this.hud?.flashHorror(0.3, 700);
+      // Tiga langkah mendekat dari belakang, masing-masing lebih dekat dan
+      // lebih keras, diputar berurutan tiap 0,9 detik selama durasi peristiwa.
+      // Posisi dihitung ulang tiap pemutaran karena pemain bisa bergerak di
+      // sela jeda tersebut.
+      const approach = [5.5, 3.6, 2.0];
+      approach.forEach((back, i) => {
+        window.setTimeout(() => {
+          if (this.gameState !== 'playing') return;
+          audioManager.playProcedural('footstep', {
+            category: 'sfx', volume: 0.35 + i * 0.1, spatial: true,
+            position: this.relativeToHead(back, 0.3 - i * 0.15, -1.5)
+          });
+        }, i * 900);
+      });
+    });
     eventBus.on<any>('horror:door', () => this.hud?.flashHorror(0.35, 700));
 
     // Kamera desktop hanya bergerak saat pointer terkunci; beri petunjuk bila
@@ -920,6 +947,26 @@ export class Game {
   private isAnyScreenVisible(): boolean {
     return Array.from(document.querySelectorAll<HTMLElement>('.screen'))
       .some(el => el.getClientRects().length > 0);
+  }
+
+  /**
+   * Posisi dunia relatif kepala pemain: `back` meter di belakang pandangan,
+   * `side` meter ke kanan (negatif = kiri), `up` meter dari garis mata.
+   * Semua suara horor spasial memakai ini supaya arahnya benar dari layar
+   * mana pun dan dari orientasi pandangan apa pun pemain berdiri.
+   */
+  private relativeToHead(back: number, side: number, up: number): [number, number, number] {
+    this.engine?.camera.getWorldPosition(_camWorldPos);
+    this.engine?.camera.getWorldDirection(_camWorldDir);
+    // Kanan = forward × up (up = sumbu Y dunia): untuk pandangan ke -Z hasilnya
+    // +X, sesuai tangan kanan.
+    const rightX = -_camWorldDir.z;
+    const rightZ = _camWorldDir.x;
+    return [
+      _camWorldPos.x + rightX * side - _camWorldDir.x * back,
+      _camWorldPos.y + up - _camWorldDir.y * back,
+      _camWorldPos.z + rightZ * side - _camWorldDir.z * back
+    ];
   }
 
   /**
