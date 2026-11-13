@@ -17,9 +17,9 @@ export default defineConfig({
       }
     },
     // three.js dipisah ke chunk sendiri lewat code splitting Rolldown (Vite 8);
-    // 516 kB mentah (~127 kB gzip) itu normal untuk satu engine 3D, jadi
+    // 648 kB mentah (~161 kB gzip) itu normal untuk satu engine 3D, jadi
     // ambang peringatan dinaikkan supaya warning-nya tetap berarti.
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 700,
     rolldownOptions: {
       output: {
         // Pengganti manualChunks (bentuk objek sudah dihapus di Rolldown):
