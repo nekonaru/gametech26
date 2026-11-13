@@ -120,6 +120,18 @@ export class FPSController {
   private fovKick = 0;
   private readonly fovKickRun = 6;
 
+  /**
+   * Bunyi langkah dan pendaratan dikaitkan dari main. Akumulasinya berbasis
+   * jarak tempuh (meter), bukan timer, supaya cadence otomatis mengikuti
+   * kecepatan: renggang saat berjalan, rapat saat berlari.
+   */
+  private strideAccumulator = 0;
+  private footstepCb: ((speed: number, running: boolean) => void) | null = null;
+  private landingCb: ((impact: number) => void) | null = null;
+  /** Kecepatan jatuh terbesar sejak lepas tanah untuk bunyi pendaratan. */
+  private fallPeak = 0;
+  private wasGrounded = true;
+
   constructor(camera: THREE.PerspectiveCamera, input: InputManager, settings: SettingsManager) {
     this.camera = camera;
     this.input = input;
@@ -164,6 +176,22 @@ export class FPSController {
     return this.pitchObject;
   }
 
+  /**
+   * Kaitkan bunyi langkah kaki. Dipanggil dari main sekali saat sistem game
+   * disiapkan; tanpa kaitan ini pemain berjalan tanpa suara sama sekali.
+   */
+  setFootstepHandler(cb: (speed: number, running: boolean) => void): void {
+    this.footstepCb = cb;
+  }
+
+  /**
+   * Kaitkan bunyi pendaratan. `impact` bernilai 0..1 dari kecepatan jatuh,
+   * dipakai main untuk mengatur volume dan kekerasan guncangan.
+   */
+  setLandingHandler(cb: (impact: number) => void): void {
+    this.landingCb = cb;
+  }
+
   setCollisionObjects(objects: THREE.Object3D[]): void {
     this.collisionObjects = objects;
 
@@ -201,7 +229,44 @@ export class FPSController {
     this.updateCameraPosition(dt);
     this.handleHeadBob(dt);
     this.updateFovKick(dt);
+    this.updateStride(dt);
     this.sanitizeTransform();
+  }
+
+  /**
+   * Irama langkah kaki dan momen pendaratan. Langkah dipicu oleh jarak
+   * tempuh horizontal (bukan waktu) sehingga cadence selalu masuk akal untuk
+   * kecepatan berjalan maupun berlari. Pendaratan memicu bunyi dan guncangan
+   * seberapa keras pemain mendarat.
+   */
+  private updateStride(dt: number): void {
+    const horizSpeed = Math.hypot(this.velocity.x, this.velocity.z);
+
+    if (this.onGround) {
+      if (!this.wasGrounded) {
+        // Baru menyentuh tanah setelah di udara: bunyi pendaratan.
+        const impact = Math.min(1, this.fallPeak / 16);
+        this.fallPeak = 0;
+        this.strideAccumulator = 0;
+        if (impact > 0.1) this.landingCb?.(impact);
+      }
+      this.wasGrounded = true;
+
+      if (horizSpeed > 0.5 && !this.viewAnim) {
+        const stride = this.isRunning ? 2.6 : 1.6;
+        this.strideAccumulator += horizSpeed * dt;
+        if (this.strideAccumulator >= stride) {
+          this.strideAccumulator -= stride;
+          this.footstepCb?.(horizSpeed, this.isRunning);
+        }
+      } else {
+        this.strideAccumulator = 0;
+      }
+    } else {
+      this.wasGrounded = false;
+      this.fallPeak = Math.max(this.fallPeak, Math.max(0, -this.velocity.y));
+      this.strideAccumulator = 0;
+    }
   }
 
   /**

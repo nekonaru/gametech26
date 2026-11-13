@@ -131,6 +131,26 @@ export class Game {
     this.fpsController.setPlayerHeight(1.72);
     this.engine.scene.add(this.fpsController.getYawObject());
 
+    // Langkah kaki dan pendaratan. Jarak langkah sudah dihitung kamera, di
+    // sini tinggal memutar bunyinya dengan nada sedikit berbeda tiap langkah
+    // (kaki kiri/kanan) supaya tidak terdengar seperti mesin.
+    let stepAlternate = false;
+    this.fpsController.setFootstepHandler((_speed, running) => {
+      stepAlternate = !stepAlternate;
+      audioManager.play(running ? 'run_fast' : 'footstep', {
+        category: 'sfx',
+        volume: running ? 0.5 : 0.38,
+        playbackRate: (stepAlternate ? 1.0 : 0.93) + Math.random() * 0.05
+      });
+    });
+    this.fpsController.setLandingHandler((impact) => {
+      audioManager.play('footstep', {
+        category: 'sfx',
+        volume: 0.3 + 0.5 * impact,
+        playbackRate: 0.85 - 0.15 * impact
+      });
+    });
+
     this.lighting = new LightingManager(this.engine.scene, settingsManager);
     this.particles = new ParticleSystem(this.engine.scene, settingsManager);
 
