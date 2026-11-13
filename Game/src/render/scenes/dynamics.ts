@@ -54,6 +54,12 @@ export interface FigureIdle {
   turnAt: number;
   turnTo: number;
   turnHold: number;
+  /** Koordinat spawn: dipakai getar halus saat tegangan tinggi. */
+  baseX: number;
+  baseZ: number;
+  /** Figur yang justru mulai memperhatikan pemain (tegangan tinggi). */
+  watchNext: number;
+  watchUntil: number;
 }
 
 /** Registri figur yang sedang diam di adegan; dikosongkan tiap ganti scene. */
@@ -136,28 +142,87 @@ export function resetDynamics(): void {
   resetDrawerState();
 }
 
-/** Jalankan semua tick animasi scene tiap frame dari loop utama. */
+/**
+ * Denyut nyala api untuk lampu titik di adegan (api unggun, cincin api,
+ * api ilusi). Lampu yang menyala stabil justru terbaca palsu; api sungguhan
+ * bernapas. Denyut dibentuk dari tiga sinus tak rasional agar tidak pernah
+ * mengulang pola yang sama dua kali, plus satu "ngempet" dalam tiap sekitar
+ * 9-14 detik (tegangan turun sesaat sebelum membesar lagi).
+ */
+export function addFireFlicker(light: THREE.PointLight, baseIntensity: number): void {
+  const phase = Math.random() * Math.PI * 2;
+  const speed = 5.5 + Math.random() * 3.5;
+  addDynamicTick((t) => {
+    const n = Math.sin(t * speed + phase) * 0.42
+      + Math.sin(t * speed * 2.71 + phase * 1.7) * 0.31
+      + Math.sin(t * speed * 5.23 + phase * 2.3) * 0.27;
+    // "Ngempet": pangkat tinggi membuat sin^8 nyaris selalu 0 kecuali
+    // sekilas di puncaknya, sehingga sesekali lampu redup separuh sebentar.
+    const dip = Math.pow(Math.max(0, Math.sin(t * 0.39 + phase * 3.1)), 8) * 0.5;
+    light.intensity = Math.max(0.05, baseIntensity * (1 + 0.24 * n) * (1 - dip));
+  });
+}
+
+/**
+ * Jalankan semua tick animasi scene tiap frame dari loop utama. */
 export function updateDynamics(t: number): void {
   for (const fn of dynamicTicks) fn(t);
 }
 
 /**
- * Animasi idle figur warga: napas dada, goyang berat badan yang sangat
- * halus, ayun lengan, dan sesekali menoleh kepala. Tanpa ini figur terbaca
- * sebagai patung kaku; dengan ini ruangan terasa berpenghuni. Dipanggil tiap
- * frame dari loop utama (main.ts), memakai detik nyata: fase tiap figur
- * berbeda supaya tidak bergerak serempak.
+ * Figur sedang menengok pemain: kepala berputar pelan ke arah pemain
+ * (dibatasi ±0,62 rad supaya tidak terpelintir), menahan sebentar, lalu
+ * kembali lurus. Dipilih tak sinkron per figur lewat cooldown acak, dan
+ * hanya aktif saat tegangan tinggi. Mengembalikan true bila figur sedang
+ * dalam fase menatap (pemanggil harus melewati animasi menoleh biasa).
  */
-export function updateFigures(t: number): void {
+function updateWatcher(f: FigureIdle, t: number, tension: number, playerPos?: { x: number; z: number }): boolean {
+  if (!f.head) return false;
+  if (t < f.watchUntil) {
+    if (playerPos) {
+      const dx = playerPos.x - f.baseX;
+      const dz = playerPos.z - f.baseZ;
+      let target = Math.atan2(dx, dz) - f.group.rotation.y;
+      target = Math.atan2(Math.sin(target), Math.cos(target));
+      target = THREE.MathUtils.clamp(target, -0.62, 0.62);
+      f.head.rotation.y += (target - f.head.rotation.y) * 0.045;
+    }
+    return true;
+  }
+  if (tension > 0.55 && playerPos && t > f.watchNext) {
+    const dist = Math.hypot(playerPos.x - f.baseX, playerPos.z - f.baseZ);
+    if (dist > 1.1 && dist < 7.5) {
+      f.watchUntil = t + 2.4 + Math.random() * 1.8;
+      f.watchNext = t + 16 + Math.random() * 20;
+      return true;
+    }
+    // Terlalu jauh / terlalu dekat: coba lagi nanti, jangan tiap frame.
+    f.watchNext = t + 6 + Math.random() * 6;
+  }
+  return false;
+}
+
+export function updateFigures(
+  t: number,
+  opts?: { tension?: number; playerPos?: { x: number; z: number } }
+): void {
+  const tension = opts?.tension ?? 0;
+  const playerPos = opts?.playerPos;
+  // Getar mikro saat tegangan tinggi: warga terbaca gelisah, bukan pajangan.
+  const shiver = tension > 0.7 ? (tension - 0.7) / 0.3 : 0;
   for (const f of figureIdle) {
     if (!f.group.parent) continue;
     // Goyang berat badan + bob sangat halus.
     f.group.rotation.z = Math.sin(t * 0.55 + f.phase) * 0.018 * f.sway;
     f.group.position.y = Math.sin(t * 0.85 + f.phase) * 0.012 * f.bob;
+    f.group.position.x = f.baseX + Math.sin(t * 11.3 + f.phase * 7.1) * 0.007 * shiver;
+    f.group.position.z = f.baseZ + Math.cos(t * 9.1 + f.phase * 5.3) * 0.007 * shiver;
     if (f.torso) {
       // Tarikan napas: dada mengembang-menyusut nyaris tak terasa.
       f.torso.scale.y = 1 + Math.sin(t * 1.15 + f.phase) * 0.012;
     }
+    // Menatap pemain mengalahkan menoleh acak biasa.
+    if (updateWatcher(f, t, tension, playerPos)) continue;
     // Menoleh sesekali: kepala berputar pelan lalu diam sebentar.
     if (f.turnAt < 0) {
       f.turnAt = t + (f.phase / (Math.PI * 2)) * 5.5;
@@ -351,7 +416,11 @@ export function figure(kit: Kit, x: number, z: number, opts: FigureOptions = {})
     bob: seated ? 0 : 0.7 + ((seed >>> 5) % 6) * 0.1,
     turnAt: -1,
     turnTo: 0,
-    turnHold: 0
+    turnHold: 0,
+    baseX: x,
+    baseZ: z,
+    watchNext: 6 + (seed % 11),
+    watchUntil: 0
   });
   return g;
 }

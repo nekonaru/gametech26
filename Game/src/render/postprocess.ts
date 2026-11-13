@@ -15,7 +15,8 @@ const ditherShader = {
     uGrain: { value: 1.0 },
     uGrainIntensity: { value: 0.03 },
     uTime: { value: 0 },
-    uResolution: { value: new THREE.Vector2(640, 360) }
+    uResolution: { value: new THREE.Vector2(640, 360) },
+    uTension: { value: 0.0 }
   },
   vertexShader: `
     varying vec2 vUv;
@@ -34,6 +35,7 @@ const ditherShader = {
     uniform float uGrainIntensity;
     uniform float uTime;
     uniform vec2 uResolution;
+    uniform float uTension;
     varying vec2 vUv;
 
     float rand(vec2 co) {
@@ -78,8 +80,17 @@ const ditherShader = {
       }
 
       if (uGrain > 0.0) {
-        float grain = (rand(vUv * uResolution + uTime) - 0.5) * uGrainIntensity;
+        // Tegangan tinggi menambah debu statis seperti monitor tua.
+        float grain = (rand(vUv * uResolution + uTime) - 0.5) * (uGrainIntensity + uTension * 0.05);
         color.rgb += grain * uGrain;
+      }
+
+      if (uTension > 0.02) {
+        // Chromatic aberration tipis di tepi, membesar mengikuti tegangan:
+        // sinyal bahwa mata pemain tidak lagi "fokus".
+        vec2 off = (vUv - 0.5) * (uTension * uTension) * 0.0075;
+        color.r = texture2D(tDiffuse, vUv + off).r;
+        color.b = texture2D(tDiffuse, vUv - off).b;
       }
 
       gl_FragColor = color;
@@ -91,7 +102,8 @@ const vignetteShader = {
   uniforms: {
     tDiffuse: { value: null },
     uIntensity: { value: 0.5 },
-    uSmoothness: { value: 0.6 }
+    uSmoothness: { value: 0.6 },
+    uTension: { value: 0.0 }
   },
   vertexShader: `
     varying vec2 vUv;
@@ -104,13 +116,18 @@ const vignetteShader = {
     uniform sampler2D tDiffuse;
     uniform float uIntensity;
     uniform float uSmoothness;
+    uniform float uTension;
     varying vec2 vUv;
     void main() {
       vec4 color = texture2D(tDiffuse, vUv);
       vec2 center = vUv - 0.5;
       float dist = length(center * 2.0);
-      float vignette = smoothstep(uSmoothness, 1.0, dist) * uIntensity;
+      // Tegangan tinggi menebalkan gelap tepi dan menghangatkan merah
+      // sepersekian: kesan jantung berdebar tanpa mengubah warna dunia.
+      float vignette = smoothstep(uSmoothness, 1.0, dist) * (uIntensity + uTension * 0.3);
       color.rgb *= (1.0 - vignette);
+      color.r *= 1.0 + uTension * 0.07;
+      color.b *= 1.0 - uTension * 0.05;
       gl_FragColor = color;
     }
   `
@@ -171,6 +188,8 @@ export class PostProcessManager {
   private time = 0;
   /** Salinan pengaturan "Jarak Kabut"; 0 = tanpa batas buatan. */
   private fogDistance = 0;
+  /** Tegangan 0..1 dari TensionDirector; menggerakkan vignette/aberrasi/grain. */
+  private tension = 0;
 
   constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, settings: SettingsManager) {
     this.renderer = renderer;
@@ -291,6 +310,15 @@ export class PostProcessManager {
     if (fog.near > fog.far * 0.9) fog.near = Math.max(0, fog.far * 0.9);
   }
 
+  /**
+   * Tegangan global (0..1). Dipanggil tiap frame oleh loop game; nilai di
+   * luar rentang dipotong. Tidak mengubah pengaturan pemain sama sekali:
+   * murni respons atmosfer terhadap naskah.
+   */
+  setTension(value: number): void {
+    this.tension = Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0;
+  }
+
   setBrightness(value: number): void {
     this.brightnessPass.uniforms.uBrightness.value = value;
   }
@@ -308,6 +336,8 @@ export class PostProcessManager {
   render(): void {
     this.time += 1/60;
     this.ditherPass.uniforms.uTime.value = this.time;
+    this.ditherPass.uniforms.uTension.value = this.tension;
+    this.vignettePass.uniforms.uTension.value = this.tension;
     // LightingManager menulis jarak kabut preset saat ganti bab; potong lagi
     // tiap frame supaya setelan pemain selalu menang tanpa perlu langkah ekstra.
     this.applyFogDistance();

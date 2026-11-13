@@ -279,6 +279,21 @@ export class AudioManager {
       };
     }
 
+    // Gema rendah 30 Hz yang mengembang lalu surut perlahan: lapisan
+    // "sesuatu yang besar sedang bergerak" di bawah ambience. Dipakai
+    // AmbienceDirector saat tegangan tinggi.
+    if (key === 'rumble') {
+      return {
+        duration: 9,
+        peak: 0.5,
+        sample: (t) => {
+          const swell = Math.pow(Math.sin(Math.PI * Math.min(1, t / 9)), 1.6);
+          return (Math.sin(2 * Math.PI * 30.5 * t) * 0.82
+            + Math.sin(2 * Math.PI * 61 * t) * 0.18) * swell;
+        }
+      };
+    }
+
     if (key === 'wind_low' || key === 'whisper_wind' || key === 'heat_wave') {
       return {
         duration: 8,

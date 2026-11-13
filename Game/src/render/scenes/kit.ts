@@ -7,7 +7,7 @@ import { getTexture, Pattern } from '../textures.js';
 import { applyVertexSnap } from '../snap.js';
 // Circular runtime-only: chestOfDrawers mendaftarkan tick animasi laci;
 // addDynamicTick hanya dipanggil saat runtime, bukan saat evaluasi modul.
-import { addDynamicTick } from './dynamics.js';
+import { addDynamicTick, addFireFlicker } from './dynamics.js';
 
 /**
  * Pintu bergerak milik scene: daun yang bisa dibuka/ditutup, lengkap dengan
@@ -374,6 +374,7 @@ export function lampAt(kit: Kit, x: number, y: number, z: number, color = palett
   const light = new THREE.PointLight(color, intensity, distance);
   light.position.set(x, y - 0.2, z);
   kit.group.add(light);
+  addFireFlicker(light, intensity);
 }
 
 export function tree(kit: Kit, x: number, z: number, h = 4, trunkColor = palette.woodDark): void {
@@ -1094,22 +1095,33 @@ export function hangingLamp(kit: Kit, x: number, ceilY: number, z: number, color
   const light = new THREE.PointLight(color, intensity, 10);
   light.position.set(x, ceilY - drop - 0.3, z);
   kit.group.add(light);
+  addFireFlicker(light, intensity);
 }
 
-export function ceilingFan(kit: Kit, x: number, ceilY: number, z: number): void {
+export function ceilingFan(kit: Kit, x: number, ceilY: number, z: number, speed = 1.6): void {
   const rod = new THREE.Mesh(cylGeo(0.03, 0.03, 0.3, 6), mat(palette.metal));
   rod.position.set(x, ceilY - 0.15, z);
   kit.group.add(rod);
   const hub = new THREE.Mesh(cylGeo(0.12, 0.12, 0.1, 8), mat(palette.metal));
   hub.position.set(x, ceilY - 0.32, z);
   kit.group.add(hub);
+  // Baling-baling dalam satu grup yang berputar pelan: ruangan terasa
+  // "ditinggali", bukan set foto. animatedLocal wajib agar SceneFactory
+  // tidak membekukan matriksnya.
+  const blades = new THREE.Group();
+  blades.position.set(x, ceilY - 0.35, z);
+  blades.userData.animatedLocal = true;
   for (let i = 0; i < 4; i++) {
     const a = (i / 4) * Math.PI * 2;
     const blade = new THREE.Mesh(boxGeo(0.85, 0.03, 0.16), mat(0x8a8578));
-    blade.position.set(x + Math.cos(a) * 0.5, ceilY - 0.35, z + Math.sin(a) * 0.5);
+    blade.position.set(Math.cos(a) * 0.5, 0, Math.sin(a) * 0.5);
     blade.rotation.y = -a;
-    kit.group.add(blade);
+    blades.add(blade);
   }
+  kit.group.add(blades);
+  addDynamicTick((t) => {
+    blades.rotation.y = t * speed;
+  });
 }
 
 /** Papan nama berdiri: dua kaki, papan, dan garis "tulisan". */
@@ -1527,5 +1539,6 @@ export function firePit(kit: Kit, x: number, z: number, size = 1.0): void {
   const light = new THREE.PointLight(palette.ember, 1.4, 12);
   light.position.set(x, 0.9, z);
   kit.group.add(light);
+  addFireFlicker(light, 1.4);
 }
 

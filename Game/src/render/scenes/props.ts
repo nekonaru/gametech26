@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { getSoftDotTexture, getFlameGradientTexture } from '../textures.js';
 import { SceneDoor, SceneBounds, Kit, palette, mat, boxGeo, cylGeo, cylGeoTiled, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, addGroupProxy, tree, crate, woodPile } from './kit.js';
-import { addDynamicTick } from './dynamics.js';
+import { addDynamicTick, addFireFlicker } from './dynamics.js';
 
 /** Mobil sedan: badan, kabin, kaca, grill, lampu, dan empat roda. */
 export function car(kit: Kit, x: number, z: number, rotY = 0, color = 0x4a5b6b): void {
@@ -194,6 +194,7 @@ export function lampPost(kit: Kit, x: number, z: number, h = 4, color = 0xffd9a0
   const light = new THREE.PointLight(color, intensity, 13);
   light.position.set(x + 0.6, h - 0.5, z);
   kit.group.add(light);
+  addFireFlicker(light, intensity);
 }
 
 /** Gerbang desa: dua tiang bertopi, balok melintang, dan papan nama. */
@@ -381,6 +382,7 @@ export function fireRing(kit: Kit, x: number, z: number, radius = 6): void {
   const light = new THREE.PointLight(palette.ember, 1.8, radius * 3.5);
   light.position.set(x, 2.2, z);
   kit.group.add(light);
+  addFireFlicker(light, 1.8);
 }
 
 /** Patok/penanda jalur: tiang pendek dengan kepala merah. */

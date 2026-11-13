@@ -94,6 +94,8 @@ export class FPSController {
   private headBobTimer = 0;
   private headBobIntensity = 0.02;
   private headBobFrequency = 8;
+  /** Fase "napas diam" saat berdiri; reset saat berjalan. */
+  private breathTimer = 0;
   /**
    * Animasi pandangan sinematik (bangun dari kasur, merebah saat tidur,
    * menghadap lawan bicara). Maju lewat `updateView` yang dipanggil tiap
@@ -561,6 +563,7 @@ export class FPSController {
 
     if (moving && grounded) {
       this.headBobTimer += deltaTime * (this.isRunning ? this.headBobFrequency * 1.5 : this.headBobFrequency);
+      this.breathTimer = 0;
       const bobX = Math.sin(this.headBobTimer) * this.headBobIntensity * (this.isRunning ? 1.5 : 1);
       const bobY = Math.sin(this.headBobTimer * 2) * this.headBobIntensity * 0.5;
       this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, bobX, 10 * deltaTime);
@@ -568,7 +571,11 @@ export class FPSController {
     } else {
       this.headBobTimer = 0;
       this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, 0, 10 * deltaTime);
-      this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, 0, 10 * deltaTime);
+      // Napas saat diam: naik-turun hampir tak terasa; jauh lebih hidup
+      // daripada kamera membeku total. Amplitudo 9 mm, periode ±4,6 s.
+      this.breathTimer += deltaTime;
+      const breathY = grounded ? Math.sin(this.breathTimer * 1.35) * 0.009 : 0;
+      this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, breathY, 4 * deltaTime);
     }
   }
 

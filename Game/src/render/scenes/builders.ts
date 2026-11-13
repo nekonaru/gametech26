@@ -4,7 +4,7 @@
  */
 import * as THREE from 'three';
 import { Kit, palette, mat, anchor, boxGeo, cylGeo, coneGeo, sphereGeo, torusGeo, box, cylinder, floor, wall, ceiling, lampAt, tree, scatterTrees, table, chair, shelf, poster, benchRow, crate, bed, rug, sofa, addGroupProxy, wardrobe, fridge, stove, kitchenCounter, tvSet, radioBox, calendarSheet, mirrorPanel, pictureFrame, wallClock, envelope, wallet, plate, cup, screwdriver, fuseBox, hangingLamp, ceilingFan, signBoard, banner, sachetStrip, motorbike, bicycle, scarecrow, haystack, basket, sack, woodPile, bucket, doorPanel, chestOfDrawers, phoneDevice, shoesPair, firePit, setSceneBounds } from './kit.js';
-import { addDynamicTick, figure } from './dynamics.js';
+import { addDynamicTick, addFireFlicker, figure } from './dynamics.js';
 import { car, bush, bottle, footprints, wallBoard, coffeeMachine, cupStack, jar, ribbon, lampPost, gateArch, hutSmall, flameMat, fireRing, markerPost, pane, groundDisc, distantBackdrop, trimRing, windowPanel, roofHip, doorwayOnX, roomShell, sealPerimeter } from './props.js';
 export function buildRumah(kit: Kit): void {
   // Jendela rumah kini lubang tembus + diorama pemandangan (windowPortal):
@@ -847,6 +847,7 @@ export function buildJalan(kit: Kit): void {
   const beamLight = new THREE.PointLight(0xffe6b0, 0.8, 9);
   beamLight.position.set(-3.0, 3.0, -5);
   kit.group.add(beamLight);
+  addFireFlicker(beamLight, 0.8);
 
   // --- Teras rumah: barang harian yang ditinggal di depan pintu ---
   box(kit, 0.45, 0.06, 0.6, palette.woodDark, 5.25, 1.0, 5.0, false);
@@ -1244,6 +1245,7 @@ export function buildHutanBerputar(kit: Kit): void {
   const flameLight = new THREE.PointLight(0xff7a2f, 1.1, 12);
   flameLight.position.set(7, 1.6, -5);
   kit.group.add(flameLight);
+  addFireFlicker(flameLight, 1.1);
 
   // Jejak kaki di lorong bercelah cincin luar: mulai setelah pohon cincin
   // dalam supaya tidak menembus batang, lurus ke pos patok dan glow keluar.
@@ -1329,6 +1331,7 @@ export function buildHutanApi(kit: Kit): void {
     const light = new THREE.PointLight(palette.ember, 1.0, 9);
     light.position.set(Math.cos(a) * r, 1.0, Math.sin(a) * r);
     kit.group.add(light);
+    addFireFlicker(light, 1.0);
   }
 
   // --- Batu api dan sisa yang tertinggal ---
@@ -1792,6 +1795,7 @@ export function buildMimpi(kit: Kit): void {
   const glow = new THREE.PointLight(0xff5a2a, 1.4, 30);
   glow.position.set(0, 6, -6);
   kit.group.add(glow);
+  addFireFlicker(glow, 1.4);
 
   // Bulan yang terlalu dekat: satu bola cahaya tanpa wajah.
   const moon = new THREE.Mesh(

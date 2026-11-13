@@ -19,6 +19,7 @@ import { journalManager } from './journal.js';
 import { phoneManager } from './phone.js';
 import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
+import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
 import { confirmAction } from '../ui/base.js';
@@ -42,6 +43,8 @@ type ScreenName =
 
 /** Setengah sisi kubus penanda objek interaktif. */
 const PROP_HALF = 0.28;
+/** Vektor sementara untuk posisi dunia kamera (dihitung tiap frame). */
+const _camWorldPos = new THREE.Vector3();
 
 /**
  * Palet penanda tujuan.
@@ -862,14 +865,27 @@ export class Game {
     this.particles?.update(deltaTime);
     this.lighting?.update(deltaTime);
     tensionDirector.update(deltaTime);
+    const tensionNow = tensionDirector.getTension();
     this.updatePropPulse();
-    // Figur warga bernapas, mengayun lengan, dan sesekali menoleh: adegan
-    // terasa berpenghuni tanpa gerakan kaku. Registri dibersihkan tiap
-    // ganti scene oleh SceneFactory.build.
-    updateFigures(performance.now() / 1000);
+    // Figur warga bernapas, mengayun lengan, sesekali menoleh, dan saat
+    // tegangan tinggi justru menatap pemain. Registri figure dibersihkan
+    // tiap ganti scene oleh SceneFactory.build.
+    this.engine?.camera?.getWorldPosition(_camWorldPos);
+    updateFigures(performance.now() / 1000, {
+      tension: tensionNow,
+      playerPos: { x: _camWorldPos.x, z: _camWorldPos.z }
+    });
     // Tick dinamis scene: daun pintu yang berayun, awan yang melintas,
     // pohon yang menggoyang tajuk, burung yang menyeberang jendela.
     updateDynamics(performance.now() / 1000);
+    // Lapisan "dunia di luar sana": suara jauh acak, gema 30 Hz, dan detak
+    // jantung yang merapat saat tegangan tinggi.
+    ambienceDirector.update(deltaTime, {
+      quiet: busy || this.isAnyScreenVisible(),
+      tension: tensionNow
+    });
+    // Vignette/aberrasi/grain menebal mengikuti tegangan.
+    this.engine?.postProcess.setTension(tensionNow);
   }
 
   private isAnyScreenVisible(): boolean {
