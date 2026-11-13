@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 256" role="img" aria-label="Asap yang Tak Padam">
+  <title>Asap yang Tak Padam - lockup horizontal (latar gelap)</title>
+  <path fill="#ff6b35" d="M128 18 C 105 55 94 75 94 93 A 34 34 0 0 0 162 93 C 162 75 151 55 128 18 Z"/>
+  <rect fill="#e0ddd5" x="91" y="140" width="74" height="88" rx="15"/>
+  <text x="300" y="116" font-family="'Courier New', Courier, monospace" font-weight="bold" font-size="62" letter-spacing="10" fill="#e0ddd5">ASAP</text>
+  <text x="300" y="174" font-family="'Courier New', Courier, monospace" font-size="30" letter-spacing="11" fill="#999689">YANG TAK PADAM</text>
+</svg>

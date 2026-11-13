@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Asap yang Tak Padam">
+  <title>Asap yang Tak Padam - app icon</title>
+  <defs>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ff6b35"/>
+      <stop offset="0.55" stop-color="#ff8c1a"/>
+      <stop offset="1" stop-color="#ffcc00"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#0a0a0a"/>
+  <g transform="translate(256 256) scale(1.9) translate(-128 -122)">
+    <path fill="url(#flame)" d="M128 18 C 105 55 94 75 94 93 A 34 34 0 0 0 162 93 C 162 75 151 55 128 18 Z"/>
+    <rect fill="#e0ddd5" x="91" y="140" width="74" height="88" rx="15"/>
+  </g>
+</svg>

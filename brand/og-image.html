@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; background: #0a0a0a; overflow: hidden; }
+  .stage { position: relative; width: 1200px; height: 630px; display: flex; align-items: center; justify-content: center; gap: 72px; }
+  .mark { flex: 0 0 auto; }
+  .copy { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+  h1 { margin: 0; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 74px; letter-spacing: 16px; color: #e0ddd5; line-height: 1.05; }
+  .sub { margin: 0; font-family: 'Courier New', Courier, monospace; font-size: 30px; letter-spacing: 18px; color: #ff6b35; }
+  .tag { margin: 6px 0 0 0; font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 25px; color: #999689; }
+  .studio { position: absolute; left: 64px; bottom: 34px; font-family: 'Courier New', Courier, monospace; font-size: 15px; letter-spacing: 6px; color: #5a574c; }
+  .type { position: absolute; right: 64px; bottom: 34px; font-family: 'Courier New', Courier, monospace; font-size: 15px; letter-spacing: 6px; color: #5a574c; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <svg class="mark" width="300" height="300" viewBox="0 0 256 256">
+      <path fill="#ff6b35" d="M128 18 C 105 55 94 75 94 93 A 34 34 0 0 0 162 93 C 162 75 151 55 128 18 Z"/>
+      <rect fill="#e0ddd5" x="91" y="140" width="74" height="88" rx="15"/>
+    </svg>
+    <div class="copy">
+      <h1>ASAP</h1>
+      <div class="sub">YANG TAK PADAM</div>
+      <p class="tag">&ldquo;Api bisa padam. Rasa bersalah tidak.&rdquo;</p>
+    </div>
+    <div class="studio">BD GAMES</div>
+    <div class="type">HOROR NARATIF PSIKOLOGIS</div>
+  </div>
+</body>
+</html>
