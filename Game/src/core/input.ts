@@ -67,6 +67,14 @@ export class InputManager {
   private touchStartY = 0;
   private touchActive = false;
   private joystickActive = false;
+  /**
+   * Identifier jari (Touch.identifier) yang memegang joystick dan menoleh.
+   * null = tidak ada jari aktif untuk peran itu. Tanpa pelacakan ini dua
+   * jempol saling berebut: touchmove hanya membaca touches[0] dan satu
+   * touchend mematikan kedua peran sekaligus.
+   */
+  private joystickTouchId: number | null = null;
+  private lookTouchId: number | null = null;
   private joystickCenterX = 0;
   private joystickCenterY = 0;
   private joystickDX = 0;
@@ -354,6 +362,12 @@ export class InputManager {
     // setelah tab kehilangan fokus.
     this.touchRunning = false;
     this.touchRunToggle = false;
+    // Jari virtual dilepas saat tab kehilangan fokus supaya tidak ada
+    // joystick/menoleh yang tersangkut setelah kembali.
+    this.joystickTouchId = null;
+    this.lookTouchId = null;
+    this.joystickActive = false;
+    this.touchActive = false;
     for (const action of ALL_ACTIONS) {
       const latchedRun = action === 'run' && this.runToggle && this.state.run;
       if (!this.actionPressed.has(action) && !latchedRun) continue;
@@ -636,87 +650,105 @@ export class InputManager {
 
   private onTouchStart(event: TouchEvent): void {
     event.preventDefault();
-    const touch = event.touches[0];
-    if (!touch || !this.canvas) return;
+    if (!this.canvas) return;
     const rect = this.canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
 
-    this.touchStartTime = performance.now();
-    this.touchMoved = 0;
+    // Setiap jari dicatat identifier-nya: dua jempol (kiri joystick, kanan
+    // menoleh) harus bisa hidup bersamaan. Dulu hanya touches[0] dibaca, jadi
+    // jari kedua diabaikan dan jari pertama "mengambil alih" semua gerakan.
+    for (const touch of Array.from(event.changedTouches)) {
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
 
-    if (x < rect.width / 2) {
-      // Separuh kiri: joystick virtual untuk bergerak.
-      this.joystickActive = true;
-      this.joystickCenterX = x;
-      this.joystickCenterY = y;
-      this.joystickDX = 0;
-      this.joystickDY = 0;
-    } else {
-      // Separuh kanan: usap untuk memutar kamera.
-      this.touchActive = true;
-      this.touchStartX = x;
-      this.touchStartY = y;
+      if (x < rect.width / 2) {
+        // Separuh kiri: joystick virtual untuk bergerak.
+        if (this.joystickTouchId !== null) continue;
+        this.joystickTouchId = touch.identifier;
+        this.joystickActive = true;
+        this.joystickCenterX = x;
+        this.joystickCenterY = y;
+        this.joystickDX = 0;
+        this.joystickDY = 0;
+      } else {
+        // Separuh kanan: usap untuk memutar kamera.
+        if (this.lookTouchId !== null) continue;
+        this.lookTouchId = touch.identifier;
+        this.touchActive = true;
+        this.touchStartX = x;
+        this.touchStartY = y;
+        this.touchStartTime = performance.now();
+        this.touchMoved = 0;
+      }
     }
   }
 
   private onTouchMove(event: TouchEvent): void {
     event.preventDefault();
-    const touch = event.touches[0];
-    if (!touch || !this.canvas) return;
+    if (!this.canvas) return;
     const rect = this.canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
 
-    if (this.joystickActive) {
-      const dx = x - this.joystickCenterX;
-      const dy = y - this.joystickCenterY;
-      const dist = Math.hypot(dx, dy);
-      if (dist > this.joystickRadius) {
-        const angle = Math.atan2(dy, dx);
-        this.joystickDX = Math.cos(angle) * this.joystickRadius;
-        this.joystickDY = Math.sin(angle) * this.joystickRadius;
-      } else {
-        this.joystickDX = dx;
-        this.joystickDY = dy;
+    // Hanya jari yang tercatat id-nya yang memengaruhi joystick/menoleh;
+    // jari lain (mis. jari kedua di sisi yang sama) diabaikan.
+    for (const touch of Array.from(event.changedTouches)) {
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      if (this.joystickTouchId === touch.identifier) {
+        const dx = x - this.joystickCenterX;
+        const dy = y - this.joystickCenterY;
+        const dist = Math.hypot(dx, dy);
+        if (dist > this.joystickRadius) {
+          const angle = Math.atan2(dy, dx);
+          this.joystickDX = Math.cos(angle) * this.joystickRadius;
+          this.joystickDY = Math.sin(angle) * this.joystickRadius;
+        } else {
+          this.joystickDX = dx;
+          this.joystickDY = dy;
+        }
+        this.touchMoved = Math.max(this.touchMoved, dist);
+        // Dorong stik ke tepi = lari. Hanya saat joystick benar-benar aktif,
+        // dan dihitung ulang tiap gerakan supaya langsung merespons.
+        this.touchRunning = Math.hypot(this.joystickDX, this.joystickDY)
+          / this.joystickRadius >= 0.88;
+      } else if (this.lookTouchId === touch.identifier) {
+        // Delta mentah dalam piksel; FPSController yang menerapkan sensitivitas.
+        const dx = x - this.touchStartX;
+        const dy = y - this.touchStartY;
+        if (this.lookEnabled) {
+          this.state.touchDeltaX += dx;
+          this.state.touchDeltaY += dy;
+        }
+        this.touchMoved = Math.max(this.touchMoved, Math.hypot(dx, dy));
+        this.touchStartX = x;
+        this.touchStartY = y;
       }
-      this.touchMoved = Math.max(this.touchMoved, dist);
-      // Dorong stik ke tepi = lari. Hanya saat joystick benar-benar aktif,
-      // dan dihitung ulang tiap gerakan supaya langsung merespons.
-      this.touchRunning = Math.hypot(this.joystickDX, this.joystickDY)
-        / this.joystickRadius >= 0.88;
-    } else if (this.touchActive) {
-      // Delta mentah dalam piksel; FPSController yang menerapkan sensitivitas.
-      const dx = x - this.touchStartX;
-      const dy = y - this.touchStartY;
-      if (this.lookEnabled) {
-        this.state.touchDeltaX += dx;
-        this.state.touchDeltaY += dy;
-      }
-      this.touchMoved = Math.max(this.touchMoved, Math.hypot(dx, dy));
-      this.touchStartX = x;
-      this.touchStartY = y;
     }
   }
 
-  private onTouchEnd(_event: TouchEvent): void {
-    if (this.joystickActive) {
-      this.joystickActive = false;
-      this.joystickDX = 0;
-      this.joystickDY = 0;
-      this.touchRunning = false;
-      this.setAction('forward', false);
-      this.setAction('backward', false);
-      this.setAction('left', false);
-      this.setAction('right', false);
-    }
-    if (this.touchActive) {
-      // Tap cepat tanpa geser = interaksi (pengganti tombol E).
-      const quickTap = performance.now() - this.touchStartTime < 300 && this.touchMoved < 12;
-      if (quickTap) this.tapQueued = true;
-      this.touchActive = false;
-      this.state.touchDeltaX = 0;
-      this.state.touchDeltaY = 0;
+  private onTouchEnd(event: TouchEvent): void {
+    // Lepas HANYA jari yang berakhir: dulu satu touchend mematikan joystick
+    // sekaligus menoleh, jadi mengangkat satu jempol mematikan jempol lainnya.
+    for (const touch of Array.from(event.changedTouches)) {
+      if (touch.identifier === this.joystickTouchId) {
+        this.joystickTouchId = null;
+        this.joystickActive = false;
+        this.joystickDX = 0;
+        this.joystickDY = 0;
+        this.touchRunning = false;
+        this.setAction('forward', false);
+        this.setAction('backward', false);
+        this.setAction('left', false);
+        this.setAction('right', false);
+      }
+      if (touch.identifier === this.lookTouchId) {
+        // Tap cepat tanpa geser = interaksi (pengganti tombol E).
+        const quickTap = performance.now() - this.touchStartTime < 300 && this.touchMoved < 12;
+        if (quickTap) this.tapQueued = true;
+        this.lookTouchId = null;
+        this.touchActive = false;
+        this.state.touchDeltaX = 0;
+        this.state.touchDeltaY = 0;
+      }
     }
   }
 
@@ -757,6 +789,8 @@ export class InputManager {
     this.lockRequestFromClick = false;
     this.joystickActive = false;
     this.touchActive = false;
+    this.joystickTouchId = null;
+    this.lookTouchId = null;
   }
 }
 
