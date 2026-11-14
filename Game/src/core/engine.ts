@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { EventBus, GameEvents, eventBus } from './events.js';
-import { SettingsManager, SettingsManager as _SM, settingsManager, DEFAULT_SETTINGS } from './settings.js';
+import { SettingsManager, settingsManager, DEFAULT_SETTINGS } from './settings.js';
 import { I18nManager, i18n } from './i18n.js';
 import { SaveManager, saveManager } from './save.js';
 import { AudioManager, audioManager } from './audio.js';
@@ -28,6 +28,16 @@ export class Engine {
 
   private animationId: number | null = null;
   private running = false;
+  /**
+   * Handler terikat disimpan sebagai field: addEventListener dan
+   * removeEventListener harus menerima fungsi yang sama, kalau tidak
+   * removeEventListener diam-diam gagal dan engine lama tetap hidup.
+   */
+  private readonly boundOnResize = () => this.onResize();
+  private readonly boundOnBeforeUnload = () => this.onBeforeUnload();
+  /** rAF butuh referensi fungsi yang sama tiap frame; .bind() tiap frame bikin closure baru. */
+  private readonly boundAnimate = () => this.animate();
+  private unsubscribeSettings: (() => void) | null = null;
 
   isRunning(): boolean {
     return this.running;
@@ -91,7 +101,11 @@ export class Engine {
       this.settings.get('controls').keyBindings,
       this.settings.get('controls').runToggle
     );
-    this.settings.subscribe(() => this.onSettingsChanged());
+    this.unsubscribeSettings = this.settings.subscribe(() => this.onSettingsChanged());
+    // Terapkan settings yang tersimpan SEKALI saat boot: volume audio,
+    // mute-on-blur, dan ukuran joystick hanya aktif setelah pemain mengubah
+    // sesuatu bila ini tidak dipanggil (reload dengan volume 0.3 tetap 0.8).
+    this.onSettingsChanged();
     this.save.startPlaytimeTracking();
   }
 
@@ -122,8 +136,8 @@ export class Engine {
   }
 
   private setupEventListeners(): void {
-    window.addEventListener('resize', this.onResize.bind(this));
-    window.addEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.addEventListener('resize', this.boundOnResize);
+    window.addEventListener('beforeunload', this.boundOnBeforeUnload);
   }
 
   private onResize(): void {
@@ -187,7 +201,7 @@ export class Engine {
 
   private animate(): void {
     if (!this.running) return;
-    this.animationId = requestAnimationFrame(this.animate.bind(this));
+    this.animationId = requestAnimationFrame(this.boundAnimate);
 
     // Jaring pengaman: frame berikutnya sudah dijadwalkan di baris atas, jadi
     // satu error di tengah frame hanya membuat satu frame terlewat: bukan
@@ -289,8 +303,10 @@ export class Engine {
 
   async dispose(): Promise<void> {
     this.stop();
-    window.removeEventListener('resize', this.onResize.bind(this));
-    window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.removeEventListener('resize', this.boundOnResize);
+    window.removeEventListener('beforeunload', this.boundOnBeforeUnload);
+    this.unsubscribeSettings?.();
+    this.unsubscribeSettings = null;
     this.input.dispose();
     await this.audio.dispose();
     this.assets.disposeAll();
