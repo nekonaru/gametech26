@@ -149,9 +149,21 @@ export function resetDynamics(): void {
  * mengulang pola yang sama dua kali, plus satu "ngempet" dalam tiap sekitar
  * 9-14 detik (tegangan turun sesaat sebelum membesar lagi).
  */
+/**
+ * Hash deterministik [0,1) dari koordinat. Dipakai parameter animasi yang
+ * dulu diambil dari Math.random: build scene jadi identik di setiap run
+ * (regresi visual dan build CI bisa dibandingkan), sementara antar lampu
+ * tetap tampak acak karena koordinatnya berbeda.
+ */
+function hash3(x: number, y: number, z: number): number {
+  const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+  return s - Math.floor(s);
+}
+
 export function addFireFlicker(light: THREE.PointLight, baseIntensity: number): void {
-  const phase = Math.random() * Math.PI * 2;
-  const speed = 5.5 + Math.random() * 3.5;
+  const p = light.position;
+  const phase = hash3(p.x, p.y, p.z) * Math.PI * 2;
+  const speed = 5.5 + hash3(p.z, p.x, p.y) * 3.5;
   addDynamicTick((t) => {
     const n = Math.sin(t * speed + phase) * 0.42
       + Math.sin(t * speed * 2.71 + phase * 1.7) * 0.31
