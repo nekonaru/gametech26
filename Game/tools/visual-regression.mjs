@@ -198,6 +198,51 @@ async function enterChapter(page, chapter) {
   );
 }
 
+/**
+ * Bekukan jam animasi halaman (performance.now) tepat sebelum shutter.
+ *
+ * Tanpa ini fase animasi waktu-nyata (beam penanda berdenyut, debu, ayun
+ * figur, kerlip api) berbeda tiap run: view dapur bisa 1,9% di satu run dan
+ * 4,1% di run berikutnya tanpa ada perubahan kode sama sekali.
+ *
+ * Dua syarat supaya benar-benar deterministik:
+ * 1. Nilai beku adalah KONSTANTA per slot view (bukan waktu saat freeze),
+ *    sehingga animasi sin(t) (beam, figur, dynamics) berhenti di pose yang
+ *    sama di setiap run.
+ * 2. Tangga nilai naik monoton dengan jarak >> durasi nyata antar freeze,
+ *    supaya deltaTime pertama selalu positif (diklamp engine ke 0,1 s) dan
+ *    tidak pernah negatif. Saat dilepas, jam dilanjutkan dari nilai beku
+ *    (offset) supaya tidak melompat mundur ke waktu nyata.
+ * setTimeout berjalan normal, jadi jam hanya beku selama frame shutter.
+ */
+const F_BASE = 10_000_000; // ms; jauh di atas performance.now nyata apa pun
+const F_STEP = 1_000_000;  // > durasi maks antar freeze (settle 45 s + aim 1 s)
+
+async function freezeClock(page, slot) {
+  const F = F_BASE + slot * F_STEP;
+  await page.evaluate((target) => {
+    if (!window.__asapClock) {
+      const orig = performance.now.bind(performance);
+      window.__asapClock = { orig, frozen: null, offset: 0 };
+      performance.now = () => {
+        const c = window.__asapClock;
+        return c.frozen !== null ? c.frozen : c.orig() + c.offset;
+      };
+    }
+    window.__asapClock.frozen = target;
+  }, F);
+}
+
+async function thawClock(page) {
+  await page.evaluate(() => {
+    const c = window.__asapClock;
+    if (!c || c.frozen === null) return;
+    // Lanjutkan jam secara monoton dari nilai beku, jangan kembali ke nyata.
+    c.offset = c.frozen - c.orig();
+    c.frozen = null;
+  });
+}
+
 function decodeShot(buf) {
   // Baseline & jepretan sama-sama JPEG (encoder Chromium deterministik per
   // versi); pngjs dipertahankan untuk snapshot lama bila masih ada.
@@ -241,7 +286,8 @@ try {
   }, null, { timeout: 120000 });
 
   let entered = '';
-  for (const view of VIEWS) {
+  for (let vi = 0; vi < VIEWS.length; vi++) {
+    const view = VIEWS[vi];
     if (view.chapter !== entered) {
       await enterChapter(page, view.chapter);
       entered = view.chapter;
@@ -251,8 +297,16 @@ try {
     let shot = null;
     for (let attempt = 0; attempt < 4 && !shot; attempt++) {
       await settle(page);
+      // Bekukan jam SEBELUM aim: posisi Y penanda berdenyut dari performance.now,
+      // jadi bila aim dihitung saat jam masih jalan, pitch kamera sedikit beda
+      // tiap run dan seluruh tepi geometri bergeser (noise dapur 1,9% -> 4,1%).
+      // Slot konstan per view+attempt: pose identik di setiap run.
+      await freezeClock(page, vi * 10 + attempt);
       await aim(page, view.marker, view.dist);
+      // Beberapa frame beku supaya pose terakhir mengendap, lalu jepret.
+      await page.waitForTimeout(400);
       const candidate = await page.locator('#game-canvas').screenshot({ type: 'jpeg', quality: 85 });
+      await thawClock(page);
       if (!await isDirty(page)) {
         shot = candidate;
       } else {
