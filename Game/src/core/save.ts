@@ -312,7 +312,25 @@ export class SaveManager {
     if (typeof save.createdAt !== 'string') return false;
     const raw = save as any;
     if (!raw.currentChapter || !Array.isArray(raw.clues) || !Array.isArray(raw.inventory)) return false;
+    if (!this.verifyChecksum(save)) return false;
     return true;
+  }
+
+  /**
+   * Hitung ulang checksum dan bandingkan dengan yang tersimpan. Save lama
+   * tanpa field `checksum` dilewati (validasi struktur tetap berlaku) supaya
+   * progres pemain lama tidak dibuang. `id` ikut dibuang: ditambahkan oleh
+   * put() sesudah checksum dibuat.
+   */
+  private verifyChecksum(save: SaveData): boolean {
+    if (typeof save.checksum !== 'string') return true;
+    const { saveVersion: _v, createdAt: _c, checksum: _k, id: _id, ...rest } = save;
+    return this.generateChecksum(rest) === save.checksum;
+  }
+
+  /** Validasi save dari luar (jalur muat permainan): struktur + checksum. */
+  isValidSaveData(data: unknown): boolean {
+    return this.validateSave(data as SaveData);
   }
 }
 

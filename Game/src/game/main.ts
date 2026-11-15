@@ -722,6 +722,14 @@ export class Game {
       await this.newGame();
       return;
     }
+    // Struktur + checksum diverifikasi di sini (satu-satunya jalur muat):
+    // save korup/terpotong jangan pernah masuk deserialize yang bisa
+    // melempar di tengah jalan dan meninggalkan state setengah jadi.
+    if (!saveManager.isValidSaveData(data)) {
+      console.warn('[game] save gagal validasi (struktur/checksum): memulai permainan baru');
+      await this.newGame();
+      return;
+    }
     try {
       gameState.deserialize(JSON.stringify(data));
     } catch (error) {
