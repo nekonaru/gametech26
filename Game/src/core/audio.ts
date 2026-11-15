@@ -27,7 +27,10 @@ export class AudioManager {
   private sources: Map<string, { source: AudioBufferSourceNode; gain: GainNode; category: AudioCategory }> = new Map();
   private config: AudioConfig;
   private listeners: Set<(config: AudioConfig) => void> = new Set();
-  private suspended = false;
+  /** Handler terikat untuk blur/focus/gesture: wajib referensi sama saat remove. */
+  private boundOnBlur: (() => void) | null = null;
+  private boundOnFocus: (() => void) | null = null;
+  private boundResume: (() => void) | null = null;
 
   constructor(config: Partial<AudioConfig> = {}) {
     this.config = {
@@ -57,17 +60,22 @@ export class AudioManager {
 
     // Guard dibaca saat kejadian, bukan saat pemasangan: setelan "Bisu saat
     // jendela tidak fokus" bisa dinyalakan/dimatikan pemain tanpa reload.
-    window.addEventListener('blur', () => { if (this.config.muteOnBlur) this.suspend(); });
-    window.addEventListener('focus', () => { if (this.config.muteOnBlur) this.resume(); });
+    // Referensi disimpan supaya dispose() benar-benar bisa melepasnya
+    // (addEventListener dengan closure baru tiap kali mustahil dihapus).
+    this.boundOnBlur = () => { if (this.config.muteOnBlur) this.suspend(); };
+    this.boundOnFocus = () => { if (this.config.muteOnBlur) this.resume(); };
+    window.addEventListener('blur', this.boundOnBlur);
+    window.addEventListener('focus', this.boundOnFocus);
 
-    document.addEventListener('click', () => this.resume(), { once: true });
-    document.addEventListener('keydown', () => this.resume(), { once: true });
+    this.boundResume = () => this.resume();
+    document.addEventListener('click', this.boundResume, { once: true });
+    document.addEventListener('keydown', this.boundResume, { once: true });
     // iOS/Safari memakai kebijakan autoplay yang ketat: konteks hanya boleh
     // di-resume di dalam gesture pengguna. `touchstart` dipasang agar unlock
     // terjadi tepat saat jari menyentuh layar; `click` pertama (mis. tombol
     // menu) tetap dipakai sebagai jaring pengaman di desktop.
-    document.addEventListener('touchstart', () => this.resume(), { once: true, passive: true });
-    document.addEventListener('pointerdown', () => this.resume(), { once: true, passive: true });
+    document.addEventListener('touchstart', this.boundResume, { once: true, passive: true });
+    document.addEventListener('pointerdown', this.boundResume, { once: true, passive: true });
   }
 
   async loadAudio(key: string, url: string): Promise<void> {
@@ -720,14 +728,12 @@ export class AudioManager {
   suspend(): void {
     if (this.audioContext && this.audioContext.state !== 'suspended') {
       this.audioContext.suspend();
-      this.suspended = true;
     }
   }
 
   resume(): void {
     if (this.audioContext && this.audioContext.state === 'suspended') {
       this.audioContext.resume();
-      this.suspended = false;
     }
   }
 
@@ -749,6 +755,17 @@ export class AudioManager {
   }
 
   async dispose(): Promise<void> {
+    if (this.boundOnBlur) window.removeEventListener('blur', this.boundOnBlur);
+    if (this.boundOnFocus) window.removeEventListener('focus', this.boundOnFocus);
+    if (this.boundResume) {
+      document.removeEventListener('click', this.boundResume);
+      document.removeEventListener('keydown', this.boundResume);
+      document.removeEventListener('touchstart', this.boundResume);
+      document.removeEventListener('pointerdown', this.boundResume);
+      this.boundResume = null;
+    }
+    this.boundOnBlur = null;
+    this.boundOnFocus = null;
     this.stopAll();
     if (this.audioContext) {
       await this.audioContext.close();
