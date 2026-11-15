@@ -101,6 +101,17 @@ export class InputManager {
   setJoystickSize(size: number): void {
     this.joystickRadius = Math.max(40, Math.min(100, size / 2));
   }
+
+  /**
+   * Sisi joystick dari Pengaturan (kiri/kanan). Menentukan separuh layar yang
+   * menggerakkan karakter; separuh sisinya untuk menoleh. Tanpa ini pemilihan
+   * "kanan" di Pengaturan tersimpan tapi tak pernah berpengaruh.
+   */
+  setJoystickSide(side: 'left' | 'right'): void {
+    // Nilai asing dari impor settings yang tidak lewat sanitize jatuh ke kiri.
+    this.joystickSide = side === 'right' ? 'right' : 'left';
+  }
+  private joystickSide: 'left' | 'right' = 'left';
   private touchStartTime = 0;
   private touchMoved = 0;
   private tapQueued = false;
@@ -660,8 +671,12 @@ export class InputManager {
       const x = touch.clientX - rect.left;
       const y = touch.clientY - rect.top;
 
-      if (x < rect.width / 2) {
-        // Separuh kiri: joystick virtual untuk bergerak.
+      const onJoystickSide = this.joystickSide === 'left'
+        ? x < rect.width / 2
+        : x >= rect.width / 2;
+
+      if (onJoystickSide) {
+        // Separuh layar joystick: virtual stick untuk bergerak.
         if (this.joystickTouchId !== null) continue;
         this.joystickTouchId = touch.identifier;
         this.joystickActive = true;

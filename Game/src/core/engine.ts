@@ -163,6 +163,7 @@ export class Engine {
     this.input.setRunToggle(controls.runToggle);
     this.input.rebind(controls.keyBindings);
     this.input.setJoystickSize(controls.joystickSize);
+    this.input.setJoystickSide(controls.joystickPosition);
 
     this.camera.fov = gfx.fov;
     this.camera.updateProjectionMatrix();
