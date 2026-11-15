@@ -211,19 +211,45 @@ export function createKeyBindingInput(currentKey: string, onChange: (key: string
   container.className = `key-binding ${className}`;
 
   const btn = document.createElement('button');
-  btn.textContent = currentKey || 'None';
+  let shownKey = currentKey || 'None';
+  let listening = false;
+  let handler: ((e: KeyboardEvent) => void) | null = null;
+
+  // Tanpa stopListening, handler keydown document tidak pernah dilepas kalau
+  // pemain berpikir ulang: tekanan tombol berikutnya (di layar mana pun)
+  // diam-diam menjadi binding baru, dan klik kedua menumpuk handler kedua.
+  const stopListening = (): void => {
+    if (!listening) return;
+    listening = false;
+    if (handler) {
+      document.removeEventListener('keydown', handler);
+      handler = null;
+    }
+    btn.classList.remove('listening');
+    btn.textContent = shownKey;
+  };
+
+  btn.textContent = shownKey;
   btn.className = 'key-btn';
   btn.addEventListener('click', () => {
+    // Klik tombol saat sedang mendengarkan = batal: label lama dipulihkan
+    // tanpa memanggil onChange. (Escape tetap bisa diikat; tombol lain untuk
+    // membatalkan tidak ada karena Escape sendiri adalah kunci yang sah,
+    // bawaan untuk aksi pause.)
+    if (listening) {
+      stopListening();
+      return;
+    }
+    listening = true;
     btn.textContent = 'Press key...';
     btn.classList.add('listening');
 
-    const handler = (e: KeyboardEvent) => {
+    handler = (e: KeyboardEvent) => {
       e.preventDefault();
       const key = e.code;
-      btn.textContent = key;
-      btn.classList.remove('listening');
+      shownKey = key || 'None';
       onChange(key);
-      document.removeEventListener('keydown', handler);
+      stopListening();
     };
 
     document.addEventListener('keydown', handler);
