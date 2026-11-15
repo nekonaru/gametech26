@@ -64,6 +64,11 @@ export class Game {
   private particles: ParticleSystem | null = null;
   private flashlight: THREE.SpotLight | null = null;
 
+  /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
+  private readonly boundHandleGlobalKeys = (event: KeyboardEvent): void => this.handleGlobalKeys(event);
+  private offPointerLockChange: (() => void) | null = null;
+  private offSettings: (() => void) | null = null;
+
   private bootScreen: BootScreen | null = null;
   private languageScreen: LanguageSelectScreen | null = null;
   private mainMenu: MainMenuScreen | null = null;
@@ -488,15 +493,14 @@ export class Game {
 
     // Kamera desktop hanya bergerak saat pointer terkunci; beri petunjuk bila
     // kuncinya lepas (Esc, alt-tab, klik di luar canvas, dst).
-    inputManager.onPointerLockChange((locked) => {
+    this.offPointerLockChange = inputManager.onPointerLockChange((locked) => {
       this.pointerLocked = locked;
       this.refreshPointerHint();
     });
-
-    window.addEventListener('keydown', this.handleGlobalKeys.bind(this));
+    window.addEventListener('keydown', this.boundHandleGlobalKeys);
     // Setelan DOM (petunjuk tombol, skala teks, kontras, latar teks) ikut
     // merespons perubahan pemain di Pengaturan tanpa memuat ulang permainan.
-    settingsManager.subscribe(() => {
+    this.offSettings = settingsManager.subscribe(() => {
       this.refreshKeyHints();
       this.applyDomSettings();
     });
@@ -2738,6 +2742,11 @@ export class Game {
   }
 
   async dispose(): Promise<void> {
+    window.removeEventListener('keydown', this.boundHandleGlobalKeys);
+    this.offPointerLockChange?.();
+    this.offPointerLockChange = null;
+    this.offSettings?.();
+    this.offSettings = null;
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
