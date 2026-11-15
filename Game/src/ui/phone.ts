@@ -32,6 +32,8 @@ export class PhoneScreen implements UIElement {
   private signal = 1;
   private activeMessage: PhoneMessage | null = null;
   private typingInterval: number | null = null;
+  private timeUpdateInterval: number | null = null;
+  private abortController: AbortController | null = null;
   private offFlashlightState?: () => void;
 
   constructor(onClose: () => void) {
@@ -155,36 +157,50 @@ export class PhoneScreen implements UIElement {
   }
 
   private startTimeUpdate(): void {
+    // Idempoten: tanpa guard, tiap buka layar ponsel menambah interval jam
+    // baru yang tak pernah berhenti (stopTimeUpdate dulu kosong) sehingga
+    // puluhan interval menulis DOM tiap detik setelah beberapa kali buka-tutup.
+    if (this.timeUpdateInterval !== null) return;
     this.updateTime();
-    setInterval(() => this.updateTime(), 1000);
+    this.timeUpdateInterval = window.setInterval(() => this.updateTime(), 1000);
   }
 
   private stopTimeUpdate(): void {
+    if (this.timeUpdateInterval !== null) {
+      clearInterval(this.timeUpdateInterval);
+      this.timeUpdateInterval = null;
+    }
   }
 
   private setupListeners(): void {
+    // Satu AbortController untuk semua listener statis: removeListeners cukup
+    // abort, jadi tombol senter/radio/tab tidak pernah menumpuk listener
+    // (listener dobel membuat toggle senter membalik dua kali = terasa mati).
+    if (this.abortController) this.abortController.abort();
+    const signal = (this.abortController = new AbortController()).signal;
+
     const closeBtn = this.element.querySelector('#phone-close');
-    closeBtn?.addEventListener('click', this.onClose);
+    closeBtn?.addEventListener('click', this.onClose, { signal });
 
     this.element.querySelectorAll<HTMLElement>('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const tab = (e.currentTarget as HTMLButtonElement).dataset.tab as PhoneScreen['currentTab'];
         this.showTab(tab);
-      });
+      }, { signal });
     });
 
     const flashlightBtn = this.element.querySelector('#flashlight-toggle');
-    flashlightBtn?.addEventListener('click', () => this.toggleFlashlight());
+    flashlightBtn?.addEventListener('click', () => this.toggleFlashlight(), { signal });
 
     this.element.querySelectorAll<HTMLElement>('.radio-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const freq = (e.currentTarget as HTMLButtonElement).dataset.freq!;
         this.tuneRadio(freq);
-      });
+      }, { signal });
     });
 
     const radioPower = this.element.querySelector('#radio-power');
-    radioPower?.addEventListener('click', () => this.turnOffRadio());
+    radioPower?.addEventListener('click', () => this.turnOffRadio(), { signal });
 
     // Sinkron dari manajer: senter bisa ditolak (barangnya belum ada di
     // inventaris) atau baterai berkurang selama layar ponsel terbuka -
@@ -199,15 +215,11 @@ export class PhoneScreen implements UIElement {
   }
 
   private removeListeners(): void {
-    const closeBtn = this.element.querySelector('#phone-close');
-    closeBtn?.removeEventListener('click', this.onClose);
+    this.abortController?.abort();
+    this.abortController = null;
 
     this.offFlashlightState?.();
     this.offFlashlightState = undefined;
-
-    this.element.querySelectorAll<HTMLElement>('.tab-btn').forEach(btn => {
-      btn.replaceWith(btn.cloneNode(true));
-    });
   }
 
   private showTab(tab: PhoneScreen['currentTab']): void {
