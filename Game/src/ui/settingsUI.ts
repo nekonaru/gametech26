@@ -332,13 +332,34 @@ export class SettingsScreen implements UIElement {
     groups[6].querySelector('.setting-control')!.appendChild(keyHintsCheck);
 
     const keyContainer = groups[7].querySelector('.setting-control')!;
+    // Tombol per aksi disimpan supaya saat tabrakan kunci (dua aksi sama)
+    // baris lain ikut diperbarui, bukan menampilkan kunci yang sudah berpindah.
+    const keyButtons = new Map<string, HTMLButtonElement>();
     Object.entries(controls.keyBindings).forEach(([action, key]) => {
       const row = document.createElement('div');
       row.className = 'key-binding-row';
       row.innerHTML = `<span class="key-label" data-i18n="controls.${action}">${action}</span>`;
       const input = createKeyBindingInput(key, (newKey) => {
-        settingsManager.update('controls', { keyBindings: { ...controls.keyBindings, [action]: newKey } });
+        // Baca bindings terkini (bukan salinan saat render): kunci baru yang
+        // sudah dipakai aksi lain ditukar dengan kunci lama aksi ini, jadi
+        // tidak ada aksi yang kehilangan tombolnya diam-diam (invertBindings
+        // last-write-wins mematikan aksi lama tanpa peringatan).
+        const next = { ...settingsManager.get('controls').keyBindings };
+        const oldKey = next[action];
+        if (newKey !== oldKey) {
+          for (const other of Object.keys(next)) {
+            if (other !== action && next[other] === newKey) {
+              next[other] = oldKey;
+              const otherBtn = keyButtons.get(other);
+              if (otherBtn) otherBtn.textContent = oldKey || 'None';
+            }
+          }
+        }
+        next[action] = newKey;
+        settingsManager.update('controls', { keyBindings: next });
       });
+      const btn = input.querySelector('button');
+      if (btn) keyButtons.set(action, btn);
       row.appendChild(input);
       keyContainer.appendChild(row);
     });
