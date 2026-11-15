@@ -148,7 +148,12 @@ export class TensionDirector {
   }
 
   setTension(value: number): void {
-    this.tension = Math.max(0, Math.min(1, value));
+    const next = Math.max(0, Math.min(1, value));
+    // Emit hanya saat benar berubah: update() dipanggil tiap frame, tanpa
+    // penjaga ini objek event dibuat tiap frame untuk pelanggan yang sama
+    // sekali tidak berubah.
+    if (next === this.tension) return;
+    this.tension = next;
     eventBus.emit(GameEvents.TENSION_CHANGED, { tension: this.tension });
   }
 
@@ -167,8 +172,11 @@ export class TensionDirector {
   update(deltaTime: number): void {
     if (!this.enabled) return;
 
-    this.tension = Math.max(this.baseTension, this.tension - deltaTime * 0.02);
-    eventBus.emit(GameEvents.TENSION_CHANGED, { tension: this.tension });
+    const decayed = Math.max(this.baseTension, this.tension - deltaTime * 0.02);
+    if (decayed !== this.tension) {
+      this.tension = decayed;
+      eventBus.emit(GameEvents.TENSION_CHANGED, { tension: this.tension });
+    }
 
     // Mode Naratif: pemain datang demi cerita, bukan mengejar-ngejar kejutan.
     // Peristiwa tegangan acak (bayangan, bisikan, jumpscare) dilewati; meter
