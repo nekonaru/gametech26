@@ -686,9 +686,30 @@ export class AudioManager {
     const localGain = this.audioContext.createGain();
     localGain.gain.value = options.volume ?? 1;
     localGain.connect(gainNode);
-    source.connect(localGain);
 
-    const sourceId = `proc_${type}_${Date.now()}`;
+    // Sama seperti play(): petunjuk arah (napas, bisikan, langkah hantu di
+    // samping kepala) harus lewat panner, kalau tidak selalu terdengar di
+    // tengah meski opsi spatial diminta pemanggil.
+    if (options.spatial && this.audioContext.listener) {
+      const panner = this.audioContext.createPanner();
+      panner.panningModel = 'HRTF';
+      panner.distanceModel = 'exponential';
+      panner.refDistance = 1;
+      panner.maxDistance = 50;
+      panner.rolloffFactor = 1;
+      if (options.position) {
+        panner.positionX.value = options.position[0];
+        panner.positionY.value = options.position[1];
+        panner.positionZ.value = options.position[2];
+      }
+      source.connect(panner).connect(localGain);
+    } else {
+      source.connect(localGain);
+    }
+
+    // Suffix acak: tanpa ini dua main tipe sama dalam milidetik yang sama
+    // menimpa entri sources, dan loop prosedural pertama tak bisa dihentikan.
+    const sourceId = `proc_${type}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     this.sources.set(sourceId, { source, gain: localGain, category });
     source.onended = () => this.sources.delete(sourceId);
     if (options.loop) source.loop = true;
