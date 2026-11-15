@@ -232,6 +232,9 @@ export class SaveManager {
   }
 
   startPlaytimeTracking(): void {
+    // Idempoten: panggilan kedua tanpa stop akan menimpa saveInterval lama
+    // (interval bocor) dan menghitung waktu dua kali lipat.
+    if (this.saveInterval !== null) return;
     this.playtimeStart = Date.now();
     this.saveInterval = window.setInterval(() => {
       this.playtimeAccumulated += Date.now() - this.playtimeStart;
@@ -243,8 +246,11 @@ export class SaveManager {
     if (this.saveInterval) {
       clearInterval(this.saveInterval);
       this.saveInterval = null;
+      this.playtimeAccumulated += Date.now() - this.playtimeStart;
     }
-    this.playtimeAccumulated += Date.now() - this.playtimeStart;
+    // Reset start: tanpa ini sesi berikutnya (lanjut dari menu) masih
+    // menghitung rentang sesi lama di getPlaytime().
+    this.playtimeStart = Date.now();
     return Math.floor(this.playtimeAccumulated / 1000);
   }
 

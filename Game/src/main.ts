@@ -22,8 +22,14 @@ async function main(): Promise<void> {
     updateLoading(100, 'Siap!');
     loadingScreen.classList.add('hidden');
 
-    window.addEventListener('beforeunload', async () => {
-      await game.dispose();
+    // Browser tidak menunggu handler beforeunload async: yang penting jalan
+    // sinkron di invocation pertama dispose() (cancelAnimationFrame +
+    // engine.stop) sudah cukup - pembersihan asinkron (tutup AudioContext,
+    // renderer.dispose) dibiarkan jalan tanpa di-await, dan browser melepas
+    // semua resource tab saat menutup. Simpan playtime ditangani listener
+    // beforeunload engine (sinkron).
+    window.addEventListener('beforeunload', () => {
+      void game.dispose();
     });
 
     console.log('Asap yang Tak Padam - Game initialized successfully');
