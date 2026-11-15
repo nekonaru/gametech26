@@ -173,7 +173,7 @@ export class InputManager {
     // Checkbox "lari sekali tekan" di layar Pengaturan tersimpan pada
     // controls.runToggle; tanpa menyambungkannya ke sini pilihannya hanya
     // hiasan dan Shift selalu harus ditahan untuk lari.
-    this.runToggle = runToggle || keyBindings.run === 'toggle';
+    this.runToggle = runToggle;
 
     this.listen(canvas, 'mousedown', this.onMouseDown);
     // mousemove/mouseup di window: kunci pointer mengirim event ke elemen yang

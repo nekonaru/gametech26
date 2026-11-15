@@ -11,7 +11,6 @@ export interface GraphicsSettings {
   fov: number;
   brightness: number;
   maxFps: 30 | 60 | 0;
-  vsync: boolean;
   /**
    * Versi gaya render yang tersimpan di localStorage. Dinaikkan bila tampilan
    * berubah mendasar supaya setelan lama (mis. resolusi 360p) bisa dimigrasi
@@ -98,7 +97,6 @@ export const DEFAULT_SETTINGS: GameSettings = {
     fov: 75,
     brightness: 1.0,
     maxFps: 60,
-    vsync: true,
     styleVersion: GRAPHICS_STYLE_VERSION
   },
   audio: {

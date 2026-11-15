@@ -79,8 +79,6 @@ export class SaveManager {
   private db: IDBDatabase | null = null;
   /** true bila IndexedDB gagal dibuka: semua operasi pindah ke localStorage. */
   private fallback = false;
-  private currentSlot: string | null = null;
-  private autoSaveEnabled = true;
   private playtimeStart = Date.now();
   private playtimeAccumulated = 0;
   private saveInterval: number | null = null;
@@ -124,20 +122,14 @@ export class SaveManager {
       checksum: this.generateChecksum(data)
     };
     await this.put(slotId, saveData);
-    this.currentSlot = slotId;
   }
 
   async autoSave(data: Omit<SaveData, 'saveVersion' | 'createdAt' | 'checksum'>): Promise<void> {
-    if (!this.autoSaveEnabled) return;
     await this.createSave(data, 'autosave');
   }
 
   async saveToSlot(slotId: string, data: Omit<SaveData, 'saveVersion' | 'createdAt' | 'checksum'>): Promise<void> {
     await this.createSave(data, slotId);
-  }
-
-  async loadSlot(slotId: string): Promise<SaveData | null> {
-    return this.get(slotId);
   }
 
   async getAllSaves(): Promise<SaveSlot[]> {
@@ -220,17 +212,6 @@ export class SaveManager {
     return JSON.stringify(save, null, 2);
   }
 
-  async importSave(json: string, slotId: string): Promise<boolean> {
-    try {
-      const save = JSON.parse(json) as SaveData;
-      if (!this.validateSave(save)) return false;
-      await this.put(slotId, save);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   startPlaytimeTracking(): void {
     // Idempoten: panggilan kedua tanpa stop akan menimpa saveInterval lama
     // (interval bocor) dan menghitung waktu dua kali lipat.
@@ -249,21 +230,9 @@ export class SaveManager {
       this.playtimeAccumulated += Date.now() - this.playtimeStart;
     }
     // Reset start: tanpa ini sesi berikutnya (lanjut dari menu) masih
-    // menghitung rentang sesi lama di getPlaytime().
+    // menghitung rentang sesi lama di akumulasi berikutnya.
     this.playtimeStart = Date.now();
     return Math.floor(this.playtimeAccumulated / 1000);
-  }
-
-  getPlaytime(): number {
-    return Math.floor((this.playtimeAccumulated + (Date.now() - this.playtimeStart)) / 1000);
-  }
-
-  setAutoSave(enabled: boolean): void {
-    this.autoSaveEnabled = enabled;
-  }
-
-  getCurrentSlot(): string | null {
-    return this.currentSlot;
   }
 
   private async put(id: string, data: SaveData): Promise<void> {
