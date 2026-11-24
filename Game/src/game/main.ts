@@ -19,6 +19,7 @@ import { journalManager } from './journal.js';
 import { phoneManager } from './phone.js';
 import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
+import { ChaseDirector } from './chase.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -62,6 +63,7 @@ export class Game {
   private fpsController: FPSController | null = null;
   private lighting: LightingManager | null = null;
   private particles: ParticleSystem | null = null;
+  private chaseDirector: ChaseDirector | null = null;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -162,6 +164,7 @@ export class Game {
 
     this.lighting = new LightingManager(this.engine.scene, settingsManager);
     this.particles = new ParticleSystem(this.engine.scene, settingsManager);
+    this.chaseDirector = new ChaseDirector();
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -345,6 +348,11 @@ export class Game {
       this.showToast(t('inventory.title'), t('inventory.noSenter'));
     });
     eventBus.on<any>('ending:reached', (data) => this.showEnding(data.ending));
+    eventBus.on<{ pos?: [number, number, number]; speed?: number }>('chase:start', (data) => {
+      if (!this.builtScene || !this.chaseDirector) return;
+      this.chaseDirector.start(this.builtScene.group, data ?? {});
+    });
+    eventBus.on('chase:stop', () => this.chaseDirector?.stop());
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
         this.lighting?.applyPreset(data.preset, data.transition || 0);
@@ -958,6 +966,7 @@ export class Game {
     // tiap ganti scene oleh SceneFactory.build.
     this.engine?.camera?.getWorldPosition(_camWorldPos);
     this.engine?.camera?.getWorldDirection(_camWorldDir);
+    if (!busy) this.chaseDirector?.update(deltaTime, _camWorldPos);
     // Pendengar mengikuti kepala pemain: tanpa ini semua suara spasial
     // (bisikan, langkah di belakang, napas) dihitung relatif titik dunia (0,0,0)
     // dan terdengar arahnya salah dari layar mana pun pemain berdiri.
@@ -1543,6 +1552,9 @@ export class Game {
     const sceneId = gameState.get('location')?.sceneId || 'rumah_dimas';
 
     if (this.builtScene) {
+      // Bayang kejaran adalah anak builtScene.group; hentikan dulu supaya
+      // geometrinya tidak ikut dibuang pembongkaran scene berikutnya.
+      this.chaseDirector?.stop();
       this.engine.scene.remove(this.builtScene.group);
       this.disposeObject(this.builtScene.group);
       this.builtScene = null;
@@ -2786,6 +2798,7 @@ export class Game {
     this.fpsController?.dispose();
     this.lighting?.dispose();
     this.particles?.dispose();
+    this.chaseDirector?.dispose();
   }
 }
 

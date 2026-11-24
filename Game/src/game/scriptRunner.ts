@@ -621,6 +621,15 @@ export class ScriptRunner {
       case 'echo':
         this.handleEcho(op);
         break;
+      case 'startChase':
+        // Bayang pengikut dijalankan Game lewat eventBus; naskah tidak
+        // memegang referensi objek scene. Mode Naratif/Horor Lembut otomatis
+        // melewati spawning di sisi Game.
+        eventBus.emit('chase:start', { pos: op.pos, speed: op.speed });
+        break;
+      case 'stopChase':
+        eventBus.emit('chase:stop', {});
+        break;
       case 'ending':
         this.triggerEnding(op.id);
         break;

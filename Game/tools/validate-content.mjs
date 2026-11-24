@@ -17,7 +17,8 @@ const KNOWN_OPS = new Set([
   'cameraAnim',
   'checkpoint', 'startPuzzle', 'echo', 'ending', 'setPOV', 'setTime', 'teleport', 'setEcho',
   'addEmpati', 'addNurani', 'modifyPercayaDimas', 'modifyPercayaRudi', 'setKonfrontasiDini',
-  'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan'
+  'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan',
+  'startChase', 'stopChase'
 ]);
 
 const chaptersDir = path.join(root, 'public', 'data', 'chapters');
