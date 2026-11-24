@@ -121,8 +121,16 @@ export const LIGHT_PRESETS: Record<string, LightPreset> = {
   }
 };
 
+// Scratch warna/vektor: lerpHex dipanggil belasan kali tiap frame transisi,
+// celestialDir dua kali. Tanpa scratch ini ratusan objek dibuang per detik.
+const _lerpA = new THREE.Color();
+const _lerpB = new THREE.Color();
+const _sunDirA = new THREE.Vector3();
+const _sunDirB = new THREE.Vector3();
+const _defaultSunDir = new THREE.Vector3(0.4, 0.5, -0.75);
+
 const lerpHex = (a: number, b: number, t: number): number =>
-  new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
+  _lerpA.set(a).lerp(_lerpB.set(b), t).getHex();
 
 /**
  * Kubah langit bergradasi milik adegan.
@@ -373,8 +381,8 @@ export class LightingManager {
     // Benda langit: matahari/bulan ikut berpindah halus saat preset berganti.
     const cel = preset.sky?.celestial;
     const fromCel = from?.sky?.celestial;
-    const dirTo = this.celestialDir(preset, cel?.dir);
-    const dirFrom = from ? this.celestialDir(from, fromCel?.dir) : dirTo;
+    const dirTo = this.celestialDir(preset, cel?.dir, _sunDirA);
+    const dirFrom = from ? this.celestialDir(from, fromCel?.dir, _sunDirB) : dirTo;
     (u.uSunDir.value as THREE.Vector3).lerpVectors(dirFrom, dirTo, t).normalize();
     (u.uSunColor.value as THREE.Color).setHex(
       lerpHex(fromCel?.color ?? cel?.color ?? 0xffffff, cel?.color ?? 0xffffff, t)
@@ -395,10 +403,10 @@ export class LightingManager {
    * matahari/bulan preset itu sendiri supaya piringan langit selalu searah
    * dengan penerangan yang menerangi tanah.
    */
-  private celestialDir(preset: LightPreset, override?: THREE.Vector3): THREE.Vector3 {
-    if (override) return override.clone().normalize();
-    const pos = preset.directional?.position ?? new THREE.Vector3(0.4, 0.5, -0.75);
-    return pos.clone().normalize();
+  private celestialDir(preset: LightPreset, override: THREE.Vector3 | undefined, out: THREE.Vector3): THREE.Vector3 {
+    if (override) return out.copy(override).normalize();
+    out.copy(preset.directional?.position ?? _defaultSunDir).normalize();
+    return out;
   }
 
   /** Transisi dijalankan di sini (dipanggil tiap frame saat game bermain). */

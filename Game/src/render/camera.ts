@@ -3,6 +3,11 @@ import { InputManager } from '../core/input.js';
 import { SettingsManager } from '../core/settings.js';
 
 const _closestPoint = new THREE.Vector3();
+// Scratch level modul untuk gerak tiap frame: membuat Quaternion/Euler/Vector
+// baru tiap frame hanya menambah sampah yang dikumpulkan GC saat bermain.
+const _yawQuaternion = new THREE.Quaternion();
+const _yawEuler = new THREE.Euler();
+const _moveDelta = new THREE.Vector3();
 
 class Capsule {
   start: THREE.Vector3;
@@ -528,12 +533,17 @@ export class FPSController {
       this.direction.normalize().multiplyScalar(Math.min(1, magnitude));
     }
 
-    const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, this.yawObject.rotation.y, 0));
-    this.direction.applyQuaternion(quaternion);
+    // Euler/Quaternion dipakai ulang: hanya sudut yaw yang dibutuhkan di sini.
+    _yawEuler.set(0, this.yawObject.rotation.y, 0);
+    _yawQuaternion.setFromEuler(_yawEuler);
+    this.direction.applyQuaternion(_yawQuaternion);
 
-    const targetVelocity = this.direction.clone().multiplyScalar(speed);
-    this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, targetVelocity.x, 10 * deltaTime);
-    this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetVelocity.z, 10 * deltaTime);
+    // Tidak perlu clone direction: komponen hasil rotasi sudah merupakan
+    // kecepatan target yang dicari.
+    const targetX = this.direction.x * speed;
+    const targetZ = this.direction.z * speed;
+    this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, targetX, 10 * deltaTime);
+    this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetZ, 10 * deltaTime);
 
     this.isRunning = this.input.isRunning();
     const crouchPressed = this.input.isJustPressed('crouch');
@@ -559,7 +569,7 @@ export class FPSController {
   }
 
   private resolveCollisions(deltaTime: number): void {
-    const delta = this.velocity.clone().multiplyScalar(deltaTime);
+    const delta = _moveDelta.copy(this.velocity).multiplyScalar(deltaTime);
 
     // Pecah perpindahan menjadi langkah kecil agar tidak menembus
     // dinding tipis saat kecepatan tinggi (jatuh/lari).
