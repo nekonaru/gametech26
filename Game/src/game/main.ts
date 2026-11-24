@@ -100,6 +100,8 @@ export class Game {
   private animationId: number | null = null;
   private lastTime = 0;
   private overlayActive = false;
+  private screenVisibilityCache = false;
+  private lastScreenVisibilityCheck = 0;
   private nextChapterId: string | null = null;
   private pointerLocked = false;
   /**
@@ -981,8 +983,15 @@ export class Game {
   }
 
   private isAnyScreenVisible(): boolean {
-    return Array.from(document.querySelectorAll<HTMLElement>('.screen'))
+    // querySelectorAll + getClientRects memaksa layout tiap frame. Keadaan
+    // layar berubah karena aksi pemain, bukan tiap frame, jadi cukup diukur
+    // ulang tiap 100 ms. Watchdog gerbang kontrol memakai nilai yang sama.
+    const now = performance.now();
+    if (now - this.lastScreenVisibilityCheck < 100) return this.screenVisibilityCache;
+    this.lastScreenVisibilityCheck = now;
+    this.screenVisibilityCache = Array.from(document.querySelectorAll<HTMLElement>('.screen'))
       .some(el => el.getClientRects().length > 0);
+    return this.screenVisibilityCache;
   }
 
   /**
