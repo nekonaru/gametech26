@@ -178,7 +178,9 @@ export function addFireFlicker(light: THREE.PointLight, baseIntensity: number): 
 /**
  * Jalankan semua tick animasi scene tiap frame dari loop utama. */
 export function updateDynamics(t: number): void {
-  for (const fn of dynamicTicks) fn(t);
+  // Mundur: remove() membuang entri tick itu sendiri. Iterasi maju dengan
+  // for..of melewati satu tick berikutnya pada frame saat entri disusutkan.
+  for (let i = dynamicTicks.length - 1; i >= 0; i--) dynamicTicks[i](t);
 }
 
 /**
