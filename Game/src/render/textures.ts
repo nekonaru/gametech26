@@ -385,6 +385,9 @@ export function getTexture(pattern: Pattern): THREE.Texture {
   painters[pattern](ctx);
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -426,6 +429,9 @@ export function getSoftDotTexture(): THREE.Texture {
   ctx.fillRect(0, 0, size, size);
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   // Tidak memakai RepeatWrapping: tepi partikel harus benar-benar transparan,
   // dan magnifikasi halus supaya tidak terlihat langkah piksel.
   texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -468,6 +474,9 @@ export function getFlameGradientTexture(): THREE.Texture {
   ctx.fillRect(0, 0, size, size);
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.needsUpdate = true;
@@ -527,6 +536,9 @@ export function getDiamondTexture(): THREE.Texture {
   ctx.fill();
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.needsUpdate = true;
 
@@ -601,6 +613,9 @@ export function getGoalDiamondTexture(): THREE.Texture {
   ctx.fill();
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.needsUpdate = true;
 
@@ -689,6 +704,9 @@ export function getWallDiamondTexture(goal = false): THREE.Texture {
   ctx.fill();
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.needsUpdate = true;
 
@@ -736,6 +754,9 @@ export function getBeamTexture(): THREE.Texture {
   ctx.globalCompositeOperation = 'source-over';
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Tekstur bersama level modul: penanda `userData.cached` dipakai pembongkaran
+  // scene (main.disposeObject) supaya tekstur milik bersama tidak ikut dibuang.
+  texture.userData.cached = true;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.needsUpdate = true;
 

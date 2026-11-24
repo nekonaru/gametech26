@@ -1918,6 +1918,10 @@ export class Game {
   }
 
   private unregisterPropMesh(mesh: THREE.Object3D): void {
+    // Buang resource dulu: setelah removeFromParent mesh tidak lagi bagian
+    // dari pohon scene, jadi bongkar scene berikutnya tidak akan menemukannya
+    // dan geometri/tekstur labelnya bocor selama halaman terbuka.
+    this.disposeObject(mesh);
     mesh.removeFromParent();
     this.propMeshes = this.propMeshes.filter(m => m !== mesh);
   }
@@ -2677,13 +2681,29 @@ export class Game {
     // tidak perlu. Tanda `userData.cached` dipasang oleh helper cache-nya.
     root.traverse(obj => {
       const mesh = obj as THREE.Mesh;
-      if (mesh.geometry && !mesh.geometry.userData.cached) mesh.geometry.dispose();
+      // Sprite memakai SATU geometri bersama level modul di three (Sprite.js):
+      // membuangnya menghapus buffer GPU milik seluruh sprite lain dan memaksa
+      // upload ulang saat scene berikutnya dibangun.
+      if (mesh.geometry && obj.type !== 'Sprite' && !mesh.geometry.userData.cached) {
+        mesh.geometry.dispose();
+      }
       const material: any = mesh.material;
-      const skip = (m: any) => m && !m.userData?.cached && typeof m.dispose === 'function' && m.dispose();
+      const disposeMat = (m: any): void => {
+        if (!m || typeof m.dispose !== 'function' || m.userData?.cached) return;
+        // Material tidak membuang teksturnya sendiri. Label penanda memakai
+        // CanvasTexture baru tiap bab, jadi kalau tidak ikut dibuang di sini
+        // memorinya tumbuh tiap ganti scene. Pemilik bersama (textures.ts)
+        // ditandai `userData.cached` dan dilewati.
+        for (const key of ['map', 'alphaMap', 'emissiveMap', 'normalMap']) {
+          const tex = m[key];
+          if (tex && !tex.userData?.cached && typeof tex.dispose === 'function') tex.dispose();
+        }
+        m.dispose();
+      };
       if (Array.isArray(material)) {
-        material.forEach(skip);
-      } else if (material && typeof material.dispose === 'function') {
-        skip(material);
+        material.forEach(disposeMat);
+      } else {
+        disposeMat(material);
       }
     });
   }
