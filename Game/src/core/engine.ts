@@ -209,7 +209,7 @@ export class Engine {
       this.lastTime = currentTime;
 
       this.update(deltaTime);
-      this.render();
+      this.render(deltaTime);
     } catch (error) {
       this.reportFrameError(error);
     }
@@ -235,8 +235,8 @@ export class Engine {
     this.eventBus.emit('engine:update', { deltaTime });
   }
 
-  render(): void {
-    this.postProcess.render();
+  render(deltaTime: number): void {
+    this.postProcess.render(deltaTime);
   }
 
   async dispose(): Promise<void> {
