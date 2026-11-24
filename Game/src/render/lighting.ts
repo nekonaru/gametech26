@@ -220,6 +220,7 @@ export class LightingManager {
    */
   private flickerState: { remaining: number; duration: number; strength: number } | null = null;
   private applied = 1;
+  private offSettings: (() => void) | null = null;
 
   constructor(scene: THREE.Scene, settings: SettingsManager) {
     this.scene = scene;
@@ -229,7 +230,7 @@ export class LightingManager {
     this.createSky();
     // "Jarak Kabut" berubah di layar Pengaturan: tulis ulang nilai mentah
     // preset supaya potongan pengaturan tidak pernah menumpuk pada nilai lama.
-    settings.subscribe(() => this.refreshFog());
+    this.offSettings = settings.subscribe(() => this.refreshFog());
   }
 
   private createSky(): void {
@@ -617,6 +618,8 @@ export class LightingManager {
   }
 
   dispose(): void {
+    this.offSettings?.();
+    this.offSettings = null;
     this.clearLights();
     if (this.skyMesh) {
       this.scene.remove(this.skyMesh);

@@ -38,6 +38,7 @@ export class FPSController {
   private velocity = new THREE.Vector3();
   private direction = new THREE.Vector3();
   private euler = new THREE.Euler(0, 0, 0, 'YXZ');
+  private offSettings: (() => void) | null = null;
   private pitchObject = new THREE.Object3D();
   private yawObject = new THREE.Object3D();
 
@@ -169,7 +170,7 @@ export class FPSController {
     );
 
     this.updateSettings();
-    this.settings.subscribe(() => this.updateSettings());
+    this.offSettings = this.settings.subscribe(() => this.updateSettings());
   }
 
   private updateSettings(): void {
@@ -870,5 +871,7 @@ export class FPSController {
   }
 
   dispose(): void {
+    this.offSettings?.();
+    this.offSettings = null;
   }
 }

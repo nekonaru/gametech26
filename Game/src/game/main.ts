@@ -2781,6 +2781,11 @@ export class Game {
     }
     this.engine?.stop();
     await this.engine?.dispose();
+    // Sub-sistem render punya resource milik sendiri (lampu, partikel,
+    // subscription setelan). Tanpa ini dispose() tidak benar-benar selesai.
+    this.fpsController?.dispose();
+    this.lighting?.dispose();
+    this.particles?.dispose();
   }
 }
 
