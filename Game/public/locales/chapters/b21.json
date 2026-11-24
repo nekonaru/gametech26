@@ -1,0 +1,42 @@
+{
+  "id": {
+    "b21": {
+      "tempat": {
+        "lorong": "Lorong Bayang"
+      },
+      "obj": {
+        "lari": "Menjauh dari bayang dan cari pintu keluar"
+      },
+      "lilin": {
+        "1": "Lilin di tunggak ini masih berasap. Aku tak ingat menyalakannya.",
+        "2": "Aku meniupnya. Bayang di belakang berhenti sejenak, lalu tetap mendekat."
+      },
+      "pintu": {
+        "1": "Pintu ini tidak ada di peta desa. Engselnya berkarat, tapi terbuka dengan mudah.",
+        "2": "Di seberang pintu ada jalan yang sama, hanya saja tanpa bayang. Atau itu cuma harapanku.",
+        "cA": "Masuk dan biarkan lorong ini menghilang",
+        "cB": "Tutup pintu dan kembali ke desa"
+      }
+    }
+  },
+  "en": {
+    "b21": {
+      "tempat": {
+        "lorong": "Shadow Lane"
+      },
+      "obj": {
+        "lari": "Get away from the shadow and find the exit"
+      },
+      "lilin": {
+        "1": "The candle on this stump is still smoking. I do not remember lighting it.",
+        "2": "I blow it out. The shadow behind pauses for a moment, then keeps coming."
+      },
+      "pintu": {
+        "1": "This door is not on the village map. Its hinges are rusted, yet it opens easily.",
+        "2": "Beyond it lies the same road, only without the shadow. Or that is just what I want to see.",
+        "cA": "Step through and let the lane vanish",
+        "cB": "Close the door and return to the village"
+      }
+    }
+  }
+}

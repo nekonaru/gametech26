@@ -1910,6 +1910,9 @@ export const builders: Record<string, (kit: Kit) => void> = {
   gubuk_briefing: buildGubuk,
   hutan_kecil: (kit) => buildForest(kit, 26),
   jalan_desa: buildJalan,
+  // Lorong bayang memakai rupa jalan desa yang sama, tapi spawn, pencahayaan,
+  // dan penanda milik bab b21 membuatnya terbaca sebagai tempat tersendiri.
+  lorong_bayang: buildJalan,
   ladang_joy: buildLadang,
   ladang_joy_pondok: buildLadang,
   balai_desa: buildBalai,
