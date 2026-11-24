@@ -524,6 +524,13 @@ export class Game {
     this.offSettings = settingsManager.subscribe(() => {
       this.refreshKeyHints();
       this.applyDomSettings();
+      // Aksesibilitas bisa dinyalakan di tengah kejaran: bayang harus segera
+      // hilang, bukan menunggu bab berikutnya atau op stopChase dari naskah.
+      const access = settingsManager.get('accessibility');
+      if (access.narrativeMode || access.softHorror) {
+        this.pendingChase = null;
+        this.chaseDirector?.stop();
+      }
     });
     this.applyDomSettings();
   }
