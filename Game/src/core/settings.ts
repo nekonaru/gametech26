@@ -11,7 +11,6 @@ export interface GraphicsSettings {
   fov: number;
   brightness: number;
   maxFps: 30 | 60 | 0;
-  vsync: boolean;
   /**
    * Versi gaya render yang tersimpan di localStorage. Dinaikkan bila tampilan
    * berubah mendasar supaya setelan lama (mis. resolusi 360p) bisa dimigrasi
@@ -98,7 +97,6 @@ export const DEFAULT_SETTINGS: GameSettings = {
     fov: 75,
     brightness: 1.0,
     maxFps: 60,
-    vsync: true,
     styleVersion: GRAPHICS_STYLE_VERSION
   },
   audio: {
@@ -224,7 +222,12 @@ export class SettingsManager {
   importSettings(json: string): boolean {
     try {
       const imported = JSON.parse(json);
-      this.settings = this.mergeDeep(DEFAULT_SETTINGS, imported);
+      const merged = this.mergeDeep(DEFAULT_SETTINGS, imported);
+      // Wajib sanitize seperti load(): data impor bisa valid-JSON tapi
+      // salah bentuk (graphics berupa string, language bukan id/en) dan
+      // langsung meracuni kamera/audio saat notify dipanggil.
+      this.sanitize(merged);
+      this.settings = merged;
       this.save();
       this.notify();
       return true;
@@ -236,10 +239,22 @@ export class SettingsManager {
   private mergeDeep(target: any, source: any): any {
     const result = { ...target };
     for (const key of Object.keys(source)) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = this.mergeDeep(target[key] || {}, source[key]);
-      } else {
-        result[key] = source[key];
+      const src = source[key];
+      const tgt = target[key];
+      const srcIsObject = !!src && typeof src === 'object' && !Array.isArray(src);
+      const tgtIsObject = !!tgt && typeof tgt === 'object' && !Array.isArray(tgt);
+      if (srcIsObject) {
+        if (tgtIsObject) {
+          result[key] = this.mergeDeep(tgt, src);
+        } else if (tgt === undefined) {
+          result[key] = src;
+        }
+        // Kategori default object datang sebagai tipe lain: biarkan nilai
+        // default; sanitize jatuhkan lagi bila perlu.
+      } else if (tgt === undefined || typeof src === typeof tgt) {
+        // Leaf hanya diterima bila tipenya sama dengan default: "fov": "bad"
+        // tidak boleh menggantikan angka (projection matrix jadi NaN).
+        result[key] = src;
       }
     }
     return result;

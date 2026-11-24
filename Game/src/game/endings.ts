@@ -184,6 +184,19 @@ export class EndingManager {
       cukongInvestigated: false,
       epilog: 'Pagi itu Dimas pulang dengan pita merah di pergelangan. Warga mulai bercerita: ada yang berjaga di ladang Joy setiap malam.'
     });
+
+    // Cadangan saat endings.json gagal dimuat. Bab b21 memanggil ending ini
+    // lewat id, jadi harus tetap ada walaupun pengambilan data lokal gagal.
+    this.endings.set('ending_11', {
+      id: 'ending_11',
+      name: t('ending.ending11'),
+      description: 'Dimas melewati pintu di lorong bayang dan menghilang dari desa.',
+      dimasFate: 'Menghilang dari catatan desa',
+      rudiFate: 'Tahu, tapi tidak pernah bercerita',
+      joyFound: false,
+      cukongInvestigated: false,
+      epilog: 'Pintu itu tertutup lagi saat fajar. Lorongnya tidak pernah ditemukan orang, hanya lilin yang masih berasap.'
+    });
   }
 
   evaluateEnding(): EndingResult | null {

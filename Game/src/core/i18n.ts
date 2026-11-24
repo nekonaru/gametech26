@@ -114,10 +114,6 @@ export class I18nManager {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   }
-
-  getAvailableLocales(): Locale[] {
-    return Array.from(this.locales.keys());
-  }
 }
 
 export const i18n = new I18nManager();

@@ -159,6 +159,22 @@
       "cukongInvestigated": false,
       "epilog_id": "Pagi itu Dimas pulang dengan pita merah di pergelangan. Warga mulai bercerita: ada yang berjaga di ladang Joy setiap malam.",
       "epilog_en": "That morning Dimas came home with a red ribbon on his wrist. Villagers began to tell: someone watches over Joy's field every night."
+    },
+    {
+      "id": "ending_11",
+      "name_id": "Lorong yang Hilang",
+      "name_en": "The Vanishing Lane",
+      "description_id": "Dimas melewati pintu di lorong bayang dan memilih menghilang dari desa. Bayang yang mengikutinya tidak pernah kembali.",
+      "description_en": "Dimas steps through the door in the shadow lane and chooses to vanish from the village. The shape that followed him never returns.",
+      "requirements": { "chapter": "b21" },
+      "dimasFate_id": "Menghilang dari catatan desa",
+      "dimasFate_en": "Gone from the village records",
+      "rudiFate_id": "Tahu, tapi tidak pernah bercerita",
+      "rudiFate_en": "Knows, but never tells",
+      "joyFound": false,
+      "cukongInvestigated": false,
+      "epilog_id": "Pintu itu tertutup lagi saat fajar. Lorongnya tidak pernah ditemukan orang, hanya lilin yang masih berasap.",
+      "epilog_en": "The door closes again at dawn. Nobody ever finds the lane again, only a candle still smoking."
     }
   ]
 }

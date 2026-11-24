@@ -19,6 +19,7 @@ import { journalManager } from './journal.js';
 import { phoneManager } from './phone.js';
 import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
+import { ChaseDirector, ChaseStartData } from './chase.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -62,7 +63,14 @@ export class Game {
   private fpsController: FPSController | null = null;
   private lighting: LightingManager | null = null;
   private particles: ParticleSystem | null = null;
+  private chaseDirector: ChaseDirector | null = null;
+  private pendingChase: ChaseStartData | null = null;
   private flashlight: THREE.SpotLight | null = null;
+
+  /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
+  private readonly boundHandleGlobalKeys = (event: KeyboardEvent): void => this.handleGlobalKeys(event);
+  private offPointerLockChange: (() => void) | null = null;
+  private offSettings: (() => void) | null = null;
 
   private bootScreen: BootScreen | null = null;
   private languageScreen: LanguageSelectScreen | null = null;
@@ -95,6 +103,8 @@ export class Game {
   private animationId: number | null = null;
   private lastTime = 0;
   private overlayActive = false;
+  private screenVisibilityCache = false;
+  private lastScreenVisibilityCheck = 0;
   private nextChapterId: string | null = null;
   private pointerLocked = false;
   /**
@@ -155,6 +165,7 @@ export class Game {
 
     this.lighting = new LightingManager(this.engine.scene, settingsManager);
     this.particles = new ParticleSystem(this.engine.scene, settingsManager);
+    this.chaseDirector = new ChaseDirector();
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -338,6 +349,19 @@ export class Game {
       this.showToast(t('inventory.title'), t('inventory.noSenter'));
     });
     eventBus.on<any>('ending:reached', (data) => this.showEnding(data.ending));
+    eventBus.on<ChaseStartData>('chase:start', (data) => {
+      // onEnter bab dipanggil SEBELUM SCENE_LOAD_COMPLETE membangun scene.
+      // Tanpa antrean ini perintah startChase di onEnter hilang begitu saja.
+      if (!this.builtScene) {
+        this.pendingChase = { ...(data ?? {}) };
+        return;
+      }
+      this.chaseDirector?.start(this.builtScene.group, data ?? {});
+    });
+    eventBus.on('chase:stop', () => {
+      this.pendingChase = null;
+      this.chaseDirector?.stop();
+    });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
         this.lighting?.applyPreset(data.preset, data.transition || 0);
@@ -347,6 +371,8 @@ export class Game {
     eventBus.on(GameEvents.SCENE_LOAD_START, () => {
       // Bab sedang berpindah: buang target interaksi lama supaya pemain tidak
       // bisa memicu dialog bab sebelumnya selama transisi.
+      this.pendingChase = null;
+      this.chaseDirector?.stop();
       interactionManager.clear();
       interactionManager.setEnabled(false);
       this.hud?.setInteractionPrompt('', false);
@@ -488,17 +514,23 @@ export class Game {
 
     // Kamera desktop hanya bergerak saat pointer terkunci; beri petunjuk bila
     // kuncinya lepas (Esc, alt-tab, klik di luar canvas, dst).
-    inputManager.onPointerLockChange((locked) => {
+    this.offPointerLockChange = inputManager.onPointerLockChange((locked) => {
       this.pointerLocked = locked;
       this.refreshPointerHint();
     });
-
-    window.addEventListener('keydown', this.handleGlobalKeys.bind(this));
+    window.addEventListener('keydown', this.boundHandleGlobalKeys);
     // Setelan DOM (petunjuk tombol, skala teks, kontras, latar teks) ikut
     // merespons perubahan pemain di Pengaturan tanpa memuat ulang permainan.
-    settingsManager.subscribe(() => {
+    this.offSettings = settingsManager.subscribe(() => {
       this.refreshKeyHints();
       this.applyDomSettings();
+      // Aksesibilitas bisa dinyalakan di tengah kejaran: bayang harus segera
+      // hilang, bukan menunggu bab berikutnya atau op stopChase dari naskah.
+      const access = settingsManager.get('accessibility');
+      if (access.narrativeMode || access.softHorror) {
+        this.pendingChase = null;
+        this.chaseDirector?.stop();
+      }
     });
     this.applyDomSettings();
   }
@@ -719,6 +751,14 @@ export class Game {
       // menaruh pemain dalam status bermain tanpa naskah: objektif basi,
       // chapterEnd langsung memicu ending. Kembalikan ke alur permainan baru.
       console.warn('[game] save tanpa bab: memulai permainan baru');
+      await this.newGame();
+      return;
+    }
+    // Struktur + checksum diverifikasi di sini (satu-satunya jalur muat):
+    // save korup/terpotong jangan pernah masuk deserialize yang bisa
+    // melempar di tengah jalan dan meninggalkan state setengah jadi.
+    if (!saveManager.isValidSaveData(data)) {
+      console.warn('[game] save gagal validasi (struktur/checksum): memulai permainan baru');
       await this.newGame();
       return;
     }
@@ -944,6 +984,7 @@ export class Game {
     // tiap ganti scene oleh SceneFactory.build.
     this.engine?.camera?.getWorldPosition(_camWorldPos);
     this.engine?.camera?.getWorldDirection(_camWorldDir);
+    if (!busy) this.chaseDirector?.update(deltaTime, _camWorldPos);
     // Pendengar mengikuti kepala pemain: tanpa ini semua suara spasial
     // (bisikan, langkah di belakang, napas) dihitung relatif titik dunia (0,0,0)
     // dan terdengar arahnya salah dari layar mana pun pemain berdiri.
@@ -969,8 +1010,15 @@ export class Game {
   }
 
   private isAnyScreenVisible(): boolean {
-    return Array.from(document.querySelectorAll<HTMLElement>('.screen'))
+    // querySelectorAll + getClientRects memaksa layout tiap frame. Keadaan
+    // layar berubah karena aksi pemain, bukan tiap frame, jadi cukup diukur
+    // ulang tiap 100 ms. Watchdog gerbang kontrol memakai nilai yang sama.
+    const now = performance.now();
+    if (now - this.lastScreenVisibilityCheck < 100) return this.screenVisibilityCache;
+    this.lastScreenVisibilityCheck = now;
+    this.screenVisibilityCache = Array.from(document.querySelectorAll<HTMLElement>('.screen'))
       .some(el => el.getClientRects().length > 0);
+    return this.screenVisibilityCache;
   }
 
   /**
@@ -1522,6 +1570,12 @@ export class Game {
     const sceneId = gameState.get('location')?.sceneId || 'rumah_dimas';
 
     if (this.builtScene) {
+      // Bayang kejaran adalah anak builtScene.group; hentikan dulu supaya
+      // geometrinya tidak ikut dibuang pembongkaran scene berikutnya, lalu
+      // mulai lagi di scene baru dengan posisi asal yang sama.
+      const activeChase = this.chaseDirector?.getState();
+      if (activeChase) this.pendingChase = activeChase;
+      this.chaseDirector?.stop();
       this.engine.scene.remove(this.builtScene.group);
       this.disposeObject(this.builtScene.group);
       this.builtScene = null;
@@ -1531,6 +1585,10 @@ export class Game {
     const built = sceneFactory.build(sceneId);
     this.engine.scene.add(built.group);
     this.builtScene = built;
+    if (this.pendingChase) {
+      this.chaseDirector?.start(built.group, this.pendingChase);
+      this.pendingChase = null;
+    }
 
     this.fpsController?.setCollisionObjects(built.colliders);
     interactionManager.setWorldObjects(built.colliders);
@@ -1906,6 +1964,10 @@ export class Game {
   }
 
   private unregisterPropMesh(mesh: THREE.Object3D): void {
+    // Buang resource dulu: setelah removeFromParent mesh tidak lagi bagian
+    // dari pohon scene, jadi bongkar scene berikutnya tidak akan menemukannya
+    // dan geometri/tekstur labelnya bocor selama halaman terbuka.
+    this.disposeObject(mesh);
     mesh.removeFromParent();
     this.propMeshes = this.propMeshes.filter(m => m !== mesh);
   }
@@ -2665,13 +2727,29 @@ export class Game {
     // tidak perlu. Tanda `userData.cached` dipasang oleh helper cache-nya.
     root.traverse(obj => {
       const mesh = obj as THREE.Mesh;
-      if (mesh.geometry && !mesh.geometry.userData.cached) mesh.geometry.dispose();
+      // Sprite memakai SATU geometri bersama level modul di three (Sprite.js):
+      // membuangnya menghapus buffer GPU milik seluruh sprite lain dan memaksa
+      // upload ulang saat scene berikutnya dibangun.
+      if (mesh.geometry && obj.type !== 'Sprite' && !mesh.geometry.userData.cached) {
+        mesh.geometry.dispose();
+      }
       const material: any = mesh.material;
-      const skip = (m: any) => m && !m.userData?.cached && typeof m.dispose === 'function' && m.dispose();
+      const disposeMat = (m: any): void => {
+        if (!m || typeof m.dispose !== 'function' || m.userData?.cached) return;
+        // Material tidak membuang teksturnya sendiri. Label penanda memakai
+        // CanvasTexture baru tiap bab, jadi kalau tidak ikut dibuang di sini
+        // memorinya tumbuh tiap ganti scene. Pemilik bersama (textures.ts)
+        // ditandai `userData.cached` dan dilewati.
+        for (const key of ['map', 'alphaMap', 'emissiveMap', 'normalMap']) {
+          const tex = m[key];
+          if (tex && !tex.userData?.cached && typeof tex.dispose === 'function') tex.dispose();
+        }
+        m.dispose();
+      };
       if (Array.isArray(material)) {
-        material.forEach(skip);
-      } else if (material && typeof material.dispose === 'function') {
-        skip(material);
+        material.forEach(disposeMat);
+      } else {
+        disposeMat(material);
       }
     });
   }
@@ -2730,11 +2808,22 @@ export class Game {
   }
 
   async dispose(): Promise<void> {
+    window.removeEventListener('keydown', this.boundHandleGlobalKeys);
+    this.offPointerLockChange?.();
+    this.offPointerLockChange = null;
+    this.offSettings?.();
+    this.offSettings = null;
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
     this.engine?.stop();
     await this.engine?.dispose();
+    // Sub-sistem render punya resource milik sendiri (lampu, partikel,
+    // subscription setelan). Tanpa ini dispose() tidak benar-benar selesai.
+    this.fpsController?.dispose();
+    this.lighting?.dispose();
+    this.particles?.dispose();
+    this.chaseDirector?.dispose();
   }
 }
 

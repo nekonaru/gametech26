@@ -1,45 +1,46 @@
 import * as THREE from 'three';
-import { EventBus, GameEvents, eventBus } from './events.js';
-import { SettingsManager, SettingsManager as _SM, settingsManager, DEFAULT_SETTINGS } from './settings.js';
+import { EventBus, eventBus } from './events.js';
+import { SettingsManager, settingsManager, DEFAULT_SETTINGS } from './settings.js';
 import { I18nManager, i18n } from './i18n.js';
 import { SaveManager, saveManager } from './save.js';
 import { AudioManager, audioManager } from './audio.js';
-import { AssetManager, assetManager } from './assets.js';
 import { InputManager, inputManager } from './input.js';
 import { BOOT_AUDIO_SAMPLES } from './audioSamples.js';
 import { PostProcessManager } from '../render/postprocess.js';
-import { PSXMaterialManager } from '../render/psx-material.js';
+
 
 export class Engine {
   public readonly canvas: HTMLCanvasElement;
   public readonly renderer: THREE.WebGLRenderer;
   public readonly scene: THREE.Scene;
   public readonly camera: THREE.PerspectiveCamera;
-  public readonly clock: THREE.Clock;
   public readonly eventBus: EventBus;
   public readonly settings: SettingsManager;
   public readonly i18n: I18nManager;
   public readonly save: SaveManager;
   public readonly audio: AudioManager;
-  public readonly assets: AssetManager;
   public readonly input: InputManager;
   public readonly postProcess: PostProcessManager;
-  public readonly psxMaterials: PSXMaterialManager;
 
   private animationId: number | null = null;
   private running = false;
+  /**
+   * Handler terikat disimpan sebagai field: addEventListener dan
+   * removeEventListener harus menerima fungsi yang sama, kalau tidak
+   * removeEventListener diam-diam gagal dan engine lama tetap hidup.
+   */
+  private readonly boundOnResize = () => this.onResize();
+  private readonly boundOnBeforeUnload = () => this.onBeforeUnload();
+  /** rAF butuh referensi fungsi yang sama tiap frame; .bind() tiap frame bikin closure baru. */
+  private readonly boundAnimate = () => this.animate();
+  private unsubscribeSettings: (() => void) | null = null;
 
   isRunning(): boolean {
     return this.running;
   }
 
-  private fixedTimeStep = 1 / 60;
-  private maxSubSteps = 3;
   private lastTime = 0;
   private lastRenderedTime = 0;
-  private frameCount = 0;
-  private fps = 0;
-  private fpsUpdateTime = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -48,7 +49,6 @@ export class Engine {
     this.i18n = i18n;
     this.save = saveManager;
     this.audio = audioManager;
-    this.assets = assetManager;
     this.input = inputManager;
 
     this.renderer = new THREE.WebGLRenderer({
@@ -66,10 +66,8 @@ export class Engine {
       0.1,
       500
     );
-    this.clock = new THREE.Clock();
 
     this.postProcess = new PostProcessManager(this.renderer, this.scene, this.camera, this.settings);
-    this.psxMaterials = new PSXMaterialManager(this.settings);
   }
 
   async initialize(): Promise<void> {
@@ -91,7 +89,11 @@ export class Engine {
       this.settings.get('controls').keyBindings,
       this.settings.get('controls').runToggle
     );
-    this.settings.subscribe(() => this.onSettingsChanged());
+    this.unsubscribeSettings = this.settings.subscribe(() => this.onSettingsChanged());
+    // Terapkan settings yang tersimpan SEKALI saat boot: volume audio,
+    // mute-on-blur, dan ukuran joystick hanya aktif setelah pemain mengubah
+    // sesuatu bila ini tidak dipanggil (reload dengan volume 0.3 tetap 0.8).
+    this.onSettingsChanged();
     this.save.startPlaytimeTracking();
   }
 
@@ -122,8 +124,8 @@ export class Engine {
   }
 
   private setupEventListeners(): void {
-    window.addEventListener('resize', this.onResize.bind(this));
-    window.addEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.addEventListener('resize', this.boundOnResize);
+    window.addEventListener('beforeunload', this.boundOnBeforeUnload);
   }
 
   private onResize(): void {
@@ -149,6 +151,7 @@ export class Engine {
     this.input.setRunToggle(controls.runToggle);
     this.input.rebind(controls.keyBindings);
     this.input.setJoystickSize(controls.joystickSize);
+    this.input.setJoystickSide(controls.joystickPosition);
 
     this.camera.fov = gfx.fov;
     this.camera.updateProjectionMatrix();
@@ -187,7 +190,7 @@ export class Engine {
 
   private animate(): void {
     if (!this.running) return;
-    this.animationId = requestAnimationFrame(this.animate.bind(this));
+    this.animationId = requestAnimationFrame(this.boundAnimate);
 
     // Jaring pengaman: frame berikutnya sudah dijadwalkan di baris atas, jadi
     // satu error di tengah frame hanya membuat satu frame terlewat: bukan
@@ -203,17 +206,8 @@ export class Engine {
       const deltaTime = Math.min((currentTime - this.lastTime) / 1000, 0.1);
       this.lastTime = currentTime;
 
-      this.frameCount++;
-      this.fpsUpdateTime += deltaTime;
-      if (this.fpsUpdateTime >= 1) {
-        this.fps = this.frameCount;
-        this.frameCount = 0;
-        this.fpsUpdateTime = 0;
-      }
-
-      this.fixedUpdate(deltaTime);
       this.update(deltaTime);
-      this.render();
+      this.render(deltaTime);
     } catch (error) {
       this.reportFrameError(error);
     }
@@ -233,67 +227,23 @@ export class Engine {
     );
   }
 
-  private fixedUpdate(deltaTime: number): void {
-    let accumulator = deltaTime;
-    let steps = this.maxSubSteps;
-    while (accumulator >= this.fixedTimeStep && steps-- > 0) {
-      this.eventBus.emit('engine:fixedUpdate', { deltaTime: this.fixedTimeStep });
-      accumulator -= this.fixedTimeStep;
-    }
-  }
-
   update(deltaTime: number): void {
     this.input.update();
-    this.psxMaterials.update(deltaTime);
     this.eventBus.emit('engine:update', { deltaTime });
   }
 
-  render(): void {
-    this.postProcess.render();
-  }
-
-  getFPS(): number {
-    return this.fps;
-  }
-
-  getDeltaTime(): number {
-    return this.clock.getDelta();
-  }
-
-  getElapsedTime(): number {
-    return this.clock.getElapsedTime();
-  }
-
-  setScene(scene: THREE.Scene): void {
-    this.scene.traverse(obj => {
-      if (obj instanceof THREE.Mesh) {
-        obj.geometry.dispose();
-        if (Array.isArray(obj.material)) {
-          obj.material.forEach(m => m.dispose());
-        } else {
-          obj.material.dispose();
-        }
-      }
-    });
-    this.scene.clear();
-    Object.assign(this.scene, scene);
-    this.postProcess.setScene(this.scene);
-  }
-
-  async loadScene(sceneId: string): Promise<THREE.Scene> {
-    this.eventBus.emit(GameEvents.SCENE_LOAD_START, { sceneId });
-    // Scene loading logic will be implemented in game module
-    this.eventBus.emit(GameEvents.SCENE_LOAD_COMPLETE, { sceneId });
-    return this.scene;
+  render(deltaTime: number): void {
+    this.postProcess.render(deltaTime);
   }
 
   async dispose(): Promise<void> {
     this.stop();
-    window.removeEventListener('resize', this.onResize.bind(this));
-    window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.removeEventListener('resize', this.boundOnResize);
+    window.removeEventListener('beforeunload', this.boundOnBeforeUnload);
+    this.unsubscribeSettings?.();
+    this.unsubscribeSettings = null;
     this.input.dispose();
     await this.audio.dispose();
-    this.assets.disposeAll();
     this.postProcess.dispose();
     this.renderer.dispose();
     this.eventBus.clear();

@@ -17,7 +17,8 @@ const KNOWN_OPS = new Set([
   'cameraAnim',
   'checkpoint', 'startPuzzle', 'echo', 'ending', 'setPOV', 'setTime', 'teleport', 'setEcho',
   'addEmpati', 'addNurani', 'modifyPercayaDimas', 'modifyPercayaRudi', 'setKonfrontasiDini',
-  'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan'
+  'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan',
+  'startChase', 'stopChase'
 ]);
 
 const chaptersDir = path.join(root, 'public', 'data', 'chapters');
@@ -87,12 +88,11 @@ for (const f of files) {
       if (!KNOWN_OPS.has(op.op)) note(f, `operasi tidak dikenal "${op.op}" di ${where}`);
       if (op.op === 'dialog') checkDialogRef(op.node, where);
       if (op.op === 'loadScene') {
-        // loadScene memuat bab lain (file chapters) atau scene dalam bab ini.
-        // Dulu setiap pemakaian dicatat manual tanpa divalidasi; kini referensi
-        // rusak benar-benar terdeteksi, yang valid tidak menimbulkan suara.
-        if (typeof op.scene !== 'string'
-          || (!chapterIds.has(op.scene) && op.scene !== script.scene && !(script.scenes || {})[op.scene])) {
-          note(f, `loadScene "${op.scene}" tidak ada sebagai chapter/scene (di ${where})`);
+        // Runtime selalu memuat file chapters (scriptRunner.loadChapter);
+        // rujukan ke scene dalam bab ini lolos validasi tapi 404 saat bermain.
+        // Scene dalam bab yang sama memakai gotoScene.
+        if (typeof op.scene !== 'string' || !chapterIds.has(op.scene)) {
+          note(f, `loadScene "${op.scene}" bukan id bab yang ada (di ${where})`);
         }
       }
       if (op.op === 'gotoScene') {

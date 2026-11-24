@@ -333,8 +333,12 @@ export class PostProcessManager {
     this.renderPass.camera = camera;
   }
 
-  render(): void {
-    this.time += 1/60;
+  render(deltaTime: number): void {
+    // Waktu grain memakai delta nyata (sudah dibatasi engine): kalau tetap
+    // 1/60 per frame, grain berjalan ~2,4x terlalu cepat di layar 144 Hz dan
+    // setengah kecepatan di 30 FPS. Saat jam dibekukan alat regresi visual,
+    // delta = 0 sehingga citra tetap deterministik.
+    this.time += Math.min(Math.max(deltaTime, 0), 0.1);
     this.ditherPass.uniforms.uTime.value = this.time;
     this.ditherPass.uniforms.uTension.value = this.tension;
     this.vignettePass.uniforms.uTension.value = this.tension;

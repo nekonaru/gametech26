@@ -8,6 +8,7 @@ export class PrologueScreen implements UIElement {
   private timer: number | null = null;
   private phase = 0;
   private finished = false;
+  private readonly onSkip = (): void => this.finish();
 
   constructor(onDone: () => void) {
     this.onDone = onDone;
@@ -95,12 +96,16 @@ export class PrologueScreen implements UIElement {
     document.body.appendChild(this.element);
     this.reset();
     const skip = this.element.querySelector('#prologue-skip');
-    skip?.addEventListener('click', () => this.finish());
+    // remove dulu: show() bisa dipanggil ulang (ulang prologue), listener pada
+    // elemen persisten tidak boleh menumpuk walau finish() sudah dijaga flag.
+    skip?.removeEventListener('click', this.onSkip);
+    skip?.addEventListener('click', this.onSkip);
     this.timer = window.setTimeout(() => this.advance(), 600);
   }
 
   hide(): void {
     this.element.style.display = 'none';
+    this.element.querySelector('#prologue-skip')?.removeEventListener('click', this.onSkip);
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
@@ -108,6 +113,7 @@ export class PrologueScreen implements UIElement {
   }
 
   destroy(): void {
+    this.element.querySelector('#prologue-skip')?.removeEventListener('click', this.onSkip);
     if (this.timer) clearTimeout(this.timer);
     this.element.remove();
   }

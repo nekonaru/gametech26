@@ -1,0 +1,45 @@
+{
+  "id": "b21",
+  "hari": 6,
+  "jam": "23:40",
+  "pov": "dimas",
+  "scene": "lorong_bayang",
+  "scenes": {
+    "lorong_bayang": {
+      "spawn": [0, 0, 0],
+      "yaw": 0,
+      "label": "b21.tempat.lorong",
+      "lighting": "malam_rumah"
+    }
+  },
+  "onEnter": [
+    { "op": "setLighting", "preset": "malam_rumah", "transition": 1.5 },
+    { "op": "objective", "id": "lari", "text": "b21.obj.lari" },
+    { "op": "playSound", "key": "ambience_village", "options": { "category": "ambience", "loop": true, "volume": 0.35 } },
+    { "op": "startChase", "pos": [0, 0, -9], "speed": 1.3 }
+  ],
+  "interactables": [
+    { "id": "lilin_terakhir", "prompt": "ui.interact", "position": [0, 0, -3], "once": true, "goalFor": ["lari"], "onUse": [
+      { "op": "stopChase" },
+      { "op": "playSound", "key": "static", "options": { "category": "sfx", "volume": 0.3 } },
+      { "op": "dialog", "node": "b21.lilin" }
+    ] },
+    { "id": "pintu_kabur", "prompt": "ui.interact", "position": [1.2, 0, -5], "once": true, "onUse": [
+      { "op": "stopChase" },
+      { "op": "dialog", "node": "b21.pintu" }
+    ] }
+  ],
+  "dialogs": {
+    "b21.lilin": [
+      { "speaker": "Dimas", "text": "b21.lilin.1" },
+      { "speaker": "Dimas", "text": "b21.lilin.2" }
+    ],
+    "b21.pintu": [
+      { "speaker": "Dimas", "text": "b21.pintu.1" },
+      { "speaker": "Dimas", "text": "b21.pintu.2", "choices": [
+        { "text": "b21.pintu.cA", "onSelect": [{ "op": "ending", "id": "ending_11" }] },
+        { "text": "b21.pintu.cB", "onSelect": [{ "op": "chapterEnd" }] }
+      ] }
+    ]
+  }
+}

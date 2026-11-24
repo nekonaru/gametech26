@@ -109,6 +109,12 @@ export class ScriptRunner {
   private currentScript: ChapterScript | null = null;
   private operationQueue: ScriptOperation[] = [];
   private running = false;
+  /**
+   * Generasi pemuatan bab. Dinaikkan tiap loadChapter; rantai operasi lama
+   * membandingkan nilainya setelah tiap await supaya operasi bab sebelumnya
+   * tidak lanjut berjalan di bab baru.
+   */
+  private runGeneration = 0;
   private waitingForInput = false;
   private currentDialogId: string | null = null;
   private dialogStack: string[] = [];
@@ -315,6 +321,10 @@ export class ScriptRunner {
       // Bab baru dimuat: hentikan loop dialog lama supaya promise yang masih
       // menunggu input tidak pernah diselesaikan (permainan macet).
       this.abortDialog();
+      // Naikkan generasi: rantai operasi lama yang sedang menunggu `wait`
+      // atau `cameraAnim` harus berhenti setelah ini, bukan menulis objective
+      // atau flag ke bab yang baru.
+      this.runGeneration++;
 
       eventBus.emit(GameEvents.SCENE_LOAD_START, { sceneId: chapterId });
 
@@ -487,6 +497,7 @@ export class ScriptRunner {
     // `gotoScene`, atau `wait` yang belum membuka dialog: pemanggil non-dialog
     // (harness auto-play) menembak interaktif lain dan memicu beberapa rantai
     // sekaligus, sehingga objective bisa mendarat terbalik.
+    const generation = this.runGeneration;
     this.opDepth++;
     try {
       for (const op of operations) {
@@ -498,6 +509,10 @@ export class ScriptRunner {
           // menutup dialog: inDialog tetap true, WASD dan menoleh mati selamanya.
           console.error('[script] operasi skrip gagal:', op, error);
         }
+        // Bab berganti di tengah rantai (op loadScene atau chapterEnd yang
+        // memuat bab lain): sisa operasi array lama tidak boleh dijalankan
+        // terhadap bab baru.
+        if (generation !== this.runGeneration) break;
         if (this.waitingForInput) break;
       }
     } finally {
@@ -605,6 +620,15 @@ export class ScriptRunner {
         break;
       case 'echo':
         this.handleEcho(op);
+        break;
+      case 'startChase':
+        // Bayang pengikut dijalankan Game lewat eventBus; naskah tidak
+        // memegang referensi objek scene. Mode Naratif/Horor Lembut otomatis
+        // melewati spawning di sisi Game.
+        eventBus.emit('chase:start', { pos: op.pos, speed: op.speed });
+        break;
+      case 'stopChase':
+        eventBus.emit('chase:stop', {});
         break;
       case 'ending':
         this.triggerEnding(op.id);
@@ -720,7 +744,10 @@ export class ScriptRunner {
             const choice = await this.waitForChoice();
             if (epoch !== this.dialogEpoch) return;
             if (choice) {
-              const choiceNode = node.choices.find(c => c.next === choice);
+              // Pilihan tanpa `next` memakai teks sebagai identitas: tanpa
+              // fallback ini onSelect-nya tidak pernah ketemu (runtime
+              // mengirim "undefined") sehingga op di dalamnya diam-diam mati.
+              const choiceNode = node.choices.find(c => c.next === choice || (!c.next && t(c.text) === choice));
               if (choiceNode?.onSelect) {
                 await this.executeOperations(choiceNode.onSelect);
               }

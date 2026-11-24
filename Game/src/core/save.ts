@@ -72,33 +72,46 @@ const DB_NAME = 'AsapYangTakPadam';
 const STORE_NAME = 'saves';
 const THUMBNAIL_STORE = 'thumbnails';
 const DB_VERSION = 1;
+/** Prefix key save di localStorage (cadangan bila IndexedDB diblokir). */
+const FALLBACK_PREFIX = 'asap_save_';
 
 export class SaveManager {
   private db: IDBDatabase | null = null;
-  private currentSlot: string | null = null;
-  private autoSaveEnabled = true;
+  /** true bila IndexedDB gagal dibuka: semua operasi pindah ke localStorage. */
+  private fallback = false;
   private playtimeStart = Date.now();
   private playtimeAccumulated = 0;
   private saveInterval: number | null = null;
 
+  /**
+   * Buka IndexedDB tanpa pernah menolak. Bila diblokir (mode privasi ketat,
+   * cookie pihak ketiga, kuota), jangan gagalkan boot: pakai localStorage
+   * sebagai cadangan supaya permainan tetap bisa dimainkan dan disimpan.
+   */
   async initialize(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        this.db = request.result;
-        resolve();
-      };
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains(THUMBNAIL_STORE)) {
-          db.createObjectStore(THUMBNAIL_STORE, { keyPath: 'id' });
-        }
-      };
-    });
+    if (this.db || this.fallback) return;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          this.db = request.result;
+          resolve();
+        };
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains(THUMBNAIL_STORE)) {
+            db.createObjectStore(THUMBNAIL_STORE, { keyPath: 'id' });
+          }
+        };
+      });
+    } catch {
+      this.fallback = true;
+      this.db = null;
+    }
   }
 
   async createSave(data: Omit<SaveData, 'saveVersion' | 'createdAt' | 'checksum'>, slotId: string): Promise<void> {
@@ -109,11 +122,9 @@ export class SaveManager {
       checksum: this.generateChecksum(data)
     };
     await this.put(slotId, saveData);
-    this.currentSlot = slotId;
   }
 
   async autoSave(data: Omit<SaveData, 'saveVersion' | 'createdAt' | 'checksum'>): Promise<void> {
-    if (!this.autoSaveEnabled) return;
     await this.createSave(data, 'autosave');
   }
 
@@ -121,34 +132,52 @@ export class SaveManager {
     await this.createSave(data, slotId);
   }
 
-  async loadSlot(slotId: string): Promise<SaveData | null> {
-    return this.get(slotId);
-  }
-
   async getAllSaves(): Promise<SaveSlot[]> {
-    if (!this.db) await this.initialize();
+    await this.initialize();
+    if (!this.db) return this.getAllSavesFallback();
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(STORE_NAME, 'readonly');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.getAll();
       request.onsuccess = () => {
-        const saves: SaveSlot[] = request.result.map((save: SaveData) => {
-          const raw = save as any;
-          const where = [raw.hari ?? raw.location?.hari ?? '', raw.jam ?? raw.location?.jam ?? '']
-            .filter(part => part !== '' && part !== undefined && part !== null)
-            .join(' ');
-          const pov = raw.pov ? String(raw.pov).toUpperCase() : '';
-          return {
-            id: save.id || 'unknown',
-            label: where ? `${where}${pov ? ' (' + pov + ')' : ''}` : (raw.currentChapter || 'save'),
-            data: save,
-            timestamp: new Date(save.createdAt).getTime()
-          };
-        });
+        const saves: SaveSlot[] = request.result.map((save: SaveData) => this.toSaveSlot(save));
         resolve(saves.sort((a, b) => b.timestamp - a.timestamp));
       };
       request.onerror = () => reject(request.error);
     });
+  }
+
+  /** Pemetaan SaveData -> SaveSlot (dipakai jalur IndexedDB dan fallback). */
+  private toSaveSlot(save: SaveData): SaveSlot {
+    const raw = save as any;
+    const where = [raw.hari ?? raw.location?.hari ?? '', raw.jam ?? raw.location?.jam ?? '']
+      .filter(part => part !== '' && part !== undefined && part !== null)
+      .join(' ');
+    const pov = raw.pov ? String(raw.pov).toUpperCase() : '';
+    return {
+      id: save.id || 'unknown',
+      label: where ? `${where}${pov ? ' (' + pov + ')' : ''}` : (raw.currentChapter || 'save'),
+      data: save,
+      timestamp: new Date(save.createdAt).getTime()
+    };
+  }
+
+  /** Baca semua save dari localStorage (bila IndexedDB gagal dibuka). */
+  private getAllSavesFallback(): SaveSlot[] {
+    const saves: SaveSlot[] = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith(FALLBACK_PREFIX)) continue;
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          const save = JSON.parse(raw) as SaveData;
+          if (this.validateSave(save)) saves.push(this.toSaveSlot(save));
+        } catch { /* save korup: lewati */ }
+      }
+    } catch { /* storage mati: daftar kosong */ }
+    return saves.sort((a, b) => b.timestamp - a.timestamp);
   }
 
   /**
@@ -163,7 +192,11 @@ export class SaveManager {
   }
 
   async deleteSlot(slotId: string): Promise<void> {
-    if (!this.db) await this.initialize();
+    await this.initialize();
+    if (!this.db) {
+      try { localStorage.removeItem(FALLBACK_PREFIX + slotId); } catch { /* storage mati: abaikan */ }
+      return;
+    }
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(STORE_NAME, 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
@@ -179,18 +212,10 @@ export class SaveManager {
     return JSON.stringify(save, null, 2);
   }
 
-  async importSave(json: string, slotId: string): Promise<boolean> {
-    try {
-      const save = JSON.parse(json) as SaveData;
-      if (!this.validateSave(save)) return false;
-      await this.put(slotId, save);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   startPlaytimeTracking(): void {
+    // Idempoten: panggilan kedua tanpa stop akan menimpa saveInterval lama
+    // (interval bocor) dan menghitung waktu dua kali lipat.
+    if (this.saveInterval !== null) return;
     this.playtimeStart = Date.now();
     this.saveInterval = window.setInterval(() => {
       this.playtimeAccumulated += Date.now() - this.playtimeStart;
@@ -202,25 +227,22 @@ export class SaveManager {
     if (this.saveInterval) {
       clearInterval(this.saveInterval);
       this.saveInterval = null;
+      this.playtimeAccumulated += Date.now() - this.playtimeStart;
     }
-    this.playtimeAccumulated += Date.now() - this.playtimeStart;
+    // Reset start: tanpa ini sesi berikutnya (lanjut dari menu) masih
+    // menghitung rentang sesi lama di akumulasi berikutnya.
+    this.playtimeStart = Date.now();
     return Math.floor(this.playtimeAccumulated / 1000);
   }
 
-  getPlaytime(): number {
-    return Math.floor((this.playtimeAccumulated + (Date.now() - this.playtimeStart)) / 1000);
-  }
-
-  setAutoSave(enabled: boolean): void {
-    this.autoSaveEnabled = enabled;
-  }
-
-  getCurrentSlot(): string | null {
-    return this.currentSlot;
-  }
-
   private async put(id: string, data: SaveData): Promise<void> {
-    if (!this.db) await this.initialize();
+    await this.initialize();
+    if (!this.db) {
+      try {
+        localStorage.setItem(FALLBACK_PREFIX + id, JSON.stringify({ ...data, id }));
+      } catch { /* storage penuh/mati: menyimpan gagal diam-diam, jangan crash */ }
+      return;
+    }
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(STORE_NAME, 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
@@ -231,7 +253,15 @@ export class SaveManager {
   }
 
   private async get(id: string): Promise<SaveData | null> {
-    if (!this.db) await this.initialize();
+    await this.initialize();
+    if (!this.db) {
+      try {
+        const raw = localStorage.getItem(FALLBACK_PREFIX + id);
+        return raw ? (JSON.parse(raw) as SaveData) : null;
+      } catch {
+        return null;
+      }
+    }
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(STORE_NAME, 'readonly');
       const store = transaction.objectStore(STORE_NAME);
@@ -257,7 +287,25 @@ export class SaveManager {
     if (typeof save.createdAt !== 'string') return false;
     const raw = save as any;
     if (!raw.currentChapter || !Array.isArray(raw.clues) || !Array.isArray(raw.inventory)) return false;
+    if (!this.verifyChecksum(save)) return false;
     return true;
+  }
+
+  /**
+   * Hitung ulang checksum dan bandingkan dengan yang tersimpan. Save lama
+   * tanpa field `checksum` dilewati (validasi struktur tetap berlaku) supaya
+   * progres pemain lama tidak dibuang. `id` ikut dibuang: ditambahkan oleh
+   * put() sesudah checksum dibuat.
+   */
+  private verifyChecksum(save: SaveData): boolean {
+    if (typeof save.checksum !== 'string') return true;
+    const { saveVersion: _v, createdAt: _c, checksum: _k, id: _id, ...rest } = save;
+    return this.generateChecksum(rest) === save.checksum;
+  }
+
+  /** Validasi save dari luar (jalur muat permainan): struktur + checksum. */
+  isValidSaveData(data: unknown): boolean {
+    return this.validateSave(data as SaveData);
   }
 }
 
