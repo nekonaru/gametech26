@@ -19,7 +19,7 @@ import { journalManager } from './journal.js';
 import { phoneManager } from './phone.js';
 import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
-import { ChaseDirector } from './chase.js';
+import { ChaseDirector, ChaseStartData } from './chase.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -64,6 +64,7 @@ export class Game {
   private lighting: LightingManager | null = null;
   private particles: ParticleSystem | null = null;
   private chaseDirector: ChaseDirector | null = null;
+  private pendingChase: ChaseStartData | null = null;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -348,11 +349,19 @@ export class Game {
       this.showToast(t('inventory.title'), t('inventory.noSenter'));
     });
     eventBus.on<any>('ending:reached', (data) => this.showEnding(data.ending));
-    eventBus.on<{ pos?: [number, number, number]; speed?: number }>('chase:start', (data) => {
-      if (!this.builtScene || !this.chaseDirector) return;
-      this.chaseDirector.start(this.builtScene.group, data ?? {});
+    eventBus.on<ChaseStartData>('chase:start', (data) => {
+      // onEnter bab dipanggil SEBELUM SCENE_LOAD_COMPLETE membangun scene.
+      // Tanpa antrean ini perintah startChase di onEnter hilang begitu saja.
+      if (!this.builtScene) {
+        this.pendingChase = { ...(data ?? {}) };
+        return;
+      }
+      this.chaseDirector?.start(this.builtScene.group, data ?? {});
     });
-    eventBus.on('chase:stop', () => this.chaseDirector?.stop());
+    eventBus.on('chase:stop', () => {
+      this.pendingChase = null;
+      this.chaseDirector?.stop();
+    });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
         this.lighting?.applyPreset(data.preset, data.transition || 0);
@@ -362,6 +371,8 @@ export class Game {
     eventBus.on(GameEvents.SCENE_LOAD_START, () => {
       // Bab sedang berpindah: buang target interaksi lama supaya pemain tidak
       // bisa memicu dialog bab sebelumnya selama transisi.
+      this.pendingChase = null;
+      this.chaseDirector?.stop();
       interactionManager.clear();
       interactionManager.setEnabled(false);
       this.hud?.setInteractionPrompt('', false);
@@ -1553,7 +1564,10 @@ export class Game {
 
     if (this.builtScene) {
       // Bayang kejaran adalah anak builtScene.group; hentikan dulu supaya
-      // geometrinya tidak ikut dibuang pembongkaran scene berikutnya.
+      // geometrinya tidak ikut dibuang pembongkaran scene berikutnya, lalu
+      // mulai lagi di scene baru dengan posisi asal yang sama.
+      const activeChase = this.chaseDirector?.getState();
+      if (activeChase) this.pendingChase = activeChase;
       this.chaseDirector?.stop();
       this.engine.scene.remove(this.builtScene.group);
       this.disposeObject(this.builtScene.group);
@@ -1564,6 +1578,10 @@ export class Game {
     const built = sceneFactory.build(sceneId);
     this.engine.scene.add(built.group);
     this.builtScene = built;
+    if (this.pendingChase) {
+      this.chaseDirector?.start(built.group, this.pendingChase);
+      this.pendingChase = null;
+    }
 
     this.fpsController?.setCollisionObjects(built.colliders);
     interactionManager.setWorldObjects(built.colliders);

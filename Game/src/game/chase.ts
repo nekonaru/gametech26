@@ -53,6 +53,14 @@ export class ChaseDirector {
     return true;
   }
 
+  getState(): ChaseStartData | null {
+    if (!this.group) return null;
+    return {
+      pos: [this.origin.x, this.origin.y, this.origin.z],
+      speed: this.speed
+    };
+  }
+
   stop(): void {
     if (!this.group) return;
     this.group.removeFromParent();
