@@ -764,27 +764,3 @@ export function getBeamTexture(): THREE.Texture {
   return texture;
 }
 
-export function disposeTextures(): void {
-  cache.forEach(t => t.dispose());
-  cache.clear();
-  if (softDot) {
-    softDot.dispose();
-    softDot = null;
-  }
-  if (flameGradient) {
-    flameGradient.dispose();
-    flameGradient = null;
-  }
-  if (diamondOutline) {
-    diamondOutline.dispose();
-    diamondOutline = null;
-  }
-  if (goalDiamond) {
-    goalDiamond.dispose();
-    goalDiamond = null;
-  }
-  if (beamGradient) {
-    beamGradient.dispose();
-    beamGradient = null;
-  }
-}

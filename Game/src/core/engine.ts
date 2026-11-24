@@ -7,7 +7,7 @@ import { AudioManager, audioManager } from './audio.js';
 import { InputManager, inputManager } from './input.js';
 import { BOOT_AUDIO_SAMPLES } from './audioSamples.js';
 import { PostProcessManager } from '../render/postprocess.js';
-import { PSXMaterialManager } from '../render/psx-material.js';
+
 
 export class Engine {
   public readonly canvas: HTMLCanvasElement;
@@ -21,7 +21,6 @@ export class Engine {
   public readonly audio: AudioManager;
   public readonly input: InputManager;
   public readonly postProcess: PostProcessManager;
-  public readonly psxMaterials: PSXMaterialManager;
 
   private animationId: number | null = null;
   private running = false;
@@ -69,7 +68,6 @@ export class Engine {
     );
 
     this.postProcess = new PostProcessManager(this.renderer, this.scene, this.camera, this.settings);
-    this.psxMaterials = new PSXMaterialManager(this.settings);
   }
 
   async initialize(): Promise<void> {
@@ -231,7 +229,6 @@ export class Engine {
 
   update(deltaTime: number): void {
     this.input.update();
-    this.psxMaterials.update(deltaTime);
     this.eventBus.emit('engine:update', { deltaTime });
   }
 
