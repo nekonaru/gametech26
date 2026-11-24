@@ -744,7 +744,10 @@ export class ScriptRunner {
             const choice = await this.waitForChoice();
             if (epoch !== this.dialogEpoch) return;
             if (choice) {
-              const choiceNode = node.choices.find(c => c.next === choice);
+              // Pilihan tanpa `next` memakai teks sebagai identitas: tanpa
+              // fallback ini onSelect-nya tidak pernah ketemu (runtime
+              // mengirim "undefined") sehingga op di dalamnya diam-diam mati.
+              const choiceNode = node.choices.find(c => c.next === choice || (!c.next && t(c.text) === choice));
               if (choiceNode?.onSelect) {
                 await this.executeOperations(choiceNode.onSelect);
               }

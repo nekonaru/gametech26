@@ -78,7 +78,7 @@ export class DialogScreen implements UIElement {
   private onScriptChoices(choices: any[]): void {
     const translated = (choices || []).map((c: any) => ({
       text: t(String(c.text)),
-      next: String(c.next),
+      next: typeof c.next === 'string' && c.next !== 'undefined' ? c.next : undefined,
       important: !!c.important,
       once: !!c.once
     }));
@@ -431,7 +431,7 @@ export class DialogScreen implements UIElement {
 
     container.innerHTML = validChoices.map((choice, index) => `
       <button class="ui-btn choice-btn ${choice.important ? 'important' : ''}" 
-              data-choice="${choice.next}"
+              data-choice="${choice.next ?? choice.text}"
               data-once="${choice.once || false}">
         <span class="choice-number">${index + 1}.</span>
         <span class="choice-text">${choice.text}</span>
