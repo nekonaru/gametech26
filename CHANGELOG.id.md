@@ -1,3 +1,22 @@
+## v3.0.0
+
+Pembaruan naratif dengan rekaman echo, New Game Plus, efek persepsi, dan bab mimpi baru.
+
+## Fitur baru
+
+- **Bab mimpi.** Bab b23 menambah rekaman echo, dua ending, dan tab Rekaman baru di ponsel.
+- **New Game Plus.** Selesaikan satu ending untuk membawa variabel, echo, dan ending terbuka ke permainan baru.
+- **Persepsi.** Keyakinan rendah mengubah warna dunia dan menambah bisikan jauh, dinonaktifkan oleh setelan aksesibilitas.
+
+## Peningkatan
+
+- **Katalog echo.** Rekaman didefinisikan di `echoes.json` dan divalidasi seperti konten lain.
+- **Nilai save.** Jalur permainan baru dan migrasi menjaga konsistensi field state baru.
+
+## Perbaikan bug
+
+- **State menu.** New Game Plus tetap nonaktif sampai satu ending terbuka.
+
 ## v2.0.0
 
 Pembaruan pengalaman dan mekanik dengan stealth, crafting, bab baru, dan antarmuka yang lebih jelas.
