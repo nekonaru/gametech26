@@ -630,6 +630,15 @@ export class ScriptRunner {
       case 'stopChase':
         eventBus.emit('chase:stop', {});
         break;
+      case 'startPatrol':
+        eventBus.emit('patrol:start', { id: op.id });
+        break;
+      case 'stopPatrol':
+        eventBus.emit('patrol:stop', { id: op.id });
+        break;
+      case 'setHideZone':
+        eventBus.emit('hidezone:set', { id: op.id, enabled: op.enabled !== false });
+        break;
       case 'ending':
         this.triggerEnding(op.id);
         break;
