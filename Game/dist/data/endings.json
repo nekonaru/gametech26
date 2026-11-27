@@ -191,6 +191,38 @@
       "cukongInvestigated": false,
       "epilog_id": "Di pagi hari pintu lorong hilang. Dimas menyimpan kunci yang tidak membuka apa pun.",
       "epilog_en": "In the morning the lane door is gone. Dimas keeps a key that opens nothing."
+    },
+    {
+      "id": "ending_13",
+      "name_id": "Yang Dipercayakan",
+      "name_en": "What Was Entrusted",
+      "description_id": "Raka menyerahkan rekaman dan memilih mempercayakan cerita kepada orang lain.",
+      "description_en": "Raka hands over the recordings and chooses to trust others with the story.",
+      "requirements": { "chapter": "b23" },
+      "dimasFate_id": "Mendengar semuanya di pagi hari",
+      "dimasFate_en": "Hears everything in the morning",
+      "rudiFate_id": "Tidak lagi dihubungi",
+      "rudiFate_en": "No longer contacted",
+      "joyFound": false,
+      "cukongInvestigated": false,
+      "epilog_id": "Pagi itu radio berhenti. Untuk pertama kalinya, Raka tidur tanpa suara.",
+      "epilog_en": "The radio stops that morning. For the first time, Raka sleeps without sound."
+    },
+    {
+      "id": "ending_14",
+      "name_id": "Yang Disimpan",
+      "name_en": "What Was Kept",
+      "description_id": "Raka menyimpan rekaman untuk dirinya sendiri dan membiarkan pintu mimpi tetap tertutup.",
+      "description_en": "Raka keeps the recordings for himself and leaves the dream door closed.",
+      "requirements": { "chapter": "b23" },
+      "dimasFate_id": "Tidak pernah tahu isi rekaman itu",
+      "dimasFate_en": "Never learns what is on them",
+      "rudiFate_id": "Masih menerima pesan dari Raka",
+      "rudiFate_en": "Still receives messages from Raka",
+      "joyFound": false,
+      "cukongInvestigated": false,
+      "epilog_id": "Rekaman itu tetap di ponsel. Setiap pagi Raka memutarnya sekali, lalu mematikan layar.",
+      "epilog_en": "The recordings stay on the phone. Each morning Raka plays them once, then turns off the screen."
     }
   ]
 }

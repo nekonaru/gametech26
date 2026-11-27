@@ -2,6 +2,8 @@
   "menu": {
     "start": "Start Game",
     "continue": "Continue",
+    "ngPlus": "New Game Plus",
+    "ngPlusDesc": "Past decisions carry over. The story starts again from the beginning.",
     "load": "Load Game",
     "settings": "Settings",
     "exit": "Exit",
@@ -191,6 +193,8 @@
     "calls": "Calls",
     "flashlight": "Flashlight",
     "radio": "Radio",
+    "echo": "Recordings",
+    "echoEmpty": "No recordings found yet.",
     "debt": "Debt",
     "noMessages": "No messages",
     "noCalls": "No calls",
@@ -331,6 +335,8 @@
     "ending10": "Oath at the Field",
     "ending11": "The Vanishing Lane",
     "ending12": "One Step Ahead",
+    "ending13": "What Was Entrusted",
+    "ending14": "What Was Kept",
     "epilog": "Epilogue",
     "fateDimas": "Dimas's fate",
     "fateRudi": "Rudi's fate"
@@ -386,6 +392,20 @@
     "senter": {
       "title": "Make an emergency flashlight",
       "desc": "Requires a cable and a battery."
+    }
+  },
+  "echo": {
+    "langkah": {
+      "title": "Steps Behind",
+      "body": "This recording catches steps that stop exactly as the feet pass. The tracks are still in the wet soil."
+    },
+    "radio": {
+      "title": "The Radio That Never Stops",
+      "body": "A news broadcast repeats the same date seven times. There is breathing between the sentences."
+    },
+    "lilin": {
+      "title": "The Self Lit Candle",
+      "body": "A short recording from the night the candle in the lane lit itself without anyone touching it."
     }
   }
 }
