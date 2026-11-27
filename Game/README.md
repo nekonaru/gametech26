@@ -52,15 +52,17 @@ Mobile: joystick sentuh di sisi kiri untuk bergerak (dorong ke tepi = lari), ges
 - `src/render` material PSX, post process 360p dengan dithering, kamera, partikel, pencahayaan, 18 pembangun adegan
 - `src/game` state, script runner op JSON, dialog, interaksi, jurnal, manajer babak, tension, ending, main
 - `src/ui` boot, menu, pengaturan, simpan muat, HUD, jurnal, papan petunjuk, ponsel, dialog, galeri, puzzle, ending, prolog
-- `public/data` data babak (26 file), clue, ending, variabel, item, patrol, resep
+- `public/data` data babak (27 file), clue, ending, variabel, item, patrol, resep, echo
 - `public/locales` terjemahan ID dan EN, termasuk terjemahan per babak
 - `docs/chapter-spec.md` kontrak penulisan babak untuk penulis naskah
 - `tools/` 7 suite audit, auto-play, visual regression, Lighthouse budget
 
 ## Yang sudah selesai
 
-- 26 babak (B1 sampai B22 termasuk B5B, B10ALT, B12B, dan B15-ALT) seluruhnya dibaca dari JSON di `public/data/chapters`
-- 12 ending dan epilog, matriks syarat diuji untuk semua cabang (ending 1 sampai 12)
+- 27 babak (B1 sampai B23 termasuk B5B, B10ALT, B12B, dan B15-ALT) seluruhnya dibaca dari JSON di `public/data/chapters`
+- 14 ending dan epilog, matriks syarat diuji untuk semua cabang (ending 1 sampai 14)
+- Bab B23 dengan rekaman echo yang diputar lewat tab Rekaman di ponsel, efek persepsi keyakinan rendah, dan dua ending baru
+- New Game Plus dari menu utama membawa variabel, echo, dan ending yang sudah terbuka
 - Bab B21 dengan scene `lorong_bayang` dan mekanik bayang pengikut lewat op `startChase` dan `stopChase`, otomatis nonaktif pada Mode Naratif dan Horor Lembut
 - Bab B22 dengan patroli, meter deteksi, zona sembunyi, dan pilihan dialog terkunci yang menampilkan alasan
 - Crafting resep dari `public/data/recipes.json` lewat panel Rakit di inventaris

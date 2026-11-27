@@ -644,6 +644,9 @@ export class ScriptRunner {
       case 'craft':
         eventBus.emit('craft:run', { id: op.recipe });
         break;
+      case 'giveEcho':
+        eventBus.emit('echo:give', { id: op.id });
+        break;
       case 'ending':
         this.triggerEnding(op.id);
         break;

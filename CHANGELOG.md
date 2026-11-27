@@ -1,3 +1,22 @@
+## v3.0.0
+
+A narrative update with echo recordings, New Game Plus, perception effects, and a new dream chapter.
+
+## New features
+
+- **Dream chapter.** Chapter b23 adds echo recordings, two endings, and a new phone tab for recovered audio.
+- **New Game Plus.** Finish an ending to carry variables, echoes, and unlocked endings into a fresh run.
+- **Perception.** Low conviction shifts the world colour and adds distant whispers, disabled by accessibility settings.
+
+## Improvements
+
+- **Echo catalogue.** Recordings are defined in `echoes.json` and validated like other content.
+- **Save values.** New game and migration paths keep new state fields consistent.
+
+## Bug fixes
+
+- **Menu state.** New Game Plus stays disabled until an ending has been unlocked.
+
 ## v2.0.0
 
 An experience and mechanics update with stealth, crafting, a new chapter, and a clearer interface.

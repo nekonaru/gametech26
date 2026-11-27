@@ -1,0 +1,20 @@
+{
+  "echoes": [
+    {
+      "id": "echo_langkah",
+      "titleKey": "echo.langkah.title",
+      "bodyKey": "echo.langkah.body",
+      "unlockClue": "jejak_kaki"
+    },
+    {
+      "id": "echo_radio",
+      "titleKey": "echo.radio.title",
+      "bodyKey": "echo.radio.body"
+    },
+    {
+      "id": "echo_lilin",
+      "titleKey": "echo.lilin.title",
+      "bodyKey": "echo.lilin.body"
+    }
+  ]
+}

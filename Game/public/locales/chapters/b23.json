@@ -1,0 +1,50 @@
+{
+  "id": {
+    "b23": {
+      "tempat": {
+        "mimpi": "Ruang Mimpi"
+      },
+      "obj": {
+        "dengar": "Dengarkan rekaman yang tertinggal dan pilih jalan keluar"
+      },
+      "radio": {
+        "1": "Radio tua ini masih bersuara walaupun tidak ada kabel.",
+        "2": "Aku merekamnya. Di ponsel, suaranya terdengar lebih dekat daripada di ruangan ini."
+      },
+      "lilin": {
+        "1": "Lilin di ujung ruang menyala dengan api yang tidak bergerak.",
+        "2": "Aku menyimpan rekamannya. Mungkin nanti bisa kubuktikan pada Dimas."
+      },
+      "pintu": {
+        "1": "Pintu ini hanya ada di mimpi, tapi tanganku tetap merasa dingin saat menyentuhnya.",
+        "2": "Aku bisa membuka jalan ini atau membiarkannya tertutup.",
+        "cA": "Buka pintu dan serahkan rekaman itu",
+        "cB": "Tutup pintu dan simpan rekaman untuk diri sendiri"
+      }
+    }
+  },
+  "en": {
+    "b23": {
+      "tempat": {
+        "mimpi": "Dream Room"
+      },
+      "obj": {
+        "dengar": "Listen to the recordings left behind and choose a way out"
+      },
+      "radio": {
+        "1": "This old radio still speaks although no cable is attached.",
+        "2": "I record it. On the phone the voice sounds closer than it does in this room."
+      },
+      "lilin": {
+        "1": "The candle at the end of the room burns with a flame that never moves.",
+        "2": "I save the recording. Maybe I can show it to Dimas later."
+      },
+      "pintu": {
+        "1": "This door only exists in a dream, yet my hand still feels cold when I touch it.",
+        "2": "I can open this way or leave it closed.",
+        "cA": "Open the door and hand over the recordings",
+        "cB": "Close the door and keep the recordings"
+      }
+    }
+  }
+}

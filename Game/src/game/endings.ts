@@ -208,6 +208,28 @@ export class EndingManager {
       cukongInvestigated: false,
       epilog: 'Di pagi hari pintu lorong hilang. Dimas menyimpan kunci yang tidak membuka apa pun.'
     });
+
+    this.endings.set('ending_13', {
+      id: 'ending_13',
+      name: t('ending.ending13'),
+      description: 'Raka menyerahkan rekaman dan memilih mempercayakan cerita kepada orang lain.',
+      dimasFate: 'Mendengar semuanya di pagi hari',
+      rudiFate: 'Tidak lagi dihubungi',
+      joyFound: false,
+      cukongInvestigated: false,
+      epilog: 'Pagi itu radio berhenti. Untuk pertama kalinya, Raka tidur tanpa suara.'
+    });
+
+    this.endings.set('ending_14', {
+      id: 'ending_14',
+      name: t('ending.ending14'),
+      description: 'Raka menyimpan rekaman untuk dirinya sendiri dan membiarkan pintu mimpi tetap tertutup.',
+      dimasFate: 'Tidak pernah tahu isi rekaman itu',
+      rudiFate: 'Masih menerima pesan dari Raka',
+      joyFound: false,
+      cukongInvestigated: false,
+      epilog: 'Rekaman itu tetap di ponsel. Setiap pagi Raka memutarnya sekali, lalu mematikan layar.'
+    });
   }
 
   evaluateEnding(): EndingResult | null {

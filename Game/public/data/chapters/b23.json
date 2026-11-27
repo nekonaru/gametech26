@@ -1,0 +1,51 @@
+{
+  "id": "b23",
+  "hari": 7,
+  "jam": "05:30",
+  "pov": "raka",
+  "scene": "mimpi",
+  "scenes": {
+    "mimpi": {
+      "spawn": [0, 0, 0],
+      "yaw": 0,
+      "label": "b23.tempat.mimpi",
+      "lighting": "malam_rumah"
+    }
+  },
+  "onEnter": [
+    { "op": "setLighting", "preset": "malam_rumah", "transition": 1.5 },
+    { "op": "addVar", "name": "keyakinan", "value": 2 },
+    { "op": "objective", "id": "dengar", "text": "b23.obj.dengar" },
+    { "op": "checkpoint", "id": "b23" }
+  ],
+  "interactables": [
+    { "id": "radio_tua", "prompt": "ui.interact", "position": [0, 0, -3], "onUse": [
+      { "op": "giveEcho", "id": "echo_radio" },
+      { "op": "dialog", "node": "b23.radio" }
+    ] },
+    { "id": "lilin_lorong", "prompt": "ui.examine", "position": [-2, 0, -4], "onUse": [
+      { "op": "giveEcho", "id": "echo_lilin" },
+      { "op": "dialog", "node": "b23.lilin" }
+    ] },
+    { "id": "pintu_mimpi", "prompt": "ui.interact", "position": [2, 0, -6], "once": true, "goalFor": ["dengar"], "onUse": [
+      { "op": "dialog", "node": "b23.pintu" }
+    ] }
+  ],
+  "dialogs": {
+    "b23.radio": [
+      { "speaker": "Raka", "text": "b23.radio.1" },
+      { "speaker": "Raka", "text": "b23.radio.2" }
+    ],
+    "b23.lilin": [
+      { "speaker": "Raka", "text": "b23.lilin.1" },
+      { "speaker": "Raka", "text": "b23.lilin.2" }
+    ],
+    "b23.pintu": [
+      { "speaker": "Raka", "text": "b23.pintu.1" },
+      { "speaker": "Raka", "text": "b23.pintu.2", "choices": [
+        { "text": "b23.pintu.cA", "onSelect": [{ "op": "ending", "id": "ending_13" }] },
+        { "text": "b23.pintu.cB", "onSelect": [{ "op": "ending", "id": "ending_14" }] }
+      ] }
+    ]
+  }
+}

@@ -91,6 +91,22 @@ body > .hud {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+.echo-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.echo-item {
+  padding: var(--space-3);
+  border: 1px solid var(--clr-border);
+  background: rgba(0, 0, 0, 0.3);
+}
+.echo-item h3 { margin-bottom: var(--space-2); font-size: 14px; color: var(--clr-accent); }
+.echo-item p { font-size: 13px; line-height: 1.5; }
+.echo-empty { font-size: 13px; color: var(--clr-fg2); }
+
+/* Keyakinan rendah: dunia sedikit lebih dingin dan kontras, tanpa mengubah
+   konten atau mengunci kontrol. */
+#game-canvas { transition: filter var(--motion-slow) var(--ease-exit); }
+.perception-low #game-canvas { filter: saturate(.85) contrast(1.12) brightness(.96); }
+.perception-low .crosshair { opacity: .7; }
+
 /* reduced motion: informasi tetap sama, gerak kuat dan kedip dimatikan. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

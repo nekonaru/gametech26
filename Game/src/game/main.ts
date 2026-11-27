@@ -22,6 +22,7 @@ import { tensionDirector } from './tension.js';
 import { ChaseDirector, ChaseStartData } from './chase.js';
 import { StealthDirector } from './stealth.js';
 import { CraftingDirector } from './crafting.js';
+import { loadEchoes, EchoEntry } from './echo.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -69,6 +70,8 @@ export class Game {
   private pendingChase: ChaseStartData | null = null;
   private stealthDirector: StealthDirector | null = null;
   private craftingDirector: CraftingDirector | null = null;
+  private echoData: Record<string, EchoEntry> = {};
+  private perceptionTimer = 0;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -174,6 +177,10 @@ export class Game {
     void this.stealthDirector.load();
     this.craftingDirector = new CraftingDirector();
     void this.craftingDirector.load();
+    void loadEchoes().then(data => {
+      this.echoData = data;
+      this.refreshPhoneEchoes();
+    });
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -201,6 +208,7 @@ export class Game {
     this.mainMenu = new MainMenuScreen({
       onStart: () => this.newGame(),
       onContinue: () => this.continueGame(),
+      onNewGamePlus: () => void this.newGamePlus(),
       onLoad: () => this.showLoadScreen(),
       onChapters: () => this.showChapterSelect(),
       onSettings: () => this.showSettings(),
@@ -385,6 +393,11 @@ export class Game {
     });
     eventBus.on<{ id: string }>('craft:run', (data) => {
       if (data?.id) this.craftingDirector?.craft(data.id);
+    });
+    eventBus.on<{ id: string }>('echo:give', (data) => {
+      if (!data?.id) return;
+      gameState.setEcho(data.id, true);
+      this.refreshPhoneEchoes();
     });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
@@ -715,6 +728,18 @@ export class Game {
     this.showScreen(this.prologueScreen!);
   }
 
+  private async newGamePlus(): Promise<void> {
+    const previous = gameState.getState();
+    const variables = { ...previous.variables };
+    const echo = { ...previous.echo };
+    const endingsUnlocked = [...previous.endingsUnlocked];
+    // New Game Plus membawa keputusan lama, bukan inventaris atau clue:
+    // pemain mengulang cerita dengan pengalaman, bukan dengan barang jadi.
+    await this.newGame();
+    gameState.update({ variables, echo, endingsUnlocked, newGamePlus: true });
+    this.showToast(t('menu.ngPlus'), t('menu.ngPlusDesc'), 3500);
+  }
+
   private async endPrologue(): Promise<void> {
     await this.startChapter('b01');
   }
@@ -1002,6 +1027,7 @@ export class Game {
     this.lighting?.update(deltaTime);
     tensionDirector.update(deltaTime);
     const tensionNow = tensionDirector.getTension();
+    this.updatePerception(deltaTime, busy);
     this.updatePropPulse();
     // Figur warga bernapas, mengayun lengan, sesekali menoleh, dan saat
     // tegangan tinggi justru menatap pemain. Registri figure dibersihkan
@@ -1357,7 +1383,34 @@ export class Game {
     this.returnFromOverlay();
   }
 
+  /**
+   * Keyakinan rendah mengubah cara dunia terlihat dan terdengar. Tidak aktif
+   * saat nilai masih nol, jadi bab awal dan baseline visual tidak berubah.
+   */
+  private updatePerception(deltaTime: number, busy: boolean): void {
+    const access = settingsManager.get('accessibility');
+    const keyakinan = gameState.get('variables').keyakinan;
+    const uneasy = !access.softHorror && !access.narrativeMode && keyakinan > 0 && keyakinan <= 2;
+    document.body.classList.toggle('perception-low', uneasy && !busy);
+    this.perceptionTimer += deltaTime;
+    if (!uneasy || busy || this.perceptionTimer < 12) return;
+    this.perceptionTimer = 0;
+    audioManager.playProcedural('whisper', {
+      category: 'ambience', volume: 0.14, spatial: true,
+      position: this.relativeToHead(0.8, -0.4, -0.05)
+    });
+  }
+
+  private refreshPhoneEchoes(): void {
+    const collected = gameState.get('echo') ?? {};
+    const entries = Object.entries(this.echoData)
+      .filter(([id]) => !!collected[id])
+      .map(([, echo]) => ({ title: t(echo.titleKey), body: t(echo.bodyKey) }));
+    this.phoneScreen?.setEchoes(entries);
+  }
+
   private showPhone(): void {
+    this.refreshPhoneEchoes();
     this.showScreen(this.phoneScreen!);
   }
 
@@ -2848,6 +2901,7 @@ export class Game {
   }
 
   async dispose(): Promise<void> {
+    document.body.classList.remove('perception-low');
     window.removeEventListener('keydown', this.boundHandleGlobalKeys);
     this.offPointerLockChange?.();
     this.offPointerLockChange = null;

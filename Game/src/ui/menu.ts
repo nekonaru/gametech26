@@ -2,6 +2,7 @@ import { UIElement } from './base.js';
 import { i18n, t } from '../core/i18n.js';
 import { settingsManager } from '../core/settings.js';
 import { saveManager, SaveSlot } from '../core/save.js';
+import { gameState } from '../game/state.js';
 
 export class MainMenuScreen implements UIElement {
   element: HTMLElement;
@@ -13,6 +14,7 @@ export class MainMenuScreen implements UIElement {
     onSettings: () => void;
     onExit: () => void;
     onGallery: () => void;
+    onNewGamePlus: () => void;
   };
 
   constructor(callbacks: MainMenuScreen['callbacks']) {
@@ -33,10 +35,11 @@ export class MainMenuScreen implements UIElement {
       </div>
       <div class="menu-content">
         <h1 class="menu-title" data-i18n="prologue.title">ASAP YANG TAK PADAM</h1>
-        <div class="menu-version">v2.0.0</div>
+        <div class="menu-version">v3.0.0</div>
         <nav class="menu-nav">
           <button id="menu-start" class="ui-btn menu-item primary" data-i18n="menu.start"></button>
           <button id="menu-continue" class="ui-btn menu-item" data-i18n="menu.continue" disabled></button>
+          <button id="menu-ngplus" class="ui-btn menu-item" data-i18n="menu.ngPlus" disabled></button>
           <button id="menu-load" class="ui-btn menu-item" data-i18n="menu.load"></button>
           <button id="menu-chapters" class="ui-btn menu-item" data-i18n="ending.chapterSelect"></button>
           <button id="menu-gallery" class="ui-btn menu-item" data-i18n="menu.gallery"></button>
@@ -60,6 +63,12 @@ export class MainMenuScreen implements UIElement {
       if (key) el.textContent = t(key);
     });
     this.updateContinueButton();
+    this.updateNewGamePlusButton();
+  }
+
+  private updateNewGamePlusButton(): void {
+    const btn = this.element.querySelector('#menu-ngplus') as HTMLButtonElement | null;
+    if (btn) btn.disabled = gameState.get('endingsUnlocked').length === 0;
   }
 
   private updateContinueButton(): void {
@@ -236,6 +245,7 @@ export class MainMenuScreen implements UIElement {
   private setupListeners(): void {
     const startBtn = this.element.querySelector('#menu-start');
     const continueBtn = this.element.querySelector('#menu-continue');
+    const ngPlusBtn = this.element.querySelector('#menu-ngplus');
     const loadBtn = this.element.querySelector('#menu-load');
     const chaptersBtn = this.element.querySelector('#menu-chapters');
     const galleryBtn = this.element.querySelector('#menu-gallery');
@@ -246,6 +256,7 @@ export class MainMenuScreen implements UIElement {
 
     startBtn?.addEventListener('click', this.callbacks.onStart);
     continueBtn?.addEventListener('click', this.callbacks.onContinue);
+    ngPlusBtn?.addEventListener('click', this.callbacks.onNewGamePlus);
     loadBtn?.addEventListener('click', this.callbacks.onLoad);
     chaptersBtn?.addEventListener('click', this.callbacks.onChapters);
     galleryBtn?.addEventListener('click', this.callbacks.onGallery);
@@ -258,6 +269,7 @@ export class MainMenuScreen implements UIElement {
   private removeListeners(): void {
     const startBtn = this.element.querySelector('#menu-start');
     const continueBtn = this.element.querySelector('#menu-continue');
+    const ngPlusBtn = this.element.querySelector('#menu-ngplus');
     const loadBtn = this.element.querySelector('#menu-load');
     const chaptersBtn = this.element.querySelector('#menu-chapters');
     const galleryBtn = this.element.querySelector('#menu-gallery');
@@ -268,6 +280,7 @@ export class MainMenuScreen implements UIElement {
 
     startBtn?.removeEventListener('click', this.callbacks.onStart);
     continueBtn?.removeEventListener('click', this.callbacks.onContinue);
+    ngPlusBtn?.removeEventListener('click', this.callbacks.onNewGamePlus);
     loadBtn?.removeEventListener('click', this.callbacks.onLoad);
     chaptersBtn?.removeEventListener('click', this.callbacks.onChapters);
     galleryBtn?.removeEventListener('click', this.callbacks.onGallery);
@@ -296,5 +309,6 @@ export class MainMenuScreen implements UIElement {
 
   refresh(): void {
     this.updateContinueButton();
+    this.updateNewGamePlusButton();
   }
 }
