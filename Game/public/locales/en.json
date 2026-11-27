@@ -2,6 +2,8 @@
   "menu": {
     "start": "Start Game",
     "continue": "Continue",
+    "ngPlus": "New Game Plus",
+    "ngPlusDesc": "Past decisions carry over. The story starts again from the beginning.",
     "load": "Load Game",
     "settings": "Settings",
     "exit": "Exit",

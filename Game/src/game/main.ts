@@ -207,6 +207,7 @@ export class Game {
     this.mainMenu = new MainMenuScreen({
       onStart: () => this.newGame(),
       onContinue: () => this.continueGame(),
+      onNewGamePlus: () => void this.newGamePlus(),
       onLoad: () => this.showLoadScreen(),
       onChapters: () => this.showChapterSelect(),
       onSettings: () => this.showSettings(),
@@ -724,6 +725,18 @@ export class Game {
     // kosong. Autosave pertama ditulis saat bab pertama dimulai.
     this.gameState = 'prologue';
     this.showScreen(this.prologueScreen!);
+  }
+
+  private async newGamePlus(): Promise<void> {
+    const previous = gameState.getState();
+    const variables = { ...previous.variables };
+    const echo = { ...previous.echo };
+    const endingsUnlocked = [...previous.endingsUnlocked];
+    // New Game Plus membawa keputusan lama, bukan inventaris atau clue:
+    // pemain mengulang cerita dengan pengalaman, bukan dengan barang jadi.
+    await this.newGame();
+    gameState.update({ variables, echo, endingsUnlocked, newGamePlus: true });
+    this.showToast(t('menu.ngPlus'), t('menu.ngPlusDesc'), 3500);
   }
 
   private async endPrologue(): Promise<void> {

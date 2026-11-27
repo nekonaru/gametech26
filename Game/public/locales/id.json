@@ -2,6 +2,8 @@
   "menu": {
     "start": "Mulai Game",
     "continue": "Lanjutkan",
+    "ngPlus": "Permainan Baru Plus",
+    "ngPlusDesc": "Keputusan lama terbawa. Cerita dimulai lagi dari awal.",
     "load": "Muat Game",
     "settings": "Pengaturan",
     "exit": "Keluar",

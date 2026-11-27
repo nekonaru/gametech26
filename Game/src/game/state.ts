@@ -23,6 +23,8 @@ export interface GameState {
   inJournal: boolean;
   gameStarted: boolean;
   contentWarningAccepted: boolean;
+  /** Apakah sesi ini memakai mode lanjutan dengan variabel bawaan terbawa. */
+  newGamePlus: boolean;
 }
 
 export interface GameVariables {
@@ -98,7 +100,8 @@ export class GameStateManager {
       inPhone: false,
       inJournal: false,
       gameStarted: false,
-      contentWarningAccepted: false
+      contentWarningAccepted: false,
+      newGamePlus: false
     };
   }
 
