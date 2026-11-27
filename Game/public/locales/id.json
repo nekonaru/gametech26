@@ -190,6 +190,8 @@
     "calls": "Panggilan",
     "flashlight": "Senter",
     "radio": "Radio",
+    "echo": "Rekaman",
+    "echoEmpty": "Belum ada rekaman yang ditemukan.",
     "debt": "Utang",
     "noMessages": "Tidak ada pesan",
     "noCalls": "Tidak ada panggilan",
@@ -385,6 +387,20 @@
     "senter": {
       "title": "Rakit senter darurat",
       "desc": "Butuh kabel dan baterai."
+    }
+  },
+  "echo": {
+    "langkah": {
+      "title": "Langkah di Belakang",
+      "body": "Rekaman ini menangkap langkah yang berhenti tepat saat kaki itu lewat. Jejaknya masih ada di tanah basah."
+    },
+    "radio": {
+      "title": "Radio yang Tidak Mati",
+      "body": "Siaran berita mengulang tanggal yang sama tujuh kali. Ada suara napas di antara kalimatnya."
+    },
+    "lilin": {
+      "title": "Lilin yang Menyala Sendiri",
+      "body": "Rekaman pendek dari malam ketika lilin di lorong menyala tanpa siapa pun menyentuhnya."
     }
   }
 }

@@ -191,6 +191,8 @@
     "calls": "Calls",
     "flashlight": "Flashlight",
     "radio": "Radio",
+    "echo": "Recordings",
+    "echoEmpty": "No recordings found yet.",
     "debt": "Debt",
     "noMessages": "No messages",
     "noCalls": "No calls",
@@ -386,6 +388,20 @@
     "senter": {
       "title": "Make an emergency flashlight",
       "desc": "Requires a cable and a battery."
+    }
+  },
+  "echo": {
+    "langkah": {
+      "title": "Steps Behind",
+      "body": "This recording catches steps that stop exactly as the feet pass. The tracks are still in the wet soil."
+    },
+    "radio": {
+      "title": "The Radio That Never Stops",
+      "body": "A news broadcast repeats the same date seven times. There is breathing between the sentences."
+    },
+    "lilin": {
+      "title": "The Self Lit Candle",
+      "body": "A short recording from the night the candle in the lane lit itself without anyone touching it."
     }
   }
 }

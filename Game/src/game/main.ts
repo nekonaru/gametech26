@@ -22,6 +22,7 @@ import { tensionDirector } from './tension.js';
 import { ChaseDirector, ChaseStartData } from './chase.js';
 import { StealthDirector } from './stealth.js';
 import { CraftingDirector } from './crafting.js';
+import { loadEchoes, EchoEntry } from './echo.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -69,6 +70,7 @@ export class Game {
   private pendingChase: ChaseStartData | null = null;
   private stealthDirector: StealthDirector | null = null;
   private craftingDirector: CraftingDirector | null = null;
+  private echoData: Record<string, EchoEntry> = {};
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -174,6 +176,10 @@ export class Game {
     void this.stealthDirector.load();
     this.craftingDirector = new CraftingDirector();
     void this.craftingDirector.load();
+    void loadEchoes().then(data => {
+      this.echoData = data;
+      this.refreshPhoneEchoes();
+    });
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -385,6 +391,11 @@ export class Game {
     });
     eventBus.on<{ id: string }>('craft:run', (data) => {
       if (data?.id) this.craftingDirector?.craft(data.id);
+    });
+    eventBus.on<{ id: string }>('echo:give', (data) => {
+      if (!data?.id) return;
+      gameState.setEcho(data.id, true);
+      this.refreshPhoneEchoes();
     });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
@@ -1357,7 +1368,16 @@ export class Game {
     this.returnFromOverlay();
   }
 
+  private refreshPhoneEchoes(): void {
+    const collected = gameState.get('echo') ?? {};
+    const entries = Object.entries(this.echoData)
+      .filter(([id]) => !!collected[id])
+      .map(([, echo]) => ({ title: t(echo.titleKey), body: t(echo.bodyKey) }));
+    this.phoneScreen?.setEchoes(entries);
+  }
+
   private showPhone(): void {
+    this.refreshPhoneEchoes();
     this.showScreen(this.phoneScreen!);
   }
 

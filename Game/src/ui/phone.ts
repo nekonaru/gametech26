@@ -1,4 +1,4 @@
-import { UIElement } from './base.js';
+import { UIElement, escapeHtml } from './base.js';
 import { i18n, t } from '../core/i18n.js';
 import { settingsManager } from '../core/settings.js';
 import { audioManager } from '../core/audio.js';
@@ -24,9 +24,10 @@ export interface PhoneCall {
 export class PhoneScreen implements UIElement {
   element: HTMLElement;
   private onClose: () => void;
-  private currentTab: 'messages' | 'calls' | 'flashlight' | 'radio' = 'messages';
+  private currentTab: 'messages' | 'calls' | 'flashlight' | 'radio' | 'echo' = 'messages';
   private messages: PhoneMessage[] = [];
   private calls: PhoneCall[] = [];
+  private echoes: Array<{ title: string; body: string }> = [];
   private flashlightOn = false;
   private battery = 1;
   private signal = 1;
@@ -63,6 +64,7 @@ export class PhoneScreen implements UIElement {
           <button class="tab-btn" data-tab="calls" data-i18n="phone.calls"></button>
           <button class="tab-btn" data-tab="flashlight" data-i18n="phone.flashlight"></button>
           <button class="tab-btn" data-tab="radio" data-i18n="phone.radio"></button>
+          <button class="tab-btn" data-tab="echo" data-i18n="phone.echo"></button>
         </nav>
         <div class="phone-content">
           <div id="tab-messages" class="tab-panel">
@@ -107,6 +109,9 @@ export class PhoneScreen implements UIElement {
               </div>
               <button id="radio-power" class="ui-btn radio-power" data-i18n="ui.close"></button>
             </div>
+          </div>
+          <div id="tab-echo" class="tab-panel hidden">
+            <div id="echo-list" class="echo-list"></div>
           </div>
         </div>
       </div>
@@ -240,6 +245,20 @@ export class PhoneScreen implements UIElement {
   addCall(call: PhoneCall): void {
     this.calls.unshift(call);
     this.renderCalls();
+  }
+
+  /** Rekaman echo yang sudah dikumpulkan pemain. */
+  setEchoes(entries: Array<{ title: string; body: string }>): void {
+    this.echoes = [...entries];
+    const list = this.element.querySelector<HTMLElement>('#echo-list');
+    if (!list) return;
+    list.innerHTML = this.echoes.length
+      ? this.echoes.map(entry => `
+          <div class="echo-item">
+            <h3>${escapeHtml(entry.title)}</h3>
+            <p>${escapeHtml(entry.body)}</p>
+          </div>`).join('')
+      : `<p class="echo-empty">${escapeHtml(t('phone.echoEmpty'))}</p>`;
   }
 
   setFlashlightState(on: boolean, battery: number): void {
