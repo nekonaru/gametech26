@@ -101,6 +101,12 @@ body > .hud {
 .echo-item p { font-size: 13px; line-height: 1.5; }
 .echo-empty { font-size: 13px; color: var(--clr-fg2); }
 
+/* Keyakinan rendah: dunia sedikit lebih dingin dan kontras, tanpa mengubah
+   konten atau mengunci kontrol. */
+#game-canvas { transition: filter var(--motion-slow) var(--ease-exit); }
+.perception-low #game-canvas { filter: saturate(.85) contrast(1.12) brightness(.96); }
+.perception-low .crosshair { opacity: .7; }
+
 /* reduced motion: informasi tetap sama, gerak kuat dan kedip dimatikan. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

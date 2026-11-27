@@ -71,6 +71,7 @@ export class Game {
   private stealthDirector: StealthDirector | null = null;
   private craftingDirector: CraftingDirector | null = null;
   private echoData: Record<string, EchoEntry> = {};
+  private perceptionTimer = 0;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -1026,6 +1027,7 @@ export class Game {
     this.lighting?.update(deltaTime);
     tensionDirector.update(deltaTime);
     const tensionNow = tensionDirector.getTension();
+    this.updatePerception(deltaTime, busy);
     this.updatePropPulse();
     // Figur warga bernapas, mengayun lengan, sesekali menoleh, dan saat
     // tegangan tinggi justru menatap pemain. Registri figure dibersihkan
@@ -1379,6 +1381,24 @@ export class Game {
       this.showToast(t('journal.evidenceBoard'), message, complete ? 5000 : 4000);
     }
     this.returnFromOverlay();
+  }
+
+  /**
+   * Keyakinan rendah mengubah cara dunia terlihat dan terdengar. Tidak aktif
+   * saat nilai masih nol, jadi bab awal dan baseline visual tidak berubah.
+   */
+  private updatePerception(deltaTime: number, busy: boolean): void {
+    const access = settingsManager.get('accessibility');
+    const keyakinan = gameState.get('variables').keyakinan;
+    const uneasy = !access.softHorror && !access.narrativeMode && keyakinan > 0 && keyakinan <= 2;
+    document.body.classList.toggle('perception-low', uneasy && !busy);
+    this.perceptionTimer += deltaTime;
+    if (!uneasy || busy || this.perceptionTimer < 12) return;
+    this.perceptionTimer = 0;
+    audioManager.playProcedural('whisper', {
+      category: 'ambience', volume: 0.14, spatial: true,
+      position: this.relativeToHead(0.8, -0.4, -0.05)
+    });
   }
 
   private refreshPhoneEchoes(): void {
@@ -2881,6 +2901,7 @@ export class Game {
   }
 
   async dispose(): Promise<void> {
+    document.body.classList.remove('perception-low');
     window.removeEventListener('keydown', this.boundHandleGlobalKeys);
     this.offPointerLockChange?.();
     this.offPointerLockChange = null;
