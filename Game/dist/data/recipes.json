@@ -1,0 +1,11 @@
+{
+  "recipes": [
+    {
+      "id": "senter_rusak",
+      "inputs": ["kabel", "baterai"],
+      "output": "senter_rusak",
+      "titleKey": "craft.senter.title",
+      "descKey": "craft.senter.desc"
+    }
+  ]
+}

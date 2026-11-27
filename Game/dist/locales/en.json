@@ -127,6 +127,8 @@
     "skip": "Skip",
     "hint": "Hint",
     "objective": "Objective",
+    "detection": "Detection",
+    "hidden": "Hidden",
     "objectiveTag": "Goal",
     "arrivedAt": "Arriving at",
     "leave": "Go",
@@ -328,6 +330,7 @@
     "ending9": "Those Who Run Never Return",
     "ending10": "Oath at the Field",
     "ending11": "The Vanishing Lane",
+    "ending12": "One Step Ahead",
     "epilog": "Epilogue",
     "fateDimas": "Dimas's fate",
     "fateRudi": "Rudi's fate"
@@ -375,5 +378,14 @@
   "b06": {
     "title": "Second Offer",
     "objective": "Decide to accept or refuse Rudi's offer"
+  },
+  "craft": {
+    "title": "Craft Items",
+    "done": "Success",
+    "doneDesc": "A new item was added to the inventory.",
+    "senter": {
+      "title": "Make an emergency flashlight",
+      "desc": "Requires a cable and a battery."
+    }
   }
 }

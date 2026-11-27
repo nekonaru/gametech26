@@ -1,0 +1,53 @@
+{
+  "id": "b22",
+  "hari": 7,
+  "jam": "03:00",
+  "pov": "dimas",
+  "scene": "lorong_bayang",
+  "scenes": {
+    "lorong_bayang": {
+      "spawn": [0, 0, 0],
+      "yaw": 0,
+      "label": "b22.tempat.lorong",
+      "lighting": "malam_rumah"
+    }
+  },
+  "onEnter": [
+    { "op": "setLighting", "preset": "malam_rumah", "transition": 1.5 },
+    { "op": "objective", "id": "sembunyi", "text": "b22.obj.sembunyi" },
+    { "op": "playSound", "key": "ambience_village", "options": { "category": "ambience", "loop": true, "volume": 0.3 } },
+    { "op": "checkpoint", "id": "b22" }
+  ],
+  "interactables": [
+    { "id": "patroli_jalan", "prompt": "ui.examine", "position": [0, 0, -2], "onUse": [
+      { "op": "startPatrol", "id": "patroli_lorong" },
+      { "op": "dialog", "node": "b22.patroli" }
+    ] },
+    { "id": "tunggak_lilin", "prompt": "ui.interact", "position": [0, 0, -3], "once": true, "goalFor": ["sembunyi"], "onUse": [
+      { "op": "setHideZone", "id": "tunggak_lilin", "enabled": true },
+      { "op": "dialog", "node": "b22.tunggak" }
+    ] },
+    { "id": "pintu_lorong", "prompt": "ui.interact", "position": [2, 0, -9], "once": true, "goalFor": ["sembunyi"], "onUse": [
+      { "op": "stopPatrol", "id": "patroli_lorong" },
+      { "op": "dialog", "node": "b22.pintu" }
+    ] }
+  ],
+  "dialogs": {
+    "b22.patroli": [
+      { "speaker": "Dimas", "text": "b22.patroli.1" },
+      { "speaker": "Dimas", "text": "b22.patroli.2" }
+    ],
+    "b22.tunggak": [
+      { "speaker": "Dimas", "text": "b22.tunggak.1" },
+      { "speaker": "Dimas", "text": "b22.tunggak.2" }
+    ],
+    "b22.pintu": [
+      { "speaker": "Dimas", "text": "b22.pintu.1" },
+      { "speaker": "Dimas", "text": "b22.pintu.2", "choices": [
+        { "text": "b22.pintu.cA", "onSelect": [{ "op": "ending", "id": "ending_12" }] },
+        { "text": "b22.pintu.cB", "onSelect": [{ "op": "chapterEnd" }] },
+        { "text": "b22.pintu.cC", "condition": "vars.deteksi < 0.35", "reasonKey": "b22.pintu.terkunci", "onSelect": [{ "op": "chapterEnd" }] }
+      ] }
+    ]
+  }
+}
