@@ -61,6 +61,7 @@ export class ChapterManager {
       { id: 'b17', name: 'Patroli Warga', hari: 6, jam: '22:00', pov: 'dimas', sceneId: 'jalan_desa', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
       { id: 'b21', name: 'Bayang di Lorong', hari: 6, jam: '23:40', pov: 'dimas', sceneId: 'lorong_bayang', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
       { id: 'b22', name: 'Patroli Lorong', hari: 7, jam: '03:00', pov: 'dimas', sceneId: 'lorong_bayang', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
+      { id: 'b23', name: 'Ruang Mimpi', hari: 7, jam: '05:30', pov: 'raka', sceneId: 'mimpi', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
       { id: 'b18', name: 'Kepingan Terakhir', hari: 7, jam: '08:00', pov: 'raka', sceneId: 'tepi_hutan', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
       { id: 'b19', name: 'Jebakan Arwah', hari: 7, jam: '20:00', pov: 'dimas', sceneId: 'hutan_berputar', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
       { id: 'b20', name: 'Pilihan Akhir', hari: 7, jam: '21:00', pov: 'raka', sceneId: 'hutan_api', pos: [0, 0, 0], yaw: 0, completed: false, cluesFound: 0, available: false },
