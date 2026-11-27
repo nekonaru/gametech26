@@ -93,11 +93,6 @@ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const port = server.address().port;
 const url = `http://127.0.0.1:${port}/index.html`;
 
-// --- Jalankan Lighthouse -----------------------------------------------------
-const chrome = await launchChrome({
-  chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu-sandbox']
-});
-
 const config = {
   extends: 'lighthouse:default',
   settings: {
@@ -116,11 +111,20 @@ const config = {
 
 const runs = [];
 for (let i = 0; i < RUNS; i++) {
-  const result = await lighthouse(url, { port: chrome.port, output: 'json', logLevel: 'error' }, config);
-  runs.push(result.lhr);
-  console.log(`Run #${i + 1} selesai.`);
+  // Chrome segar tiap run: memakai ulang port yang sama membuat tab crash
+  // pada run kedua di runner bersama. Ambang tidak berubah, yang diperbaiki
+  // hanya cara pengukurannya.
+  const chrome = await launchChrome({
+    chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu-sandbox']
+  });
+  try {
+    const result = await lighthouse(url, { port: chrome.port, output: 'json', logLevel: 'error' }, config);
+    runs.push(result.lhr);
+    console.log(`Run #${i + 1} selesai.`);
+  } finally {
+    await chrome.kill();
+  }
 }
-await chrome.kill();
 server.close();
 
 // Ambil median per kategori & audit kunci antar-run.
