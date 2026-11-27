@@ -197,6 +197,17 @@ export class EndingManager {
       cukongInvestigated: false,
       epilog: 'Pintu itu tertutup lagi saat fajar. Lorongnya tidak pernah ditemukan orang, hanya lilin yang masih berasap.'
     });
+
+    this.endings.set('ending_12', {
+      id: 'ending_12',
+      name: t('ending.ending12'),
+      description: 'Dimas keluar dari lorong tepat sebelum patroli mencapainya. Ia selamat, tapi tahu siapa yang berjaga.',
+      dimasFate: 'Selamat, tapi tidak pernah tidur tenang',
+      rudiFate: 'Tidak pernah menyebut nama yang melihatnya',
+      joyFound: false,
+      cukongInvestigated: false,
+      epilog: 'Di pagi hari pintu lorong hilang. Dimas menyimpan kunci yang tidak membuka apa pun.'
+    });
   }
 
   evaluateEnding(): EndingResult | null {

@@ -1,0 +1,50 @@
+{
+  "id": {
+    "b22": {
+      "tempat": {
+        "lorong": "Lorong Bayang"
+      },
+      "obj": {
+        "sembunyi": "Menghindari patroli dan mencapai pintu lorong"
+      },
+      "patroli": {
+        "1": "Ada langkah teratur di ujung lorong. Bukan langkah warga yang pulang.",
+        "2": "Seseorang berjalan bolak balik dengan jarak yang sama setiap kali."
+      },
+      "tunggak": {
+        "1": "Tunggak ini masih hangat. Lilin di atasnya memberi tempat berlindung yang sempit.",
+        "2": "Aku berjongkok di belakangnya. Langkah itu lewat beberapa meter saja."
+      },
+      "pintu": {
+        "1": "Pintu lorong hampir terbuka. Langkah di belakangku makin dekat.",
+        "2": "Aku bisa keluar sekarang, atau menunggu sampai bayangan itu lewat.",
+        "cA": "Keluar sekarang juga",
+        "cB": "Tunggu sampai aman"
+      }
+    }
+  },
+  "en": {
+    "b22": {
+      "tempat": {
+        "lorong": "Shadow Lane"
+      },
+      "obj": {
+        "sembunyi": "Avoid the patrol and reach the lane door"
+      },
+      "patroli": {
+        "1": "Regular steps come from the end of the lane. Not the walk of someone going home.",
+        "2": "Someone paces back and forth over the same distance each time."
+      },
+      "tunggak": {
+        "1": "This stump is still warm. The candle on it offers a narrow place to hide.",
+        "2": "I crouch behind it. The steps pass only a few meters away."
+      },
+      "pintu": {
+        "1": "The lane door is almost open. The steps behind me are getting closer.",
+        "2": "I can leave now, or wait until the shape passes.",
+        "cA": "Leave right now",
+        "cB": "Wait until it is safe"
+      }
+    }
+  }
+}

@@ -24,9 +24,9 @@ beforeEach(() => {
 });
 
 describe('EndingManager.evaluateEnding', () => {
-  it('built-in endings termuat (11 ending)', async () => {
+  it('built-in endings termuat (12 ending)', async () => {
     const m = await freshManager();
-    expect(m.getAllEndings()).toHaveLength(11);
+    expect(m.getAllEndings()).toHaveLength(12);
   });
 
   it('menolak tawaran Rudi -> ending_1', async () => {
