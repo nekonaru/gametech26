@@ -175,6 +175,22 @@
       "cukongInvestigated": false,
       "epilog_id": "Pintu itu tertutup lagi saat fajar. Lorongnya tidak pernah ditemukan orang, hanya lilin yang masih berasap.",
       "epilog_en": "The door closes again at dawn. Nobody ever finds the lane again, only a candle still smoking."
+    },
+    {
+      "id": "ending_12",
+      "name_id": "Selangkah Lebih Awal",
+      "name_en": "One Step Ahead",
+      "description_id": "Dimas keluar dari lorong tepat sebelum patroli mencapainya. Ia selamat, tapi tahu siapa yang berjaga.",
+      "description_en": "Dimas leaves the lane just before the patrol reaches him. He survives, but knows who keeps watch.",
+      "requirements": { "chapter": "b22" },
+      "dimasFate_id": "Selamat, tapi tidak pernah tidur tenang",
+      "dimasFate_en": "Alive, but never sleeps soundly",
+      "rudiFate_id": "Tidak pernah menyebut nama yang melihatnya",
+      "rudiFate_en": "Never names the one who saw him",
+      "joyFound": false,
+      "cukongInvestigated": false,
+      "epilog_id": "Di pagi hari pintu lorong hilang. Dimas menyimpan kunci yang tidak membuka apa pun.",
+      "epilog_en": "In the morning the lane door is gone. Dimas keeps a key that opens nothing."
     }
   ]
 }

@@ -1,3 +1,25 @@
+## v2.0.0
+
+An experience and mechanics update with stealth, crafting, a new chapter, and a clearer interface.
+
+## New features
+
+- **Stealth chapter.** Chapter b22 adds patrol routes, a detection meter, hide zones, and ending 12.
+- **Crafting.** Recipes from `recipes.json` can be assembled in a new inventory panel.
+- **Locked choices.** Dialog options whose conditions are not met stay visible with a short reason.
+- **Design tokens.** Focus rings, motion tokens, and reduced motion support are applied across the interface.
+
+## Improvements
+
+- **Detection feedback.** The HUD shows detection and hidden status with a compact meter.
+- **Save compatibility.** Old saves gain default values for new variables when loaded.
+- **Interaction polish.** Buttons have active states and modal panels use a consistent entrance animation.
+
+## Bug fixes
+
+- **Dialog identity.** Choices without a target node still resolve to the correct option.
+- **Listener hygiene.** Inventory craft buttons reuse one bound handler instead of stacking listeners.
+
 ## v1.1.0
 
 A content and reliability update that adds a new chapter, a shadow chase mechanic, and fixes across saves, input, audio, UI, and rendering.

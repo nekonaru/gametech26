@@ -52,16 +52,18 @@ Mobile: joystick sentuh di sisi kiri untuk bergerak (dorong ke tepi = lari), ges
 - `src/render` material PSX, post process 360p dengan dithering, kamera, partikel, pencahayaan, 18 pembangun adegan
 - `src/game` state, script runner op JSON, dialog, interaksi, jurnal, manajer babak, tension, ending, main
 - `src/ui` boot, menu, pengaturan, simpan muat, HUD, jurnal, papan petunjuk, ponsel, dialog, galeri, puzzle, ending, prolog
-- `public/data` data babak (25 file), clue, ending, variabel, item
+- `public/data` data babak (26 file), clue, ending, variabel, item, patrol, resep
 - `public/locales` terjemahan ID dan EN, termasuk terjemahan per babak
 - `docs/chapter-spec.md` kontrak penulisan babak untuk penulis naskah
 - `tools/` 7 suite audit, auto-play, visual regression, Lighthouse budget
 
 ## Yang sudah selesai
 
-- 25 babak (B1 sampai B21 termasuk B5B, B10ALT, B12B, dan B15-ALT) seluruhnya dibaca dari JSON di `public/data/chapters`
-- 11 ending dan epilog, matriks syarat diuji untuk semua cabang (ending 1 sampai 11)
+- 26 babak (B1 sampai B22 termasuk B5B, B10ALT, B12B, dan B15-ALT) seluruhnya dibaca dari JSON di `public/data/chapters`
+- 12 ending dan epilog, matriks syarat diuji untuk semua cabang (ending 1 sampai 12)
 - Bab B21 dengan scene `lorong_bayang` dan mekanik bayang pengikut lewat op `startChase` dan `stopChase`, otomatis nonaktif pada Mode Naratif dan Horor Lembut
+- Bab B22 dengan patroli, meter deteksi, zona sembunyi, dan pilihan dialog terkunci yang menampilkan alasan
+- Crafting resep dari `public/data/recipes.json` lewat panel Rakit di inventaris
 - Sistem Jejak Silang (echo), ponsel masuk panggilan, jurnal clue, dan papan petunjuk dengan penarikan kartu
 - Variabel sesuai GDD: nurani 0 sampai 4, empati 0 sampai 3, investigasi 0 sampai 7 (dihitung dari poin clue, clue bonus bernilai 0), keyakinan 0 sampai 9, percaya Dimas, dan flag percabangan
 - 6 puzzle unik: dial laci (B4), struk robek (B13), kalender dinding (B13), papan petunjuk (B18), jalan berputar (B19), dan timing cincin (B20). Semua punya tombol Bantuan dan Lewati

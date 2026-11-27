@@ -100,9 +100,11 @@ export interface DialogChoice {
   text: string;
   next: string;
   condition?: string;
+  reasonKey?: string;
   onSelect?: ScriptOperation[];
   important?: boolean;
   once?: boolean;
+  locked?: boolean;
 }
 
 export class ScriptRunner {
@@ -630,6 +632,18 @@ export class ScriptRunner {
       case 'stopChase':
         eventBus.emit('chase:stop', {});
         break;
+      case 'startPatrol':
+        eventBus.emit('patrol:start', { id: op.id });
+        break;
+      case 'stopPatrol':
+        eventBus.emit('patrol:stop', { id: op.id });
+        break;
+      case 'setHideZone':
+        eventBus.emit('hidezone:set', { id: op.id, enabled: op.enabled !== false });
+        break;
+      case 'craft':
+        eventBus.emit('craft:run', { id: op.recipe });
+        break;
       case 'ending':
         this.triggerEnding(op.id);
         break;
@@ -782,14 +796,20 @@ export class ScriptRunner {
 
   private showChoices(choices: DialogChoice[]): DialogChoice[] {
     this.waitingForInput = true;
-    const validChoices = choices.filter(c => !c.condition || this.evaluateCondition(c.condition));
+    // Pilihan yang syaratnya tidak terpenuhi tetap dikirim ke UI dengan
+    // penanda locked. Pemain melihat bahwa jalur itu ada dan tahu alasannya.
+    const resolved = choices.map(c => ({
+      ...c,
+      locked: !!c.condition && !this.evaluateCondition(c.condition)
+    }));
+    const validChoices = resolved.filter(c => !c.locked);
     if (!validChoices.length) {
       // Semua pilihan ter-filter kondisinya: jangan menunggu input yang tidak
       // pernah datang (macet).
       this.waitingForInput = false;
       return [];
     }
-    eventBus.emit('dialog:choices', { choices: validChoices });
+    eventBus.emit('dialog:choices', { choices: resolved });
     return validChoices;
   }
 

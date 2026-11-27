@@ -18,7 +18,7 @@ const KNOWN_OPS = new Set([
   'checkpoint', 'startPuzzle', 'echo', 'ending', 'setPOV', 'setTime', 'teleport', 'setEcho',
   'addEmpati', 'addNurani', 'modifyPercayaDimas', 'modifyPercayaRudi', 'setKonfrontasiDini',
   'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan',
-  'startChase', 'stopChase'
+  'startChase', 'stopChase', 'startPatrol', 'stopPatrol', 'setHideZone', 'craft'
 ]);
 
 const chaptersDir = path.join(root, 'public', 'data', 'chapters');
@@ -59,6 +59,16 @@ const files = fs.readdirSync(chaptersDir).filter(f => f.endsWith('.json'));
 // loadScene merujuk bab lain: id bab = nama file tanpa ekstensi.
 const chapterIds = new Set(files.map((f) => f.replace(/\.json$/, '')));
 
+// Data stealth: rute patrol dan zona sembunyi harus benar-benar ada.
+const patrolFile = path.join(root, 'public', 'data', 'patrols.json');
+const patrolData = fs.existsSync(patrolFile) ? readJson(patrolFile) : {};
+const patrolRouteIds = new Set((patrolData.routes || []).map((r) => r.id));
+const hideZoneIds = new Set((patrolData.hideZones || []).map((z) => z.id));
+
+const recipeFile = path.join(root, 'public', 'data', 'recipes.json');
+const recipeData = fs.existsSync(recipeFile) ? readJson(recipeFile) : {};
+const recipeIds = new Set((recipeData.recipes || []).map((r) => r.id));
+
 // Katalog rekaman: blok FILES di src/core/audioSamples.ts. playSound yang
 // key-nya tidak ada di sini HANYA boleh yang memang sintesis saja
 // (phone_hangup/phone_vibrate: bunyi <1 detik, tak worth file mp3).
@@ -94,6 +104,15 @@ for (const f of files) {
         if (typeof op.scene !== 'string' || !chapterIds.has(op.scene)) {
           note(f, `loadScene "${op.scene}" bukan id bab yang ada (di ${where})`);
         }
+      }
+      if (op.op === 'startPatrol' && typeof op.id === 'string' && !patrolRouteIds.has(op.id)) {
+        note(f, `startPatrol "${op.id}" tidak ada di patrols.json (di ${where})`);
+      }
+      if (op.op === 'setHideZone' && typeof op.id === 'string' && !hideZoneIds.has(op.id)) {
+        note(f, `setHideZone "${op.id}" tidak ada di patrols.json (di ${where})`);
+      }
+      if (op.op === 'craft' && typeof op.recipe === 'string' && !recipeIds.has(op.recipe)) {
+        note(f, `craft "${op.recipe}" tidak ada di recipes.json (di ${where})`);
       }
       if (op.op === 'gotoScene') {
         const known = script.scenes || {};

@@ -43,6 +43,9 @@ export class HUD implements UIElement {
    */
   private coarsePointer: MediaQueryList | null = null;
   private runIndicator: HTMLElement | null = null;
+  private detectionElement: HTMLElement | null = null;
+  private detectionFill: HTMLElement | null = null;
+  private detectionHidden: HTMLElement | null = null;
 
   constructor() {
     this.element = this.createElement();
@@ -75,6 +78,11 @@ export class HUD implements UIElement {
       </div>
       <div id="day-indicator" class="day-indicator hidden">
         <span class="day-text"></span>
+      </div>
+      <div id="detection" class="detection hidden" aria-live="polite">
+        <span class="detection-label" data-i18n="hud.detection"></span>
+        <div class="detection-bar"><div class="detection-fill"></div></div>
+        <span class="detection-hidden" data-i18n="hud.hidden"></span>
       </div>
       <div id="flashlight-indicator" class="flashlight-indicator hidden">
         <span class="flashlight-icon">🔦</span>
@@ -190,6 +198,9 @@ export class HUD implements UIElement {
     this.objectiveElement = this.element.querySelector('#objective');
     this.crosshairElement = this.element.querySelector('#crosshair');
     this.dayIndicatorElement = this.element.querySelector('#day-indicator');
+    this.detectionElement = this.element.querySelector('#detection');
+    this.detectionFill = this.element.querySelector('.detection-fill');
+    this.detectionHidden = this.element.querySelector('.detection-hidden');
     this.flashlightElement = this.element.querySelector('#flashlight-indicator');
     this.interactionPromptElement = this.element.querySelector('#interaction-prompt');
     this.pointerHintElement = this.element.querySelector('#pointer-hint');
@@ -533,6 +544,18 @@ export class HUD implements UIElement {
       });
     });
     this.updateTouchLabels();
+  }
+
+  /** Perbarui meter deteksi sistem stealth. Disembunyikan bila tidak relevan. */
+  setDetection(value: number, hidden: boolean): void {
+    const meter = this.detectionElement;
+    if (!meter) return;
+    const clamped = Math.max(0, Math.min(1, value));
+    const relevant = clamped > 0.01 || hidden;
+    meter.classList.toggle('hidden', !relevant);
+    meter.classList.toggle('hidden-state', hidden);
+    if (this.detectionFill) this.detectionFill.style.width = `${Math.round(clamped * 100)}%`;
+    if (this.detectionHidden) this.detectionHidden.classList.toggle('hidden', !hidden);
   }
 
   setVisible(visible: boolean): void {

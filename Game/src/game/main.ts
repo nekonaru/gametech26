@@ -20,6 +20,8 @@ import { phoneManager } from './phone.js';
 import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
 import { ChaseDirector, ChaseStartData } from './chase.js';
+import { StealthDirector } from './stealth.js';
+import { CraftingDirector } from './crafting.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -65,6 +67,8 @@ export class Game {
   private particles: ParticleSystem | null = null;
   private chaseDirector: ChaseDirector | null = null;
   private pendingChase: ChaseStartData | null = null;
+  private stealthDirector: StealthDirector | null = null;
+  private craftingDirector: CraftingDirector | null = null;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -166,6 +170,10 @@ export class Game {
     this.lighting = new LightingManager(this.engine.scene, settingsManager);
     this.particles = new ParticleSystem(this.engine.scene, settingsManager);
     this.chaseDirector = new ChaseDirector();
+    this.stealthDirector = new StealthDirector();
+    void this.stealthDirector.load();
+    this.craftingDirector = new CraftingDirector();
+    void this.craftingDirector.load();
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -361,6 +369,22 @@ export class Game {
     eventBus.on('chase:stop', () => {
       this.pendingChase = null;
       this.chaseDirector?.stop();
+    });
+    eventBus.on<{ id: string }>('patrol:start', (data) => {
+      if (this.builtScene) this.stealthDirector?.startPatrol(data?.id ?? '', this.builtScene.group);
+    });
+    eventBus.on<{ id: string }>('patrol:stop', (data) => {
+      this.stealthDirector?.stopPatrol(data?.id ?? '');
+    });
+    eventBus.on<{ id: string; enabled: boolean }>('hidezone:set', (data) => {
+      if (data?.id) this.stealthDirector?.setHideZone(data.id, !!data.enabled);
+    });
+    eventBus.on('stealth:spotted', () => {
+      this.hud?.flashHorror(0.6, 900);
+      audioManager.playProcedural('whisper', { category: 'ambience', volume: 0.28 });
+    });
+    eventBus.on<{ id: string }>('craft:run', (data) => {
+      if (data?.id) this.craftingDirector?.craft(data.id);
     });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
@@ -985,6 +1009,15 @@ export class Game {
     this.engine?.camera?.getWorldPosition(_camWorldPos);
     this.engine?.camera?.getWorldDirection(_camWorldDir);
     if (!busy) this.chaseDirector?.update(deltaTime, _camWorldPos);
+    this.stealthDirector?.update(deltaTime, {
+      playerPosition: _camWorldPos,
+      sceneId: gameState.get('location').sceneId,
+      crouching: inputManager.getState().crouch,
+      running: inputManager.isRunning(),
+      inDialog: gameState.get('inDialog'),
+      paused: busy
+    });
+    this.hud?.setDetection(this.stealthDirector?.getDetection() ?? 0, this.stealthDirector?.isHidden() ?? false);
     // Pendengar mengikuti kepala pemain: tanpa ini semua suara spasial
     // (bisikan, langkah di belakang, napas) dihitung relatif titik dunia (0,0,0)
     // dan terdengar arahnya salah dari layar mana pun pemain berdiri.
@@ -1254,6 +1287,12 @@ export class Game {
     const screen = this.inventoryScreen;
     if (screen) {
       screen.setItems(gameState.get('inventory') ?? []);
+      screen.setRecipes(this.craftingDirector?.getRecipes() ?? [], (id) => {
+        if (this.craftingDirector?.craft(id)) {
+          screen.setItems(gameState.get('inventory') ?? []);
+          this.showToast(t('craft.done'), t('craft.doneDesc'), 2500);
+        }
+      });
       this.showScreen(screen);
     }
   }
@@ -1576,6 +1615,7 @@ export class Game {
       const activeChase = this.chaseDirector?.getState();
       if (activeChase) this.pendingChase = activeChase;
       this.chaseDirector?.stop();
+      this.stealthDirector?.stopAll();
       this.engine.scene.remove(this.builtScene.group);
       this.disposeObject(this.builtScene.group);
       this.builtScene = null;
@@ -2824,6 +2864,7 @@ export class Game {
     this.lighting?.dispose();
     this.particles?.dispose();
     this.chaseDirector?.dispose();
+    this.stealthDirector?.dispose();
   }
 }
 

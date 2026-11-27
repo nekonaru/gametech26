@@ -48,6 +48,59 @@ body > .hud {
   --clr-danger: #ffcf3f;
 }
 
+/* ==========================================================================
+   Lapisan semantik dan gerak. Komponen memakai token ini, bukan nilai mentah,
+   supaya kontras, fokus, dan durasi bisa diubah dari satu tempat.
+   ========================================================================== */
+:root {
+  --focus-color: #ffd9a0;
+  --panel-bg: var(--clr-bg2);
+  --panel-border: var(--clr-border);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --motion-instant: 80ms;
+  --motion-quick: 160ms;
+  --motion-base: 240ms;
+  --motion-slow: 400ms;
+  --motion-cinematic: 800ms;
+  --ease-enter: cubic-bezier(.2, .8, .2, 1);
+  --ease-exit: cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Fokus selalu terlihat, termasuk saat pemain memakai gamepad atau keyboard. */
+:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+.ui-btn:active:not(:disabled),
+.choice-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.confirm-dialog,
+.panel-enter {
+  animation: panel-in var(--motion-base) var(--ease-enter);
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* reduced motion: informasi tetap sama, gerak kuat dan kedip dimatikan. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 html, body {
   width: 100%; height: 100%;
   overflow: hidden;
@@ -448,6 +501,35 @@ input[type="checkbox"].ui-checkbox {
   border: 1px solid #555;
 }
 .battery-fill { height: 100%; background: var(--clr-success); transition: width 0.3s; }
+
+/* Meter deteksi stealth: lebar mengikuti state, warna naik ke merah. */
+.detection {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(10, 10, 15, 0.78);
+  border: 1px solid var(--panel-border);
+  font-size: 12px;
+}
+.detection-bar {
+  width: 140px;
+  height: 6px;
+  background: var(--clr-bg3);
+  border: 1px solid var(--clr-border);
+}
+.detection-fill {
+  width: 0;
+  height: 100%;
+  background: var(--clr-accent);
+  transition: width var(--motion-quick) var(--ease-enter);
+}
+.detection.hidden-state .detection-fill { background: var(--clr-success); }
+.detection-hidden { color: var(--clr-success); }
 .interaction-prompt {
   position: absolute;
   top: calc(50% + 34px);
@@ -784,6 +866,13 @@ input[type="checkbox"].ui-checkbox {
 /* Pilihan sedang tersorot keyboard (W/S): samarkan seperti hover tombol. */
 .choice-btn.kb-selected { background: var(--clr-accent); color: #000; }
 .choice-btn.kb-selected .choice-number { color: #000; }
+.choice-btn.locked { opacity: 0.5; cursor: not-allowed; }
+.choice-reason {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: 11px;
+  color: var(--clr-fg2);
+}
 /* Baris pilihan dan status auto-play ditonjolkan supaya mudah ditemukan. */
 .dialog-hints .hint-choice { color: var(--clr-accent); }
 .dialog-hints .hint-auto.active { color: var(--clr-accent); }

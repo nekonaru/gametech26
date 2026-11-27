@@ -33,7 +33,7 @@ export class MainMenuScreen implements UIElement {
       </div>
       <div class="menu-content">
         <h1 class="menu-title" data-i18n="prologue.title">ASAP YANG TAK PADAM</h1>
-        <div class="menu-version">v1.1.0</div>
+        <div class="menu-version">v2.0.0</div>
         <nav class="menu-nav">
           <button id="menu-start" class="ui-btn menu-item primary" data-i18n="menu.start"></button>
           <button id="menu-continue" class="ui-btn menu-item" data-i18n="menu.continue" disabled></button>
