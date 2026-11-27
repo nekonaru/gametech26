@@ -45,7 +45,8 @@
       { "speaker": "Dimas", "text": "b22.pintu.1" },
       { "speaker": "Dimas", "text": "b22.pintu.2", "choices": [
         { "text": "b22.pintu.cA", "onSelect": [{ "op": "ending", "id": "ending_12" }] },
-        { "text": "b22.pintu.cB", "onSelect": [{ "op": "chapterEnd" }] }
+        { "text": "b22.pintu.cB", "onSelect": [{ "op": "chapterEnd" }] },
+        { "text": "b22.pintu.cC", "condition": "vars.deteksi < 0.35", "reasonKey": "b22.pintu.terkunci", "onSelect": [{ "op": "chapterEnd" }] }
       ] }
     ]
   }

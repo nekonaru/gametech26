@@ -1,4 +1,4 @@
-import { UIElement } from './base.js';
+import { UIElement, escapeHtml } from './base.js';
 import { i18n, t } from '../core/i18n.js';
 import { settingsManager } from '../core/settings.js';
 import { audioManager } from '../core/audio.js';
@@ -17,6 +17,9 @@ export interface DialogChoice {
   text: string;
   next: string;
   condition?: () => boolean;
+  reasonKey?: string;
+  locked?: boolean;
+  reason?: string;
   onSelect?: () => void;
   important?: boolean;
   once?: boolean;
@@ -80,7 +83,9 @@ export class DialogScreen implements UIElement {
       text: t(String(c.text)),
       next: typeof c.next === 'string' && c.next !== 'undefined' ? c.next : undefined,
       important: !!c.important,
-      once: !!c.once
+      once: !!c.once,
+      locked: !!c.locked,
+      reason: c.reasonKey ? t(String(c.reasonKey)) : ''
     }));
     if (this.element.style.display === 'none' || !this.element.isConnected) {
       this.show();
@@ -426,15 +431,16 @@ export class DialogScreen implements UIElement {
     const container = this.element.querySelector('#dialog-choices') as HTMLElement;
     if (!container) return;
 
-    const validChoices = choices.filter(c => typeof c.condition !== 'function' || c.condition());
-    this.waitingForChoice = validChoices.length > 0;
+    const unlocked = choices.filter(c => !c.locked && (typeof c.condition !== 'function' || c.condition()));
+    this.waitingForChoice = unlocked.length > 0;
 
-    container.innerHTML = validChoices.map((choice, index) => `
-      <button class="ui-btn choice-btn ${choice.important ? 'important' : ''}" 
+    container.innerHTML = choices.map((choice, index) => `
+      <button class="ui-btn choice-btn ${choice.important ? 'important' : ''} ${choice.locked ? 'locked' : ''}"
               data-choice="${choice.next ?? choice.text}"
-              data-once="${choice.once || false}">
+              data-once="${choice.once || false}" ${choice.locked ? 'disabled' : ''}>
         <span class="choice-number">${index + 1}.</span>
         <span class="choice-text">${choice.text}</span>
+        ${choice.reason ? `<span class="choice-reason">${escapeHtml(choice.reason)}</span>` : ''}
         ${choice.important ? '<span class="choice-important" data-i18n="dialog.willBeRemembered"></span>' : ''}
       </button>
     `).join('');
@@ -466,7 +472,7 @@ export class DialogScreen implements UIElement {
     const buttons = container?.querySelectorAll<HTMLElement>('.choice-btn');
     const btn = buttons?.[index] as HTMLButtonElement;
 
-    if (!btn) return;
+    if (!btn || btn.hasAttribute('disabled')) return;
 
     this.clearAutoAdvance();
     buttons?.forEach(b => b.classList.remove('kb-selected'));

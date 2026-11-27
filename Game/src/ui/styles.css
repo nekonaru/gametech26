@@ -866,6 +866,13 @@ input[type="checkbox"].ui-checkbox {
 /* Pilihan sedang tersorot keyboard (W/S): samarkan seperti hover tombol. */
 .choice-btn.kb-selected { background: var(--clr-accent); color: #000; }
 .choice-btn.kb-selected .choice-number { color: #000; }
+.choice-btn.locked { opacity: 0.5; cursor: not-allowed; }
+.choice-reason {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: 11px;
+  color: var(--clr-fg2);
+}
 /* Baris pilihan dan status auto-play ditonjolkan supaya mudah ditemukan. */
 .dialog-hints .hint-choice { color: var(--clr-accent); }
 .dialog-hints .hint-auto.active { color: var(--clr-accent); }

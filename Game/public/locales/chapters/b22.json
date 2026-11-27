@@ -19,7 +19,9 @@
         "1": "Pintu lorong hampir terbuka. Langkah di belakangku makin dekat.",
         "2": "Aku bisa keluar sekarang, atau menunggu sampai bayangan itu lewat.",
         "cA": "Keluar sekarang juga",
-        "cB": "Tunggu sampai aman"
+        "cB": "Tunggu sampai aman",
+        "cC": "Keluar perlahan tanpa suara",
+        "terkunci": "Patroli masih terlalu dekat"
       }
     }
   },
@@ -43,7 +45,9 @@
         "1": "The lane door is almost open. The steps behind me are getting closer.",
         "2": "I can leave now, or wait until the shape passes.",
         "cA": "Leave right now",
-        "cB": "Wait until it is safe"
+        "cB": "Wait until it is safe",
+        "cC": "Leave slowly without a sound",
+        "terkunci": "The patrol is still too close"
       }
     }
   }
