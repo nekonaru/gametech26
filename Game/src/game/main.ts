@@ -21,6 +21,7 @@ import { chapterManager } from './chapter.js';
 import { tensionDirector } from './tension.js';
 import { ChaseDirector, ChaseStartData } from './chase.js';
 import { StealthDirector } from './stealth.js';
+import { CraftingDirector } from './crafting.js';
 import { ambienceDirector } from './ambience.js';
 import { endingManager } from './endings.js';
 import { BootScreen, LanguageSelectScreen } from '../ui/boot.js';
@@ -67,6 +68,7 @@ export class Game {
   private chaseDirector: ChaseDirector | null = null;
   private pendingChase: ChaseStartData | null = null;
   private stealthDirector: StealthDirector | null = null;
+  private craftingDirector: CraftingDirector | null = null;
   private flashlight: THREE.SpotLight | null = null;
 
   /** Penangan global yang disimpan supaya dispose() benar-benar bisa melepasnya. */
@@ -170,6 +172,8 @@ export class Game {
     this.chaseDirector = new ChaseDirector();
     this.stealthDirector = new StealthDirector();
     void this.stealthDirector.load();
+    this.craftingDirector = new CraftingDirector();
+    void this.craftingDirector.load();
 
     // Senter: sinar lebih terang dan menjangkau lebih jauh dari versi lama
     // (intensitas 2,6 / jarak 16 / decay 1,3) supaya lorong gelap terbaca
@@ -378,6 +382,9 @@ export class Game {
     eventBus.on('stealth:spotted', () => {
       this.hud?.flashHorror(0.6, 900);
       audioManager.playProcedural('whisper', { category: 'ambience', volume: 0.28 });
+    });
+    eventBus.on<{ id: string }>('craft:run', (data) => {
+      if (data?.id) this.craftingDirector?.craft(data.id);
     });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
@@ -1280,6 +1287,12 @@ export class Game {
     const screen = this.inventoryScreen;
     if (screen) {
       screen.setItems(gameState.get('inventory') ?? []);
+      screen.setRecipes(this.craftingDirector?.getRecipes() ?? [], (id) => {
+        if (this.craftingDirector?.craft(id)) {
+          screen.setItems(gameState.get('inventory') ?? []);
+          this.showToast(t('craft.done'), t('craft.doneDesc'), 2500);
+        }
+      });
       this.showScreen(screen);
     }
   }

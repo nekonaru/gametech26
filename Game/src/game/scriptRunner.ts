@@ -639,6 +639,9 @@ export class ScriptRunner {
       case 'setHideZone':
         eventBus.emit('hidezone:set', { id: op.id, enabled: op.enabled !== false });
         break;
+      case 'craft':
+        eventBus.emit('craft:run', { id: op.recipe });
+        break;
       case 'ending':
         this.triggerEnding(op.id);
         break;

@@ -25,6 +25,8 @@ export class InventoryScreen implements UIElement {
   element: HTMLElement;
   private onClose: () => void;
   private items: string[] = [];
+  private recipes: Array<{ id: string; inputs: string[]; titleKey: string; descKey: string }> = [];
+  private onCraft: ((id: string) => void) | null = null;
 
   constructor(onClose: () => void) {
     this.onClose = onClose;
@@ -50,6 +52,10 @@ export class InventoryScreen implements UIElement {
           <button id="inventory-close" class="ui-btn close-btn" data-i18n="ui.close"></button>
         </header>
         <div id="inventory-grid" class="inventory-grid"></div>
+        <div id="craft-panel" class="craft-panel hidden">
+          <h3 data-i18n="craft.title"></h3>
+          <div id="craft-list"></div>
+        </div>
         <footer class="inventory-footer">
           <span data-i18n="inventory.hint"></span>
         </footer>
@@ -61,6 +67,13 @@ export class InventoryScreen implements UIElement {
   /** Salin daftar benda dari gameState. Dipanggil main sebelum show(). */
   setItems(items: string[]): void {
     this.items = [...items];
+    this.render();
+  }
+
+  /** Daftar resep dari CraftingDirector. Tombol nonaktif bila bahan kurang. */
+  setRecipes(recipes: Array<{ id: string; inputs: string[]; titleKey: string; descKey: string }>, onCraft: (id: string) => void): void {
+    this.recipes = [...recipes];
+    this.onCraft = onCraft;
     this.render();
   }
 
@@ -86,25 +99,39 @@ export class InventoryScreen implements UIElement {
 
     if (!this.items.length) {
       grid.innerHTML = `<p class="inventory-empty">${escapeHtml(t('inventory.kosong'))}</p>`;
-      return;
+    } else {
+      grid.innerHTML = this.items.map(id => {
+        const icon = ITEM_ICON[id] ?? '📦';
+        const nameKey = `item.${id}.name`;
+        const descKey = itemDescKey(id);
+        // Barang tanpa terjemahan tetap tampil (pakai id mentah): daftar
+        // inventori tidak boleh menghilang hanya karena locale kurang kunci.
+        const name = i18n.hasKey(nameKey) ? t(nameKey) : id;
+        const desc = i18n.hasKey(descKey) ? t(descKey) : '';
+        return `
+          <div class="inventory-item">
+            <span class="inventory-icon" aria-hidden="true">${icon}</span>
+            <div class="inventory-meta">
+              <h3>${escapeHtml(name)}</h3>
+              <p>${escapeHtml(desc)}</p>
+            </div>
+          </div>`;
+      }).join('');
     }
+    this.renderCraftList();
+  }
 
-    grid.innerHTML = this.items.map(id => {
-      const icon = ITEM_ICON[id] ?? '📦';
-      const nameKey = `item.${id}.name`;
-      const descKey = itemDescKey(id);
-      // Barang tanpa terjemahan tetap tampil (pakai id mentah): daftar
-      // inventori tidak boleh menghilang hanya karena locale kurang kunci.
-      const name = i18n.hasKey(nameKey) ? t(nameKey) : id;
-      const desc = i18n.hasKey(descKey) ? t(descKey) : '';
+  private renderCraftList(): void {
+    const panel = this.element.querySelector<HTMLElement>('#craft-panel');
+    const list = this.element.querySelector<HTMLElement>('#craft-list');
+    if (!panel || !list) return;
+    panel.classList.toggle('hidden', this.recipes.length === 0);
+    list.innerHTML = this.recipes.map(recipe => {
+      const ready = recipe.inputs.every(item => this.items.includes(item));
       return `
-        <div class="inventory-item">
-          <span class="inventory-icon" aria-hidden="true">${icon}</span>
-          <div class="inventory-meta">
-            <h3>${escapeHtml(name)}</h3>
-            <p>${escapeHtml(desc)}</p>
-          </div>
-        </div>`;
+        <button class="ui-btn small craft-btn" data-craft="${recipe.id}" ${ready ? '' : 'disabled'}>
+          ${escapeHtml(t(recipe.titleKey))}
+        </button>`;
     }).join('');
   }
 
@@ -128,10 +155,18 @@ export class InventoryScreen implements UIElement {
   private setupListeners(): void {
     const closeBtn = this.element.querySelector('#inventory-close');
     closeBtn?.addEventListener('click', this.onClose);
+    this.element.querySelector('#craft-list')?.addEventListener('click', this.onCraftListClick);
   }
+
+  private readonly onCraftListClick = (event: Event): void => {
+    const btn = (event.target as HTMLElement).closest<HTMLElement>('[data-craft]');
+    const id = btn?.dataset.craft;
+    if (id && !btn?.hasAttribute('disabled')) this.onCraft?.(id);
+  };
 
   private removeListeners(): void {
     const closeBtn = this.element.querySelector('#inventory-close');
     closeBtn?.removeEventListener('click', this.onClose);
+    this.element.querySelector('#craft-list')?.removeEventListener('click', this.onCraftListClick);
   }
 }

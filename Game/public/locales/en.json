@@ -378,5 +378,14 @@
   "b06": {
     "title": "Second Offer",
     "objective": "Decide to accept or refuse Rudi's offer"
+  },
+  "craft": {
+    "title": "Craft Items",
+    "done": "Success",
+    "doneDesc": "A new item was added to the inventory.",
+    "senter": {
+      "title": "Make an emergency flashlight",
+      "desc": "Requires a cable and a battery."
+    }
   }
 }

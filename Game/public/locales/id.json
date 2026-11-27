@@ -377,5 +377,14 @@
   "b06": {
     "title": "Tawaran Kedua",
     "objective": "Keputusan menerima atau menolak tawaran Rudi"
+  },
+  "craft": {
+    "title": "Rakit Barang",
+    "done": "Berhasil",
+    "doneDesc": "Barang baru masuk ke inventaris.",
+    "senter": {
+      "title": "Rakit senter darurat",
+      "desc": "Butuh kabel dan baterai."
+    }
   }
 }

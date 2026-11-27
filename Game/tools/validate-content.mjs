@@ -18,7 +18,7 @@ const KNOWN_OPS = new Set([
   'checkpoint', 'startPuzzle', 'echo', 'ending', 'setPOV', 'setTime', 'teleport', 'setEcho',
   'addEmpati', 'addNurani', 'modifyPercayaDimas', 'modifyPercayaRudi', 'setKonfrontasiDini',
   'setEmpatiB15', 'setJoyDitemui', 'setB20Pilihan', 'calculateKeyakinan',
-  'startChase', 'stopChase', 'startPatrol', 'stopPatrol', 'setHideZone'
+  'startChase', 'stopChase', 'startPatrol', 'stopPatrol', 'setHideZone', 'craft'
 ]);
 
 const chaptersDir = path.join(root, 'public', 'data', 'chapters');
@@ -65,6 +65,10 @@ const patrolData = fs.existsSync(patrolFile) ? readJson(patrolFile) : {};
 const patrolRouteIds = new Set((patrolData.routes || []).map((r) => r.id));
 const hideZoneIds = new Set((patrolData.hideZones || []).map((z) => z.id));
 
+const recipeFile = path.join(root, 'public', 'data', 'recipes.json');
+const recipeData = fs.existsSync(recipeFile) ? readJson(recipeFile) : {};
+const recipeIds = new Set((recipeData.recipes || []).map((r) => r.id));
+
 // Katalog rekaman: blok FILES di src/core/audioSamples.ts. playSound yang
 // key-nya tidak ada di sini HANYA boleh yang memang sintesis saja
 // (phone_hangup/phone_vibrate: bunyi <1 detik, tak worth file mp3).
@@ -106,6 +110,9 @@ for (const f of files) {
       }
       if (op.op === 'setHideZone' && typeof op.id === 'string' && !hideZoneIds.has(op.id)) {
         note(f, `setHideZone "${op.id}" tidak ada di patrols.json (di ${where})`);
+      }
+      if (op.op === 'craft' && typeof op.recipe === 'string' && !recipeIds.has(op.recipe)) {
+        note(f, `craft "${op.recipe}" tidak ada di recipes.json (di ${where})`);
       }
       if (op.op === 'gotoScene') {
         const known = script.scenes || {};
