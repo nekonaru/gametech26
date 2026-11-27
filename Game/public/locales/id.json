@@ -126,6 +126,8 @@
     "skip": "Lewati",
     "hint": "Petunjuk",
     "objective": "Objektif",
+    "detection": "Deteksi",
+    "hidden": "Tersembunyi",
     "objectiveTag": "Tujuan",
     "arrivedAt": "Tiba di",
     "leave": "Pergi",

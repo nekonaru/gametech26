@@ -39,6 +39,10 @@ export interface GameVariables {
   joyDitemui: boolean;
   b20Pilihan: 'selamatkan_lapor' | 'diam' | 'biarkan' | '';
   keyakinan: number;
+  /** Seberapa besar pemain terdeteksi patrol, 0 sampai 1. */
+  deteksi: number;
+  /** Apakah pemain sedang berada di zona sembunyi yang aktif. */
+  tersembunyi: boolean;
 }
 
 export const DEFAULT_VARIABLES: GameVariables = {
@@ -54,7 +58,9 @@ export const DEFAULT_VARIABLES: GameVariables = {
   percayaRudi: false,
   joyDitemui: false,
   b20Pilihan: '',
-  keyakinan: 0
+  keyakinan: 0,
+  deteksi: 0,
+  tersembunyi: false
 };
 
 export class GameStateManager {
@@ -242,7 +248,20 @@ export class GameStateManager {
   }
 
   deserialize(json: string): void {
-    this.state = JSON.parse(json);
+    // Save lama tidak punya variabel baru. Gabungkan dengan bawaan supaya
+    // sistem deteksi tidak membaca undefined setelah memuat progres lama.
+    const parsed = JSON.parse(json) as Partial<GameState>;
+    this.state = {
+      ...this.getDefaultState(),
+      ...parsed,
+      location: { ...this.getDefaultState().location, ...(parsed.location ?? {}) },
+      variables: { ...DEFAULT_VARIABLES, ...(parsed.variables ?? {}) },
+      flags: { ...(parsed.flags ?? {}) },
+      clues: [...(parsed.clues ?? [])],
+      inventory: [...(parsed.inventory ?? [])],
+      echo: { ...(parsed.echo ?? {}) },
+      endingsUnlocked: [...(parsed.endingsUnlocked ?? [])]
+    };
     this.notify();
   }
 }

@@ -127,6 +127,8 @@
     "skip": "Skip",
     "hint": "Hint",
     "objective": "Objective",
+    "detection": "Detection",
+    "hidden": "Hidden",
     "objectiveTag": "Goal",
     "arrivedAt": "Arriving at",
     "leave": "Go",
