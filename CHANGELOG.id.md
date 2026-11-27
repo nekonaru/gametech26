@@ -1,3 +1,25 @@
+## v2.0.0
+
+Pembaruan pengalaman dan mekanik dengan stealth, crafting, bab baru, dan antarmuka yang lebih jelas.
+
+## Fitur baru
+
+- **Bab stealth.** Bab b22 menambah rute patroli, meter deteksi, zona sembunyi, dan ending 12.
+- **Crafting.** Resep dari `recipes.json` bisa dirakit lewat panel baru di inventaris.
+- **Pilihan terkunci.** Opsi dialog yang syaratnya belum terpenuhi tetap tampil dengan alasan singkat.
+- **Token desain.** Focus ring, token gerak, dan dukungan reduced motion berlaku di seluruh antarmuka.
+
+## Peningkatan
+
+- **Umpan balik deteksi.** HUD menampilkan deteksi dan status sembunyi lewat meter ringkas.
+- **Kompatibilitas save.** Save lama mendapat nilai bawaan untuk variabel baru saat dimuat.
+- **Interaksi lebih halus.** Tombol punya state aktif dan panel modal memakai animasi masuk yang konsisten.
+
+## Perbaikan bug
+
+- **Identitas dialog.** Pilihan tanpa node tujuan tetap cocok dengan opsi yang benar.
+- **Kebersihan listener.** Tombol crafting inventaris memakai satu handler terikat, bukan listener yang menumpuk.
+
 ## v1.1.0
 
 Pembaruan konten dan keandalan yang menambah bab baru, mekanik bayang pengikut, dan perbaikan di penyimpanan, input, audio, antarmuka, serta rendering.

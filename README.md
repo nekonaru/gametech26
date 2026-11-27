@@ -38,11 +38,11 @@
 
 ## Tentang
 
-**Asap yang Tak Padam** adalah game horor naratif psikologis orang pertama bergaya PS1. Kamu bergantian menjadi **Dimas** dan **Raka** selama 7 hari di sebuah desa: memeriksa benda, mengajak warga bicara, mengumpulkan clue ke jurnal, memecahkan puzzle, dan menentukan salah satu dari **11 ending** lewat pilihan dan nuranimu sendiri.
+**Asap yang Tak Padam** adalah game horor naratif psikologis orang pertama bergaya PS1. Kamu bergantian menjadi **Dimas** dan **Raka** selama 7 hari di sebuah desa: memeriksa benda, mengajak warga bicara, mengumpulkan clue ke jurnal, memecahkan puzzle, dan menentukan salah satu dari **12 ending** lewat pilihan dan nuranimu sendiri.
 
 > _"Api bisa padam. Rasa bersalah tidak."_
 
-Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca dari JSON (25 berkas bab, dua bahasa), jadi penulis cerita bisa menambah bab tanpa menyentuh kode.
+Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca dari JSON (26 berkas bab, dua bahasa), jadi penulis cerita bisa menambah bab tanpa menyentuh kode.
 
 ---
 
@@ -52,8 +52,8 @@ Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca 
 
 | Fitur | Keterangan |
 |-------|------------|
-| **25 bab JSON** | B1 sampai B21 plus B5B, B10ALT, B12B, dan B15-ALT; dua POV (Dimas/Raka), 2 bab cabang opsional |
-| **11 ending + epilog** | Pohon keputusan diuji unit untuk semua cabang, termasuk true ending |
+| **26 bab JSON** | B1 sampai B22 plus B5B, B10ALT, B12B, dan B15-ALT; dua POV (Dimas/Raka), 2 bab cabang opsional |
+| **12 ending + epilog** | Pohon keputusan diuji unit untuk semua cabang, termasuk true ending |
 | **Indonesia + English** | Seluruh teks lewat i18n, simetri ID/EN diaudit otomatis |
 | **Pilih Babak & galeri** | Ulangi babak terbuka dari menu utama; galeri ending + pencapaian Detektif |
 
@@ -65,6 +65,9 @@ Dibangun dengan **Three.js** + **TypeScript** + **Vite**. Seluruh naskah dibaca 
 | **Jurnal & papan petunjuk** | Clue, evidence board dengan penarikan kartu, ringkasan hari + daftar clue terlewat |
 | **6 puzzle unik** | Dial laci, struk robek, kalender dinding, papan petunjuk, jalan berputar, timing cincin; semua punya Bantuan dan Lewati |
 | **Bayang pengikut** | Bab B21 memakai scene lorong baru dan bayang yang mengikuti pemain lewat op startChase dan stopChase; nonaktif di Mode Naratif dan Horor Lembut |
+| **Stealth dan sembunyi** | Bab B22 menghadirkan patroli, meter deteksi, dan tempat sembunyi; jongkok mengurangi deteksi, lari menaikkannya |
+| **Crafting** | Resep kabel dan baterai menjadi senter darurat lewat panel Rakit di inventaris |
+| **Pilihan terkunci** | Opsi dialog yang syaratnya belum terpenuhi tetap tampil dengan alasan singkat |
 
 ### Tampilan
 
