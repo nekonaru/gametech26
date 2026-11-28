@@ -399,6 +399,17 @@ export class Game {
       gameState.setEcho(data.id, true);
       this.refreshPhoneEchoes();
     });
+    eventBus.on('engine:contextLost', () => {
+      this.showToast(t('ui.contextLost'), t('ui.contextLostDesc'), 8000);
+    });
+    eventBus.on('engine:contextRestored', () => {
+      this.showToast(t('ui.contextRestored'), t('ui.contextRestoredDesc'), 4000);
+      // Hanya lanjut otomatis bila pemain memang sedang bermain dan tidak
+      // sedang membuka overlay atau dialog.
+      if (this.gameState === 'playing' && !this.overlayActive && !gameState.get('inDialog')) {
+        this.engine?.start();
+      }
+    });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {
         this.lighting?.applyPreset(data.preset, data.transition || 0);
