@@ -1,3 +1,23 @@
+## v4.0.0
+
+Pembaruan sistem dengan dua puzzle baru, impor save, Pengaturan cepat, dan pemulihan grafis yang aman.
+
+## Fitur baru
+
+- **Bab kode balai.** Bab b24 menambah puzzle radio Morse dan keypad telepon, serta ending 15.
+- **Impor save.** Layar Muat menerima berkas save tervalidasi ke Slot 1.
+- **Pengaturan cepat.** Tombol di HUD membuka Pengaturan saat bermain dan kembali ke game saat ditutup.
+- **Pemulihan grafis.** Konteks WebGL yang hilang menjeda game dan melanjutkannya dengan aman saat pulih.
+
+## Peningkatan
+
+- **Variasi puzzle.** Layar puzzle kini mendukung delapan tipe dengan aturan Bantuan dan Lewati yang sama.
+- **Umpan balik status.** Hasil impor ditampilkan di layar Muat tanpa meninggalkannya.
+
+## Perbaikan bug
+
+- **Jumlah listener.** Tombol Pengaturan cepat memakai satu handler terikat, bukan listener yang menumpuk.
+
 ## v3.0.0
 
 Pembaruan naratif dengan rekaman echo, New Game Plus, efek persepsi, dan bab mimpi baru.
