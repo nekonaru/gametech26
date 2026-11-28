@@ -46,6 +46,7 @@ export class HUD implements UIElement {
   private detectionElement: HTMLElement | null = null;
   private detectionFill: HTMLElement | null = null;
   private detectionHidden: HTMLElement | null = null;
+  private readonly onQuickSettings = (): void => eventBus.emit('ui:openSettings', {});
 
   constructor() {
     this.element = this.createElement();
@@ -59,6 +60,7 @@ export class HUD implements UIElement {
     // Rebind kunci harus langsung tercermin di prompt interaksi.
     settingsManager.subscribe(() => this.updatePromptKey());
     this.wireTouchControls();
+    this.element.querySelector('#quick-settings')?.addEventListener('click', this.onQuickSettings);
   }
 
   private createElement(): HTMLElement {
@@ -113,6 +115,7 @@ export class HUD implements UIElement {
       </div>
       <div id="sensory-text" class="sensory-text hidden"></div>
       <div id="horror-vignette" class="horror-vignette"></div>
+      <button id="quick-settings" class="ui-btn small quick-settings" data-i18n="ui.settings"></button>
     `;
     return div;
   }
@@ -191,6 +194,7 @@ export class HUD implements UIElement {
     if (this.sensoryTimer !== null) window.clearTimeout(this.sensoryTimer);
     if (this.flickerTimer !== null) window.clearTimeout(this.flickerTimer);
     if (this.hotbarPopupTimer !== null) window.clearTimeout(this.hotbarPopupTimer);
+    this.element.querySelector('#quick-settings')?.removeEventListener('click', this.onQuickSettings);
     this.element.remove();
   }
 

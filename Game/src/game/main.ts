@@ -284,6 +284,7 @@ export class Game {
       );
     });
     eventBus.on('ui:openJournal', () => this.showJournal());
+    eventBus.on('ui:openSettings', () => this.showSettings());
     eventBus.on('ui:openEvidenceBoard', () => this.openEvidenceBoard());
     // Tombol kontrol layar sentuh (HUD). Memakai penjaga yang sama persis
     // dengan pintasan keyboard supaya tidak ada jalur alternatif yang bisa
