@@ -101,6 +101,22 @@ body > .hud {
 .echo-item p { font-size: 13px; line-height: 1.5; }
 .echo-empty { font-size: 13px; color: var(--clr-fg2); }
 
+.puzzle-morse .morse-prompt { margin-bottom: var(--space-3); color: var(--clr-fg2); }
+.morse-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.morse-option { font-family: var(--font); letter-spacing: 2px; }
+.keypad-puzzle { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.keypad-display {
+  min-width: 180px;
+  padding: var(--space-3);
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 6px;
+  border: 1px solid var(--clr-border);
+  background: rgba(0, 0, 0, 0.4);
+}
+.keypad-grid { display: grid; grid-template-columns: repeat(3, 64px); gap: var(--space-2); }
+.keypad-grid .ui-btn { min-width: 0; padding: var(--space-2); }
+
 /* Keyakinan rendah: dunia sedikit lebih dingin dan kontras, tanpa mengubah
    konten atau mengunci kontrol. */
 #game-canvas { transition: filter var(--motion-slow) var(--ease-exit); }

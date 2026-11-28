@@ -1,4 +1,4 @@
-import { UIElement, confirmAction } from './base.js';
+import { UIElement, confirmAction, escapeHtml } from './base.js';
 import { i18n, t } from '../core/i18n.js';
 import { settingsManager } from '../core/settings.js';
 import { audioManager } from '../core/audio.js';
@@ -10,7 +10,7 @@ const HELP_DELAY_MS = 120000;
 
 export interface PuzzleConfig {
   id: string;
-  type: 'dial' | 'jigsaw' | 'calendar' | 'evidence' | 'navigation' | 'timing';
+  type: 'dial' | 'jigsaw' | 'calendar' | 'evidence' | 'navigation' | 'timing' | 'morse' | 'keypad';
   title: string;
   description: string;
   data: any;
@@ -174,7 +174,79 @@ export class PuzzleScreen implements UIElement {
       case 'timing':
         this.renderTimingPuzzle(content, config);
         break;
+      case 'morse':
+        this.renderMorsePuzzle(content, config);
+        break;
+      case 'keypad':
+        this.renderKeypadPuzzle(content, config);
+        break;
     }
+  }
+
+  /** Pilih pola Morse yang cocok dengan petunjuk di naskah. */
+  private renderMorsePuzzle(container: HTMLElement, config: PuzzleConfig): void {
+    const { code = '..--', choices = [] } = config.data;
+    const options: string[] = choices.length ? choices : [code, '.-..', '--..', '....'];
+    container.innerHTML = `
+      <div class="puzzle-morse">
+        <p class="morse-prompt" data-i18n="puzzle.morsePrompt"></p>
+        <div class="morse-options">
+          ${options.map((value: string, index: number) => `
+            <button class="ui-btn morse-option" data-value="${escapeHtml(value)}">${index + 1}. ${escapeHtml(value)}</button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    this.updateText();
+    container.querySelectorAll<HTMLElement>('.morse-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.value === code) {
+          audioManager.playProcedural('blip', { category: 'sfx', volume: 0.25 });
+          config.onSolve({ success: true, code });
+        } else {
+          audioManager.playProcedural('static', { category: 'sfx', volume: 0.3 });
+        }
+      });
+    });
+  }
+
+  /** Masukkan kode angka dari pesan telepon. */
+  private renderKeypadPuzzle(container: HTMLElement, config: PuzzleConfig): void {
+    const answer = String(config.data.answer ?? '1234');
+    let entered = '';
+    container.innerHTML = `
+      <div class="keypad-puzzle">
+        <div class="keypad-display">${'_'.repeat(answer.length)}</div>
+        <div class="keypad-grid">
+          ${Array.from({ length: 9 }, (_, i) => `<button class="ui-btn keypad-key" data-key="${i + 1}">${i + 1}</button>`).join('')}
+          <button class="ui-btn keypad-key" data-key="clear">C</button>
+          <button class="ui-btn keypad-key" data-key="0">0</button>
+          <button class="ui-btn primary keypad-submit" data-i18n="ui.confirm"></button>
+        </div>
+      </div>
+    `;
+    this.updateText();
+    const display = container.querySelector<HTMLElement>('.keypad-display');
+    const paint = (): void => {
+      if (display) display.textContent = entered + '_'.repeat(Math.max(0, answer.length - entered.length));
+    };
+    container.querySelectorAll<HTMLElement>('.keypad-key').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key;
+        if (key === 'clear') entered = '';
+        else if (key && entered.length < answer.length) entered += key;
+        paint();
+        audioManager.playProcedural('blip', { category: 'sfx', volume: 0.2 });
+      });
+    });
+    container.querySelector('.keypad-submit')?.addEventListener('click', () => {
+      if (entered === answer) config.onSolve({ success: true, code: answer });
+      else {
+        entered = '';
+        paint();
+        audioManager.playProcedural('static', { category: 'sfx', volume: 0.3 });
+      }
+    });
   }
 
   private renderDialPuzzle(container: HTMLElement, config: PuzzleConfig): void {

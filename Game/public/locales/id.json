@@ -280,6 +280,7 @@
     "solved": "Puzzle terpecahkan!",
     "failed": "Coba lagi",
     "hint": "Petunjuk: ",
+    "morsePrompt": "Pilih pola yang sesuai dengan rekaman radio.",
     "cancel": "Batal"
   },
   "achievements": {

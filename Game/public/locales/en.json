@@ -281,6 +281,7 @@
     "solved": "Puzzle solved!",
     "failed": "Try again",
     "hint": "Hint: ",
+    "morsePrompt": "Choose the pattern that matches the radio recording.",
     "cancel": "Cancel"
   },
   "achievements": {
