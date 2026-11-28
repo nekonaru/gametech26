@@ -124,6 +124,14 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "import": "Import Save",
+    "importConfirm": "Importing will overwrite Slot 1. Continue?",
+    "importDone": "Save imported to Slot 1.",
+    "importFailed": "Save is invalid.",
+    "contextLost": "Graphics interrupted",
+    "contextLostDesc": "The game is paused for a moment. Waiting for graphics to recover.",
+    "contextRestored": "Graphics recovered",
+    "contextRestoredDesc": "The game continues.",
     "back": "Back",
     "next": "Next",
     "skip": "Skip",
@@ -281,6 +289,7 @@
     "solved": "Puzzle solved!",
     "failed": "Try again",
     "hint": "Hint: ",
+    "morsePrompt": "Choose the pattern that matches the radio recording.",
     "cancel": "Cancel"
   },
   "achievements": {
@@ -337,6 +346,7 @@
     "ending12": "One Step Ahead",
     "ending13": "What Was Entrusted",
     "ending14": "What Was Kept",
+    "ending15": "To the End",
     "epilog": "Epilogue",
     "fateDimas": "Dimas's fate",
     "fateRudi": "Rudi's fate"
