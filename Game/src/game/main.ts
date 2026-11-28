@@ -284,6 +284,7 @@ export class Game {
       );
     });
     eventBus.on('ui:openJournal', () => this.showJournal());
+    eventBus.on('ui:openSettings', () => this.showSettings());
     eventBus.on('ui:openEvidenceBoard', () => this.openEvidenceBoard());
     // Tombol kontrol layar sentuh (HUD). Memakai penjaga yang sama persis
     // dengan pintasan keyboard supaya tidak ada jalur alternatif yang bisa
@@ -398,6 +399,17 @@ export class Game {
       if (!data?.id) return;
       gameState.setEcho(data.id, true);
       this.refreshPhoneEchoes();
+    });
+    eventBus.on('engine:contextLost', () => {
+      this.showToast(t('ui.contextLost'), t('ui.contextLostDesc'), 8000);
+    });
+    eventBus.on('engine:contextRestored', () => {
+      this.showToast(t('ui.contextRestored'), t('ui.contextRestoredDesc'), 4000);
+      // Hanya lanjut otomatis bila pemain memang sedang bermain dan tidak
+      // sedang membuka overlay atau dialog.
+      if (this.gameState === 'playing' && !this.overlayActive && !gameState.get('inDialog')) {
+        this.engine?.start();
+      }
     });
     eventBus.on<any>('lighting:preset', (data) => {
       if (data && typeof data.preset === 'string') {

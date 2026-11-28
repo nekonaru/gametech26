@@ -31,6 +31,16 @@ export class Engine {
    */
   private readonly boundOnResize = () => this.onResize();
   private readonly boundOnBeforeUnload = () => this.onBeforeUnload();
+  /** Konteks WebGL bisa hilang saat GPU reset. Hentikan loop, lalu izinkan
+   *  three memulihkan dan Game memutuskan kapan melanjutkan. */
+  private readonly boundOnContextLost = (event: Event): void => {
+    event.preventDefault();
+    this.stop();
+    this.eventBus.emit('engine:contextLost', {});
+  };
+  private readonly boundOnContextRestored = (): void => {
+    this.eventBus.emit('engine:contextRestored', {});
+  };
   /** rAF butuh referensi fungsi yang sama tiap frame; .bind() tiap frame bikin closure baru. */
   private readonly boundAnimate = () => this.animate();
   private unsubscribeSettings: (() => void) | null = null;
@@ -126,6 +136,8 @@ export class Engine {
   private setupEventListeners(): void {
     window.addEventListener('resize', this.boundOnResize);
     window.addEventListener('beforeunload', this.boundOnBeforeUnload);
+    this.canvas.addEventListener('webglcontextlost', this.boundOnContextLost);
+    this.canvas.addEventListener('webglcontextrestored', this.boundOnContextRestored);
   }
 
   private onResize(): void {
@@ -240,6 +252,8 @@ export class Engine {
     this.stop();
     window.removeEventListener('resize', this.boundOnResize);
     window.removeEventListener('beforeunload', this.boundOnBeforeUnload);
+    this.canvas.removeEventListener('webglcontextlost', this.boundOnContextLost);
+    this.canvas.removeEventListener('webglcontextrestored', this.boundOnContextRestored);
     this.unsubscribeSettings?.();
     this.unsubscribeSettings = null;
     this.input.dispose();

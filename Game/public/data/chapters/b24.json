@@ -1,0 +1,63 @@
+{
+  "id": "b24",
+  "hari": 7,
+  "jam": "06:30",
+  "pov": "dimas",
+  "scene": "balai_desa",
+  "scenes": {
+    "balai_desa": {
+      "spawn": [0, 0, 0],
+      "yaw": 0,
+      "label": "b24.tempat.balai",
+      "lighting": "pagi_desa"
+    }
+  },
+  "onEnter": [
+    { "op": "objective", "id": "kode", "text": "b24.obj.kode" },
+    { "op": "playSound", "key": "radio_berita", "options": { "category": "ambience", "volume": 0.25 } },
+    { "op": "checkpoint", "id": "b24" }
+  ],
+  "interactables": [
+    { "id": "radio_desawara", "prompt": "ui.interact", "position": [-2, 0, -3], "onUse": [
+      { "op": "startPuzzle", "id": "p7", "config": {
+        "type": "morse",
+        "title": "b24.puzzle.morse.title",
+        "description": "b24.puzzle.morse.desc",
+        "data": {
+          "code": "..--",
+          "choices": ["..--", ".-..", "--..", "...."],
+          "hints": ["b24.puzzle.morse.hint"]
+        },
+        "onSolve": [{ "op": "objective", "id": "kode2", "text": "b24.obj.kode2" }],
+        "onSkip": [{ "op": "objective", "id": "kode2", "text": "b24.obj.kode2" }],
+        "onHelp": [{ "op": "setEcho", "key": "help_p7", "value": true }]
+      } }
+    ] },
+    { "id": "ponsel_kunci", "prompt": "ui.examine", "position": [1.5, 0, -3.5], "onUse": [
+      { "op": "startPuzzle", "id": "p8", "config": {
+        "type": "keypad",
+        "title": "b24.puzzle.keypad.title",
+        "description": "b24.puzzle.keypad.desc",
+        "data": {
+          "answer": "7314",
+          "hints": ["b24.puzzle.keypad.hint"]
+        },
+        "onSolve": [{ "op": "objective", "id": "kode3", "text": "b24.obj.kode3" }],
+        "onSkip": [{ "op": "objective", "id": "kode3", "text": "b24.obj.kode3" }],
+        "onHelp": [{ "op": "setEcho", "key": "help_p8", "value": true }]
+      } }
+    ] },
+    { "id": "pintu_balai", "prompt": "ui.interact", "position": [0, 0, -6], "once": true, "goalFor": ["kode3"], "onUse": [
+      { "op": "dialog", "node": "b24.pintu" }
+    ] }
+  ],
+  "dialogs": {
+    "b24.pintu": [
+      { "speaker": "Dimas", "text": "b24.pintu.1" },
+      { "speaker": "Dimas", "text": "b24.pintu.2", "choices": [
+        { "text": "b24.pintu.cA", "onSelect": [{ "op": "ending", "id": "ending_15" }] },
+        { "text": "b24.pintu.cB", "onSelect": [{ "op": "chapterEnd" }] }
+      ] }
+    ]
+  }
+}

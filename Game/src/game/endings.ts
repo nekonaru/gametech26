@@ -230,6 +230,17 @@ export class EndingManager {
       cukongInvestigated: false,
       epilog: 'Rekaman itu tetap di ponsel. Setiap pagi Raka memutarnya sekali, lalu mematikan layar.'
     });
+
+    this.endings.set('ending_15', {
+      id: 'ending_15',
+      name: t('ending.ending15'),
+      description: 'Dimas mengikuti radio sampai akhir dan menemukan siapa yang mengirim kode itu.',
+      dimasFate: 'Pulang dengan jawaban yang tidak bisa dibuktikan',
+      rudiFate: 'Tidak pernah mengakui apa pun',
+      joyFound: false,
+      cukongInvestigated: false,
+      epilog: 'Radio balai berhenti tengah malam. Dimas menyimpan kertas berisi empat tanda sampai hari ini.'
+    });
   }
 
   evaluateEnding(): EndingResult | null {

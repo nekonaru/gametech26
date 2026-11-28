@@ -1,0 +1,62 @@
+{
+  "id": {
+    "b24": {
+      "tempat": {
+        "balai": "Balai Desa"
+      },
+      "obj": {
+        "kode": "Cari pola radio yang hilang",
+        "kode2": "Buka kunci ponsel dari pesan terakhir",
+        "kode3": "Gunakan kode untuk membuka pintu balai"
+      },
+      "puzzle": {
+        "morse": {
+          "title": "Pola Radio",
+          "desc": "Radio berulang kali memancarkan empat tanda. Pilih pola yang sama persis.",
+          "hint": "Dua titik di awal, dua garis di akhir."
+        },
+        "keypad": {
+          "title": "Kunci Ponsel",
+          "desc": "Pesan terakhir menyebut empat angka yang diulang Raka di telepon.",
+          "hint": "Tujuh, tiga, satu, empat."
+        }
+      },
+      "pintu": {
+        "1": "Pintu balai terbuka. Kode itu benar, tapi suara radio masih mengikuti dari dalam.",
+        "2": "Aku bisa mengikuti suaranya atau kembali ke jalan.",
+        "cA": "Ikuti radio sampai habis",
+        "cB": "Kembali ke jalan"
+      }
+    }
+  },
+  "en": {
+    "b24": {
+      "tempat": {
+        "balai": "Village Hall"
+      },
+      "obj": {
+        "kode": "Find the missing radio pattern",
+        "kode2": "Unlock the phone from the last message",
+        "kode3": "Use the code to open the hall door"
+      },
+      "puzzle": {
+        "morse": {
+          "title": "Radio Pattern",
+          "desc": "The radio repeats four marks. Choose the exact same pattern.",
+          "hint": "Two dots at the start, two dashes at the end."
+        },
+        "keypad": {
+          "title": "Phone Lock",
+          "desc": "The last message names four numbers Raka repeated on the phone.",
+          "hint": "Seven, three, one, four."
+        }
+      },
+      "pintu": {
+        "1": "The hall door opens. The code was right, but the radio still follows from inside.",
+        "2": "I can follow the sound or go back to the road.",
+        "cA": "Follow the radio to the end",
+        "cB": "Go back to the road"
+      }
+    }
+  }
+}

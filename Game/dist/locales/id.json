@@ -123,6 +123,14 @@
     "yes": "Ya",
     "no": "Tidak",
     "ok": "OK",
+    "import": "Impor Save",
+    "importConfirm": "Impor akan menimpa Slot 1. Lanjutkan?",
+    "importDone": "Save berhasil diimpor ke Slot 1.",
+    "importFailed": "Save tidak valid.",
+    "contextLost": "Grafis terganggu",
+    "contextLostDesc": "Permainan dijeda sementara. Menunggu grafis pulih.",
+    "contextRestored": "Grafis pulih",
+    "contextRestoredDesc": "Permainan dilanjutkan.",
     "back": "Kembali",
     "next": "Selanjutnya",
     "skip": "Lewati",
@@ -280,6 +288,7 @@
     "solved": "Puzzle terpecahkan!",
     "failed": "Coba lagi",
     "hint": "Petunjuk: ",
+    "morsePrompt": "Pilih pola yang sesuai dengan rekaman radio.",
     "cancel": "Batal"
   },
   "achievements": {
@@ -336,6 +345,7 @@
     "ending12": "Selangkah Lebih Awal",
     "ending13": "Yang Dipercayakan",
     "ending14": "Yang Disimpan",
+    "ending15": "Sampai Habis",
     "epilog": "Epilog",
     "fateDimas": "Nasib Dimas",
     "fateRudi": "Nasib Rudi"

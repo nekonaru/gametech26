@@ -212,6 +212,18 @@ export class SaveManager {
     return JSON.stringify(save, null, 2);
   }
 
+  /** Impor save dari JSON dengan validasi struktur dan checksum. */
+  async importSave(json: string, slotId: string): Promise<boolean> {
+    try {
+      const data = JSON.parse(json) as SaveData;
+      if (!this.isValidSaveData(data)) return false;
+      await this.put(slotId, data);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   startPlaytimeTracking(): void {
     // Idempoten: panggilan kedua tanpa stop akan menimpa saveInterval lama
     // (interval bocor) dan menghitung waktu dua kali lipat.

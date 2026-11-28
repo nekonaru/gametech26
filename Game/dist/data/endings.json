@@ -223,6 +223,22 @@
       "cukongInvestigated": false,
       "epilog_id": "Rekaman itu tetap di ponsel. Setiap pagi Raka memutarnya sekali, lalu mematikan layar.",
       "epilog_en": "The recordings stay on the phone. Each morning Raka plays them once, then turns off the screen."
+    },
+    {
+      "id": "ending_15",
+      "name_id": "Sampai Habis",
+      "name_en": "To the End",
+      "description_id": "Dimas mengikuti radio sampai akhir dan menemukan siapa yang mengirim kode itu.",
+      "description_en": "Dimas follows the radio to the end and learns who sent the code.",
+      "requirements": { "chapter": "b24" },
+      "dimasFate_id": "Pulang dengan jawaban yang tidak bisa dibuktikan",
+      "dimasFate_en": "Goes home with an answer he cannot prove",
+      "rudiFate_id": "Tidak pernah mengakui apa pun",
+      "rudiFate_en": "Never admits anything",
+      "joyFound": false,
+      "cukongInvestigated": false,
+      "epilog_id": "Radio balai berhenti tengah malam. Dimas menyimpan kertas berisi empat tanda sampai hari ini.",
+      "epilog_en": "The hall radio stops at midnight. Dimas still keeps the paper with four marks."
     }
   ]
 }

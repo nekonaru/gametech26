@@ -26,6 +26,8 @@ export class LoadGameScreen implements UIElement {
     this.mode = mode;
     const h2 = this.element.querySelector('.load-header h2');
     if (h2) h2.setAttribute('data-i18n', mode === 'save' ? 'ui.save' : 'menu.load');
+    const importBtn = this.element.querySelector<HTMLElement>('#load-import');
+    if (importBtn) importBtn.classList.toggle('hidden', mode === 'save');
     this.updateText();
     void this.refresh();
   }
@@ -39,6 +41,8 @@ export class LoadGameScreen implements UIElement {
         <header class="load-header">
           <h2 data-i18n="menu.load"></h2>
           <button id="load-back" class="ui-btn back-btn" data-i18n="ui.back"></button>
+          <button id="load-import" class="ui-btn small" data-i18n="ui.import"></button>
+          <span id="load-import-status" class="load-import-status"></span>
         </header>
         <div class="load-slots" id="load-slots"></div>
       </div>
@@ -73,12 +77,38 @@ export class LoadGameScreen implements UIElement {
   private setupListeners(): void {
     const backBtn = this.element.querySelector('#load-back');
     backBtn?.addEventListener('click', this.onBack);
+    this.element.querySelector('#load-import')?.addEventListener('click', this.onImport);
   }
 
   private removeListeners(): void {
     const backBtn = this.element.querySelector('#load-back');
     backBtn?.removeEventListener('click', this.onBack);
+    this.element.querySelector('#load-import')?.removeEventListener('click', this.onImport);
   }
+
+  private readonly onImport = (): void => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        void confirmAction(t('ui.importConfirm'), {
+          title: t('ui.import'), confirmLabel: t('ui.yes'), cancelLabel: t('ui.no')
+        }).then(async ok => {
+          if (!ok) return;
+          const status = this.element.querySelector<HTMLElement>('#load-import-status');
+          const imported = await saveManager.importSave(String(reader.result ?? ''), 'slot-1');
+          if (status) status.textContent = t(imported ? 'ui.importDone' : 'ui.importFailed');
+          if (imported) await this.refresh();
+        });
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
 
   async refresh(): Promise<void> {
     this.slots = await saveManager.getAllSaves();

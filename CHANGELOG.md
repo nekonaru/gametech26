@@ -1,3 +1,23 @@
+## v4.0.0
+
+A systems update with two new puzzles, save import, quick settings, and safe graphics recovery.
+
+## New features
+
+- **Code hall chapter.** Chapter b24 adds Morse radio and phone keypad puzzles, plus ending 15.
+- **Save import.** The Load screen accepts a validated JSON save into Slot 1.
+- **Quick settings.** A HUD button opens Settings during play and returns to the game on close.
+- **Graphics recovery.** Lost WebGL context pauses the game and resumes safely when restored.
+
+## Improvements
+
+- **Puzzle variety.** The puzzle screen now supports eight types with the same help and skip rules.
+- **Status feedback.** Import results are shown in the Load screen without leaving it.
+
+## Bug fixes
+
+- **Listener count.** The quick settings button reuses one bound handler instead of stacking listeners.
+
 ## v3.0.0
 
 A narrative update with echo recordings, New Game Plus, perception effects, and a new dream chapter.
